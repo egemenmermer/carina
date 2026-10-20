@@ -1,0 +1,146 @@
+{
+  "vodContinueWatching": "Continue watching",
+  "vodFavorites": "Favorites",
+  "vodRecentlyAdded": "Recently added",
+  "vodTrendingThisWeek": "Trending this week",
+  "vodPlay": "Play",
+  "vodInfo": "Info",
+  "vodHome": "Home",
+  "vodAllMovies": "All movies",
+  "vodAllShows": "All shows",
+  "vodBackToMovies": "Movies",
+  "vodBackToShows": "Shows",
+  "vodUntitled": "Untitled",
+  "vodWatched": "Watched",
+  "vodTimeLeft": "{time} left",
+  "@vodTimeLeft": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "vodReviews": "({count} reviews)",
+  "@vodReviews": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "vodSeasons": "{count, plural, =1{1 season} other{{count} seasons}}",
+  "@vodSeasons": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vodEpisodes": "{count, plural, =1{1 episode} other{{count} episodes}}",
+  "@vodEpisodes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vodSeasonsUpper": "{count, plural, =1{1 SEASON} other{{count} SEASONS}}",
+  "@vodSeasonsUpper": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vodSeasonTab": "Season {number}",
+  "@vodSeasonTab": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "vodSpecialContents": "Special contents",
+  "vodCastLabel": "Cast:",
+  "vodGenresLabel": "Genres:",
+  "vodDirectorLabel": "Director:",
+  "vodResumeFrom": "Resume from {time}",
+  "@vodResumeFrom": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "vodFromBeginning": "From the beginning",
+  "vodPlayEpisode": "Play {episode}",
+  "@vodPlayEpisode": {
+    "placeholders": {
+      "episode": {
+        "type": "String"
+      }
+    }
+  },
+  "vodAddToFavorites": "Add to favorites",
+  "vodRemoveFromFavorites": "Remove from favorites",
+  "vodAddToFavoriteWithTags": "Add to favorite with tags",
+  "vodMarkWatched": "Mark as watched",
+  "vodMarkUnwatched": "Mark as unwatched",
+  "vodMarkPreviousWatched": "Mark all previous as watched",
+  "vodHide": "Hide",
+  "vodRemoveFromContinue": "Remove from Continue watching",
+  "vodRefreshEpisodes": "Refresh episodes",
+  "vodToastAddedToFavorites": "Added to favorites",
+  "vodToastRemovedFromFavorites": "Removed from favorites",
+  "vodToastMarkedWatched": "Marked as watched",
+  "vodToastMarkedUnwatched": "Marked as unwatched",
+  "vodToastMarkedPrevious": "{count, plural, =0{No earlier episodes to mark} =1{1 episode marked as watched} other{{count} episodes marked as watched}}",
+  "@vodToastMarkedPrevious": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vodToastHidden": "Hidden. Restore it in Settings › Hidden items.",
+  "vodToastRemovedFromContinue": "Removed from Continue watching",
+  "vodToastEpisodesUpdated": "Episodes updated",
+  "vodToastEpisodesFailed": "Couldn't refresh the episodes",
+  "vodToastNoEpisodes": "There are no episodes to play yet",
+  "vodSortHeader": "Sort by",
+  "vodSortDefault": "Default order",
+  "vodSortName": "Name",
+  "vodSortDateAdded": "Date added",
+  "vodSortRating": "Rating",
+  "vodSortYear": "Year",
+  "vodFilterHint": "Filter this list",
+  "vodClearFilter": "Clear",
+  "vodTitlesCount": "{count, plural, =1{1 title} other{{count} titles}}",
+  "@vodTitlesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vodEmptyMoviesTitle": "No movies yet",
+  "vodEmptyMoviesMessage": "This playlist doesn't have any movies. Reload it from the Playlist Manager or pick another playlist.",
+  "vodEmptyShowsTitle": "No shows yet",
+  "vodEmptyShowsMessage": "This playlist doesn't have any shows. Reload it from the Playlist Manager or pick another playlist.",
+  "vodEmptyCategory": "Nothing in this category yet.",
+  "vodEmptyFavorites": "No favorites yet. Right-click a title and choose Add to favorites.",
+  "vodEmptyContinue": "Nothing to continue yet. Titles you start show up here.",
+  "vodEmptyRecent": "Nothing was added in the last 7 days.",
+  "vodNoResults": "No results for “{query}”",
+  "@vodNoResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "vodLoadError": "This list couldn't be loaded.",
+  "vodDetailsMissing": "This title is no longer in the playlist.",
+  "vodDetailsCached": "The provider didn't answer, so saved details are shown.",
+  "vodNoEpisodes": "No episodes yet. Try Refresh episodes."
+}

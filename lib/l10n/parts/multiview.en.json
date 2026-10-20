@@ -1,0 +1,43 @@
+{
+  "multiviewTitle": "Multi-channel",
+  "multiviewLayoutSideBySide": "1 + 1",
+  "multiviewLayoutGrid": "2 × 2",
+  "multiviewLayoutOnePlusThree": "1 + 3",
+  "multiviewLayoutSideBySideHint": "Side by side",
+  "multiviewLayoutGridHint": "Grid",
+  "multiviewLayoutOnePlusThreeHint": "One big, three small",
+  "multiviewAddChannel": "Add channel",
+  "multiviewChangeChannel": "Change channel",
+  "multiviewCloseTile": "Close",
+  "multiviewSwapWithMain": "Swap with main",
+  "multiviewFullTile": "Full screen",
+  "multiviewEmptyTitle": "Watch up to 4 channels at once",
+  "multiviewEmptyMessage": "Add channels here, from TV Live or from the live player.",
+  "multiviewWarnTitle": "Open another stream?",
+  "multiviewWarnMessage": "Most IPTV accounts allow only 1–2 connections at the same time. Your account allows {count}.",
+  "@multiviewWarnMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "multiviewWarnMessageUnknown": "Most IPTV accounts allow only 1–2 connections at the same time; extra streams may not play.",
+  "multiviewOpenAnyway": "Open anyway",
+  "multiviewMaxReached": "Multi-channel shows up to 4 channels",
+  "multiviewAdded": "Added to multi-channel",
+  "multiviewClosed": "Channel closed",
+  "multiviewPickerTitle": "Choose a channel",
+  "multiviewSearchHint": "Search channels",
+  "multiviewNoResults": "No channels match “{query}”",
+  "@multiviewNoResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "multiviewFullTileHint": "Esc to return to all channels",
+  "multiviewAudioOn": "Sound on",
+  "multiviewClose": "Close multi-channel"
+}

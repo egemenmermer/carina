@@ -1,0 +1,934 @@
+{
+  "startedAt": "2026-10-17T06:07:35.634126",
+  "platform": "macos Version 27.0.1 (Build 26A434)",
+  "dart": "3.13.5",
+  "buildMode": "debug",
+  "args": {
+    "media": [
+      "h264_aac_1080p25.ts",
+      "h264_ac3_51_1080p25.ts",
+      "hevc_eac3_2160p25.ts",
+      "mpeg2_mp2_576i25.ts",
+      "h264_aac_720p50.mp4",
+      "vod_tracks.mkv",
+      "index.m3u8"
+    ],
+    "seconds": 6,
+    "zapCount": 200,
+    "zapA": "h264_aac_1080p25.ts",
+    "zapB": "h264_ac3_51_1080p25.ts",
+    "switchMedia": "h264_aac_720p50.mp4"
+  },
+  "rssStartMb": 270.9,
+  "capabilities": {
+    "mpv-version": "mpv 0.36.0",
+    "ffmpeg-version": "6.0",
+    "deinterlaceAutoSupported": false,
+    "deinterlaceFilters": [],
+    "defaults": {
+      "audio-buffer": "0.200000",
+      "cache-pause": "yes",
+      "demuxer-lavf-probe-info": "auto",
+      "demuxer-lavf-analyzeduration": "0.000000",
+      "interpolation": "no",
+      "video-latency-hacks": "no",
+      "stream-buffer-size": "131072",
+      "vd-lavc-threads": "0",
+      "video-sync": "audio",
+      "network-timeout": "5.000000",
+      "hwdec": "auto-safe",
+      "vo": "libmpv",
+      "cache-on-disk": "yes",
+      "subs-fallback": "yes",
+      "sub-ass": "yes"
+    },
+    "profileProperty": true,
+    "applyProfileCommand": true,
+    "demuxerLavfO": {
+      "base": "seg_max_retry=5,strict=experimental,allowed_extensions=ALL,protocol_whitelist=udp,rtp,tcp,tls,data,file,http,https,crypto,fflags=+nobuffer",
+      "afterAdd": "seg_max_retry=5,strict=experimental,allowed_extensions=ALL,protocol_whitelist=udp,rtp,tcp,tls,data,file,http,https,crypto,fflags=+nobuffer",
+      "afterRemove": "seg_max_retry=5,strict=experimental,allowed_extensions=ALL,protocol_whitelist=udp,rtp,tcp,tls,data,file,http,https,crypto",
+      "ok": true
+    },
+    "streamBufferSize4096": "4096",
+    "deinterlaceYes": "yes"
+  },
+  "media": [
+    {
+      "file": "h264_aac_1080p25.ts",
+      "live": false,
+      "timeToFirstFrameMs": 328,
+      "props": {
+        "audio-codec-name": "aac",
+        "audio-codec": "aac ((null))",
+        "audio-params/channel-count": "2",
+        "audio-params/samplerate": "48000",
+        "audio-params": "{\"samplerate\":48000,\"channel-count\":2,\"channels\":\"stereo\",\"hr-channels\":\"stereo\",\"format\":\"floatp\"}",
+        "audio-out-params": "{\"samplerate\":48000,\"channel-count\":2,\"channels\":\"stereo\",\"hr-channels\":\"stereo\",\"format\":\"floatp\"}",
+        "video-params": "{\"pixelformat\":\"videotoolbox\",\"hw-pixelformat\":\"nv12\",\"w\":1920,\"h\":1080,\"dw\":1920,\"dh\":1080,\"aspect\":1.777778,\"par\":1.000000,\"colormatrix\":\"bt.709\",\"colorlevels\":\"limited\",\"primaries\":\"bt.709\",\"gamma\":\"bt.1886\",\"sig-peak\":1.000000,\"light\":\"display\",\"chroma-location\":\"mpeg2/4/h264\",\"stereo-in\":\"mono\",\"rotate\":0}",
+        "video-format": "h264",
+        "video-codec": "h264 ((null))",
+        "hwdec-current": "videotoolbox",
+        "deinterlace": "no",
+        "vf": null,
+        "video-frame-info/interlaced": "no",
+        "estimated-vf-fps": "25.000000",
+        "container-fps": "25.000000",
+        "aid": "1",
+        "sid": "no",
+        "mute": "no",
+        "volume": "15.000000"
+      },
+      "stats": {
+        "width": 1920,
+        "height": 1080,
+        "fps": 25.0,
+        "videoCodec": "h264",
+        "audioCodec": "aac",
+        "audioChannels": 2,
+        "sampleRate": 48000,
+        "hwdec": "videotoolbox",
+        "cacheDurationSec": 30.016,
+        "bufferingPercent": 100.0,
+        "droppedFrames": 0,
+        "profile": "hardware",
+        "fallbackHappened": false,
+        "videoBitrate": 4105752,
+        "audioBitrate": 130047,
+        "deinterlacing": false
+      },
+      "statsSamples": 7,
+      "position": {
+        "start": 0.0,
+        "at1_5s": 1.181,
+        "atEnd": 5.741
+      },
+      "trackListIsJson": true,
+      "audioTracks": [
+        "EngineTrack(audio 1, null, null, aac, 2ch)"
+      ],
+      "subtitleTracks": [],
+      "selectedAudioId": null,
+      "selectedSubtitleId": null,
+      "state": "EngineState(playing: true, buffering: false 100%, position: 0:00:05.741333, duration: 0:01:30.021333, 1920x1080, completed: false, error: null, reconnect: 0, audio: 1, subtitles: 0)",
+      "checks": {
+        "audioDecodes": true,
+        "audioCodec=aac": true,
+        "channels in [2]": true,
+        "videoDecodes": true,
+        "size=1920x1080": true,
+        "videoCodec=h264": true,
+        "positionAdvances": true,
+        "noError": true,
+        "state.playing": true,
+        "state not buffering": true
+      },
+      "notes": [],
+      "platformLimitations": [],
+      "pass": true,
+      "log": [
+        "[media_kit] error: property not found _setProperty(osc, 1)",
+        "[playlist] Reading plaintext playlist."
+      ]
+    },
+    {
+      "file": "h264_ac3_51_1080p25.ts",
+      "live": false,
+      "timeToFirstFrameMs": 275,
+      "props": {
+        "audio-codec-name": "ac3",
+        "audio-codec": "ac3 ((null))",
+        "audio-params/channel-count": "6",
+        "audio-params/samplerate": "48000",
+        "audio-params": "{\"samplerate\":48000,\"channel-count\":6,\"channels\":\"5.1(side)\",\"hr-channels\":\"5.1(side)\",\"format\":\"floatp\"}",
+        "audio-out-params": "{\"samplerate\":48000,\"channel-count\":2,\"channels\":\"stereo\",\"hr-channels\":\"stereo\",\"format\":\"floatp\"}",
+        "video-params": "{\"pixelformat\":\"videotoolbox\",\"hw-pixelformat\":\"nv12\",\"w\":1920,\"h\":1080,\"dw\":1920,\"dh\":1080,\"aspect\":1.777778,\"par\":1.000000,\"colormatrix\":\"bt.709\",\"colorlevels\":\"limited\",\"primaries\":\"bt.709\",\"gamma\":\"bt.1886\",\"sig-peak\":1.000000,\"light\":\"display\",\"chroma-location\":\"mpeg2/4/h264\",\"stereo-in\":\"mono\",\"rotate\":0}",
+        "video-format": "h264",
+        "video-codec": "h264 ((null))",
+        "hwdec-current": "videotoolbox",
+        "deinterlace": "no",
+        "vf": null,
+        "video-frame-info/interlaced": "no",
+        "estimated-vf-fps": "25.000000",
+        "container-fps": "25.000000",
+        "aid": "1",
+        "sid": "no",
+        "mute": "no",
+        "volume": "15.000000"
+      },
+      "stats": {
+        "width": 1920,
+        "height": 1080,
+        "fps": 25.0,
+        "videoCodec": "h264",
+        "audioCodec": "ac3",
+        "audioChannels": 6,
+        "sampleRate": 48000,
+        "hwdec": "videotoolbox",
+        "cacheDurationSec": 30.016,
+        "bufferingPercent": 100.0,
+        "droppedFrames": 1,
+        "profile": "hardware",
+        "fallbackHappened": false,
+        "videoBitrate": 4098160,
+        "audioBitrate": 384000,
+        "deinterlacing": false
+      },
+      "statsSamples": 7,
+      "position": {
+        "start": 0.0,
+        "at1_5s": 1.285,
+        "atEnd": 5.805
+      },
+      "trackListIsJson": true,
+      "audioTracks": [
+        "EngineTrack(audio 1, null, null, ac3, 6ch)"
+      ],
+      "subtitleTracks": [],
+      "selectedAudioId": null,
+      "selectedSubtitleId": null,
+      "state": "EngineState(playing: true, buffering: false 100%, position: 0:00:05.805333, duration: 0:01:30.016000, 1920x1080, completed: false, error: null, reconnect: 0, audio: 1, subtitles: 0)",
+      "checks": {
+        "audioDecodes": true,
+        "audioCodec=ac3": true,
+        "channels in [6]": true,
+        "videoDecodes": true,
+        "size=1920x1080": true,
+        "videoCodec=h264": true,
+        "positionAdvances": true,
+        "noError": true,
+        "state.playing": true,
+        "state not buffering": true
+      },
+      "notes": [],
+      "platformLimitations": [],
+      "pass": true,
+      "log": [
+        "[media_kit] error: property not found _setProperty(osc, 1)",
+        "[playlist] Reading plaintext playlist."
+      ]
+    },
+    {
+      "file": "hevc_eac3_2160p25.ts",
+      "live": false,
+      "timeToFirstFrameMs": 358,
+      "props": {
+        "audio-codec-name": "eac3",
+        "audio-codec": "eac3 ((null))",
+        "audio-params/channel-count": "6",
+        "audio-params/samplerate": "48000",
+        "audio-params": "{\"samplerate\":48000,\"channel-count\":6,\"channels\":\"5.1(side)\",\"hr-channels\":\"5.1(side)\",\"format\":\"floatp\"}",
+        "audio-out-params": "{\"samplerate\":48000,\"channel-count\":2,\"channels\":\"stereo\",\"hr-channels\":\"stereo\",\"format\":\"floatp\"}",
+        "video-params": "{\"pixelformat\":\"videotoolbox\",\"hw-pixelformat\":\"nv12\",\"w\":3840,\"h\":2160,\"dw\":3840,\"dh\":2160,\"aspect\":1.777778,\"par\":1.000000,\"colormatrix\":\"bt.709\",\"colorlevels\":\"limited\",\"primaries\":\"bt.709\",\"gamma\":\"bt.1886\",\"sig-peak\":1.000000,\"light\":\"display\",\"chroma-location\":\"mpeg2/4/h264\",\"stereo-in\":\"mono\",\"rotate\":0}",
+        "video-format": "hevc",
+        "video-codec": "hevc ((null))",
+        "hwdec-current": "videotoolbox",
+        "deinterlace": "no",
+        "vf": null,
+        "video-frame-info/interlaced": "no",
+        "estimated-vf-fps": "25.000000",
+        "container-fps": "25.000000",
+        "aid": "1",
+        "sid": "no",
+        "mute": "no",
+        "volume": "15.000000"
+      },
+      "stats": {
+        "width": 3840,
+        "height": 2160,
+        "fps": 25.0,
+        "videoCodec": "hevc",
+        "audioCodec": "eac3",
+        "audioChannels": 6,
+        "sampleRate": 48000,
+        "hwdec": "videotoolbox",
+        "cacheDurationSec": 30.016,
+        "bufferingPercent": 100.0,
+        "droppedFrames": 1,
+        "profile": "hardware",
+        "fallbackHappened": false,
+        "videoBitrate": 6692120,
+        "audioBitrate": 384000,
+        "deinterlacing": false
+      },
+      "statsSamples": 7,
+      "position": {
+        "start": 0.0,
+        "at1_5s": 1.245,
+        "atEnd": 5.805
+      },
+      "trackListIsJson": true,
+      "audioTracks": [
+        "EngineTrack(audio 1, null, null, eac3, 6ch)"
+      ],
+      "subtitleTracks": [],
+      "selectedAudioId": "1",
+      "selectedSubtitleId": null,
+      "state": "EngineState(playing: true, buffering: false 100%, position: 0:00:05.805333, duration: 0:01:30.005333, 3840x2160, completed: false, error: null, reconnect: 0, audio: 1, subtitles: 0)",
+      "hevcDecoder": "videotoolbox",
+      "checks": {
+        "audioDecodes": true,
+        "audioCodec=eac3": true,
+        "channels in [6]": true,
+        "videoDecodes": true,
+        "size=3840x2160": true,
+        "videoCodec=hevc": true,
+        "positionAdvances": true,
+        "noError": true,
+        "state.playing": true,
+        "state not buffering": true
+      },
+      "notes": [
+        "HEVC hardware decoded (videotoolbox)"
+      ],
+      "platformLimitations": [],
+      "pass": true,
+      "log": [
+        "[media_kit] error: property not found _setProperty(osc, 1)",
+        "[playlist] Reading plaintext playlist."
+      ]
+    },
+    {
+      "file": "mpeg2_mp2_576i25.ts",
+      "live": false,
+      "timeToFirstFrameMs": 249,
+      "props": {
+        "audio-codec-name": "mp2",
+        "audio-codec": "mp2 ((null))",
+        "audio-params/channel-count": "2",
+        "audio-params/samplerate": "48000",
+        "audio-params": "{\"samplerate\":48000,\"channel-count\":2,\"channels\":\"stereo\",\"hr-channels\":\"stereo\",\"format\":\"s16p\"}",
+        "audio-out-params": "{\"samplerate\":48000,\"channel-count\":2,\"channels\":\"stereo\",\"hr-channels\":\"stereo\",\"format\":\"s16p\"}",
+        "video-params": "{\"pixelformat\":\"yuv420p\",\"average-bpp\":12,\"w\":720,\"h\":576,\"dw\":1024,\"dh\":576,\"aspect\":1.777778,\"par\":1.422222,\"colormatrix\":\"bt.601\",\"colorlevels\":\"limited\",\"primaries\":\"bt.601-625\",\"gamma\":\"bt.1886\",\"sig-peak\":1.000000,\"light\":\"display\",\"chroma-location\":\"mpeg2/4/h264\",\"stereo-in\":\"mono\",\"rotate\":0}",
+        "video-format": "mpeg2video",
+        "video-codec": "mpeg2video ((null))",
+        "hwdec-current": null,
+        "deinterlace": "yes",
+        "vf": null,
+        "video-frame-info/interlaced": "yes",
+        "estimated-vf-fps": "25.000000",
+        "container-fps": "25.000000",
+        "aid": "1",
+        "sid": "no",
+        "mute": "no",
+        "volume": "15.000000"
+      },
+      "stats": {
+        "width": 720,
+        "height": 576,
+        "fps": 25.0,
+        "videoCodec": "mpeg2video",
+        "audioCodec": "mp2",
+        "audioChannels": 2,
+        "sampleRate": 48000,
+        "hwdec": null,
+        "cacheDurationSec": 30.0,
+        "bufferingPercent": 100.0,
+        "droppedFrames": 1,
+        "profile": "hardware",
+        "fallbackHappened": false,
+        "videoBitrate": 3851780,
+        "audioBitrate": 192000,
+        "deinterlacing": true
+      },
+      "statsSamples": 7,
+      "position": {
+        "start": 0.0,
+        "at1_5s": 1.29,
+        "atEnd": 5.81
+      },
+      "trackListIsJson": true,
+      "audioTracks": [
+        "EngineTrack(audio 1, null, null, mp2, 2ch)"
+      ],
+      "subtitleTracks": [],
+      "selectedAudioId": null,
+      "selectedSubtitleId": null,
+      "state": "EngineState(playing: true, buffering: false 100%, position: 0:00:05.810022, duration: 0:01:30.010022, 1024x576, completed: false, error: null, reconnect: 0, audio: 1, subtitles: 0)",
+      "deinterlace": {
+        "property": "yes",
+        "vf": null,
+        "estimatedVfFps": 25.0,
+        "containerFps": 25.0,
+        "interlacedFramesAtOutput": "yes",
+        "statsDeinterlacing": true,
+        "hwdecCurrent": null,
+        "effective": false,
+        "buildLacksDeinterlacer": true
+      },
+      "deinterlaceModes": {
+        "rawNo": {
+          "deinterlace": "no",
+          "vf": null,
+          "estimated-vf-fps": "25.000000",
+          "video-frame-info/interlaced": "yes"
+        },
+        "rawYes": {
+          "deinterlace": "yes",
+          "vf": null,
+          "estimated-vf-fps": "25.000000",
+          "video-frame-info/interlaced": "yes"
+        },
+        "forcedOn": {
+          "deinterlace": "yes",
+          "vf": null,
+          "estimated-vf-fps": "25.000000",
+          "video-frame-info/interlaced": "yes"
+        },
+        "off": {
+          "deinterlace": "no",
+          "vf": null,
+          "estimated-vf-fps": "25.000000",
+          "video-frame-info/interlaced": "yes"
+        },
+        "autoAgain": {
+          "deinterlace": "yes",
+          "vf": null,
+          "estimated-vf-fps": "25.000000",
+          "video-frame-info/interlaced": "yes"
+        }
+      },
+      "checks": {
+        "audioDecodes": true,
+        "audioCodec=mp2": true,
+        "channels in [2]": true,
+        "videoDecodes": true,
+        "size=720x576": true,
+        "videoCodec=mpeg2video": true,
+        "positionAdvances": true,
+        "noError": true,
+        "state.playing": true,
+        "state not buffering": true,
+        "deinterlace requested (auto detected interlaced frames)": true
+      },
+      "notes": [],
+      "platformLimitations": [
+        "deinterlace=yes was set, but this libmpv build has no software deinterlacer (yadif/bwdif) and mpv 0.36 has none for software frames: output stays interlaced"
+      ],
+      "pass": true,
+      "log": [
+        "[media_kit] error: property not found _setProperty(osc, 1)",
+        "[playlist] Reading plaintext playlist.",
+        "[ffmpeg/video] mpeg2video: Failed setup for format videotoolbox_vld: hwaccel initialisation returned error.",
+        "[ffmpeg/video] mpeg2video: Failed setup for format videotoolbox_vld: hwaccel initialisation returned error.",
+        "[carina] interlaced video detected: deinterlace=yes",
+        "[lavfi] filter 'yadif' not found or failed to allocate",
+        "[dummy] Creating filter 'yadif' failed.",
+        "[lavfi] filter 'yadif' not found or failed to allocate",
+        "[dummy] Creating filter 'yadif' failed.",
+        "[carina] interlaced video detected: deinterlace=yes",
+        "[lavfi] filter 'yadif' not found or failed to allocate",
+        "[dummy] Creating filter 'yadif' failed."
+      ]
+    },
+    {
+      "file": "h264_aac_720p50.mp4",
+      "live": false,
+      "timeToFirstFrameMs": 247,
+      "props": {
+        "audio-codec-name": "aac",
+        "audio-codec": "aac ((null))",
+        "audio-params/channel-count": "2",
+        "audio-params/samplerate": "48000",
+        "audio-params": "{\"samplerate\":48000,\"channel-count\":2,\"channels\":\"stereo\",\"hr-channels\":\"stereo\",\"format\":\"floatp\"}",
+        "audio-out-params": "{\"samplerate\":48000,\"channel-count\":2,\"channels\":\"stereo\",\"hr-channels\":\"stereo\",\"format\":\"floatp\"}",
+        "video-params": "{\"pixelformat\":\"videotoolbox\",\"hw-pixelformat\":\"nv12\",\"w\":1280,\"h\":720,\"dw\":1280,\"dh\":720,\"aspect\":1.777778,\"par\":1.000000,\"colormatrix\":\"bt.709\",\"colorlevels\":\"limited\",\"primaries\":\"bt.709\",\"gamma\":\"bt.1886\",\"sig-peak\":1.000000,\"light\":\"display\",\"chroma-location\":\"mpeg2/4/h264\",\"stereo-in\":\"mono\",\"rotate\":0}",
+        "video-format": "h264",
+        "video-codec": "h264 ((null))",
+        "hwdec-current": "videotoolbox",
+        "deinterlace": "no",
+        "vf": null,
+        "video-frame-info/interlaced": "no",
+        "estimated-vf-fps": "50.000000",
+        "container-fps": "50.000000",
+        "aid": "1",
+        "sid": "no",
+        "mute": "no",
+        "volume": "15.000000"
+      },
+      "stats": {
+        "width": 1280,
+        "height": 720,
+        "fps": 50.0,
+        "videoCodec": "h264",
+        "audioCodec": "aac",
+        "audioChannels": 2,
+        "sampleRate": 48000,
+        "hwdec": "videotoolbox",
+        "cacheDurationSec": 30.016,
+        "bufferingPercent": 100.0,
+        "droppedFrames": 1,
+        "profile": "hardware",
+        "fallbackHappened": false,
+        "videoBitrate": 3118860,
+        "audioBitrate": 127422,
+        "deinterlacing": false
+      },
+      "statsSamples": 7,
+      "position": {
+        "start": 0.0,
+        "at1_5s": 1.24,
+        "atEnd": 5.78
+      },
+      "trackListIsJson": true,
+      "audioTracks": [
+        "EngineTrack(audio 1, null, null, aac, 2ch, default)"
+      ],
+      "subtitleTracks": [],
+      "selectedAudioId": "1",
+      "selectedSubtitleId": null,
+      "state": "EngineState(playing: true, buffering: false 100%, position: 0:00:05.780000, duration: 0:01:30.021333, 1280x720, completed: false, error: null, reconnect: 0, audio: 1, subtitles: 0)",
+      "checks": {
+        "audioDecodes": true,
+        "audioCodec=aac": true,
+        "channels in [2]": true,
+        "videoDecodes": true,
+        "size=1280x720": true,
+        "videoCodec=h264": true,
+        "positionAdvances": true,
+        "noError": true,
+        "state.playing": true,
+        "state not buffering": true
+      },
+      "notes": [],
+      "platformLimitations": [],
+      "pass": true,
+      "log": [
+        "[media_kit] error: property not found _setProperty(osc, 1)",
+        "[playlist] Reading plaintext playlist."
+      ]
+    },
+    {
+      "file": "vod_tracks.mkv",
+      "live": false,
+      "timeToFirstFrameMs": 311,
+      "props": {
+        "audio-codec-name": "aac",
+        "audio-codec": "aac ((null))",
+        "audio-params/channel-count": "2",
+        "audio-params/samplerate": "48000",
+        "audio-params": "{\"samplerate\":48000,\"channel-count\":2,\"channels\":\"stereo\",\"hr-channels\":\"stereo\",\"format\":\"floatp\"}",
+        "audio-out-params": "{\"samplerate\":48000,\"channel-count\":2,\"channels\":\"stereo\",\"hr-channels\":\"stereo\",\"format\":\"floatp\"}",
+        "video-params": "{\"pixelformat\":\"videotoolbox\",\"hw-pixelformat\":\"nv12\",\"w\":1280,\"h\":720,\"dw\":1280,\"dh\":720,\"aspect\":1.777778,\"par\":1.000000,\"colormatrix\":\"bt.709\",\"colorlevels\":\"limited\",\"primaries\":\"bt.709\",\"gamma\":\"bt.1886\",\"sig-peak\":1.000000,\"light\":\"display\",\"chroma-location\":\"mpeg2/4/h264\",\"stereo-in\":\"mono\",\"rotate\":0}",
+        "video-format": "h264",
+        "video-codec": "h264 ((null))",
+        "hwdec-current": "videotoolbox",
+        "deinterlace": "no",
+        "vf": null,
+        "video-frame-info/interlaced": "no",
+        "estimated-vf-fps": "25.000000",
+        "container-fps": "25.000000",
+        "aid": "1",
+        "sid": "no",
+        "mute": "no",
+        "volume": "15.000000"
+      },
+      "stats": {
+        "width": 1280,
+        "height": 720,
+        "fps": 25.0,
+        "videoCodec": "h264",
+        "audioCodec": "aac",
+        "audioChannels": 2,
+        "sampleRate": 48000,
+        "hwdec": "videotoolbox",
+        "cacheDurationSec": 30.072333,
+        "bufferingPercent": 100.0,
+        "droppedFrames": 1,
+        "profile": "hardware",
+        "fallbackHappened": false,
+        "videoBitrate": 2640388,
+        "audioBitrate": 127422,
+        "deinterlacing": false
+      },
+      "statsSamples": 7,
+      "position": {
+        "start": 0.0,
+        "at1_5s": 1.28,
+        "atEnd": 5.84
+      },
+      "trackListIsJson": true,
+      "audioTracks": [
+        "EngineTrack(audio 1, eng, English, aac, 2ch, default)",
+        "EngineTrack(audio 2, tur, Türkçe, ac3, 6ch)"
+      ],
+      "subtitleTracks": [
+        "EngineTrack(subtitle 1, eng, English, subrip, -ch)",
+        "EngineTrack(subtitle 2, tur, Türkçe, subrip, -ch)"
+      ],
+      "selectedAudioId": "1",
+      "selectedSubtitleId": null,
+      "state": "EngineState(playing: true, buffering: false 100%, position: 0:00:05.840000, duration: 0:01:30.021000, 1280x720, completed: false, error: null, reconnect: 0, audio: 2, subtitles: 2)",
+      "afterSelectSecondAudio": {
+        "track": "EngineTrack(audio 2, tur, Türkçe, ac3, 6ch)",
+        "aid": "2",
+        "audio-codec-name": "ac3",
+        "audio-params/channel-count": "6"
+      },
+      "checks": {
+        "audioDecodes": true,
+        "audioCodec=aac": true,
+        "channels in [2]": true,
+        "videoDecodes": true,
+        "size=1280x720": true,
+        "videoCodec=h264": true,
+        "positionAdvances": true,
+        "noError": true,
+        "state.playing": true,
+        "state not buffering": true,
+        "2 audio tracks": true,
+        "2 subtitle tracks": true,
+        "aid=2": true,
+        "second audio codec=ac3": true,
+        "sid=2": true,
+        "subtitles off": true
+      },
+      "notes": [],
+      "platformLimitations": [],
+      "pass": true,
+      "log": [
+        "[media_kit] error: property not found _setProperty(osc, 1)",
+        "[playlist] Reading plaintext playlist."
+      ]
+    },
+    {
+      "file": "index.m3u8",
+      "live": true,
+      "timeToFirstFrameMs": 268,
+      "props": {
+        "audio-codec-name": "aac",
+        "audio-codec": "aac ((null))",
+        "audio-params/channel-count": "2",
+        "audio-params/samplerate": "48000",
+        "audio-params": "{\"samplerate\":48000,\"channel-count\":2,\"channels\":\"stereo\",\"hr-channels\":\"stereo\",\"format\":\"floatp\"}",
+        "audio-out-params": "{\"samplerate\":48000,\"channel-count\":2,\"channels\":\"stereo\",\"hr-channels\":\"stereo\",\"format\":\"floatp\"}",
+        "video-params": "{\"pixelformat\":\"videotoolbox\",\"hw-pixelformat\":\"nv12\",\"w\":1280,\"h\":720,\"dw\":1280,\"dh\":720,\"aspect\":1.777778,\"par\":1.000000,\"colormatrix\":\"bt.709\",\"colorlevels\":\"limited\",\"primaries\":\"bt.709\",\"gamma\":\"bt.1886\",\"sig-peak\":1.000000,\"light\":\"display\",\"chroma-location\":\"mpeg2/4/h264\",\"stereo-in\":\"mono\",\"rotate\":0}",
+        "video-format": "h264",
+        "video-codec": "h264 ((null))",
+        "hwdec-current": "videotoolbox",
+        "deinterlace": "no",
+        "vf": null,
+        "video-frame-info/interlaced": "no",
+        "estimated-vf-fps": "25.000000",
+        "container-fps": "25.000000",
+        "aid": "1",
+        "sid": "no",
+        "mute": "no",
+        "volume": "15.000000"
+      },
+      "stats": {
+        "width": 1280,
+        "height": 720,
+        "fps": 25.0,
+        "videoCodec": "h264",
+        "audioCodec": "aac",
+        "audioChannels": 2,
+        "sampleRate": 48000,
+        "hwdec": "videotoolbox",
+        "cacheDurationSec": 4.032,
+        "bufferingPercent": 100.0,
+        "droppedFrames": 1,
+        "profile": "hardware",
+        "fallbackHappened": false,
+        "videoBitrate": 2481828,
+        "audioBitrate": 129922,
+        "deinterlacing": false
+      },
+      "statsSamples": 7,
+      "position": {
+        "start": 0.0,
+        "at1_5s": 1.32,
+        "atEnd": 5.96
+      },
+      "trackListIsJson": true,
+      "audioTracks": [
+        "EngineTrack(audio 1, null, null, aac, 2ch)"
+      ],
+      "subtitleTracks": [],
+      "selectedAudioId": null,
+      "selectedSubtitleId": null,
+      "state": "EngineState(playing: true, buffering: false 100%, position: 0:00:05.960000, duration: 0:00:11.194667, 1280x720, completed: false, error: null, reconnect: 0, audio: 1, subtitles: 0)",
+      "checks": {
+        "audioDecodes": true,
+        "channels in [2, 6]": true,
+        "videoDecodes": true,
+        "positionAdvances": true,
+        "noError": true,
+        "state.playing": true,
+        "state not buffering": true
+      },
+      "notes": [],
+      "platformLimitations": [],
+      "pass": true,
+      "log": [
+        "[media_kit] error: property not found _setProperty(osc, 1)",
+        "[playlist] Reading plaintext playlist."
+      ]
+    }
+  ],
+  "platformLimitations": [
+    "mpeg2_mp2_576i25.ts: deinterlace=yes was set, but this libmpv build has no software deinterlacer (yadif/bwdif) and mpv 0.36 has none for software frames: output stays interlaced"
+  ],
+  "languagePreference": {
+    "tr": {
+      "ttffMs": 254,
+      "selectedAudio": "EngineTrack(audio 2, tur, Türkçe, ac3, 6ch)",
+      "selectedSubtitle": "EngineTrack(subtitle 2, tur, Türkçe, subrip, -ch)",
+      "aid": "2",
+      "sid": "2",
+      "audio-codec-name": "ac3"
+    },
+    "enNoSubs": {
+      "ttffMs": 250,
+      "selectedAudio": "EngineTrack(audio 1, eng, English, aac, 2ch, default)",
+      "selectedSubtitle": null,
+      "aid": "1",
+      "sid": "no",
+      "audio-codec-name": "aac"
+    },
+    "checks": {
+      "tr audio is ac3": true,
+      "tr subtitle selected": true,
+      "tr subtitle is Turkish": true,
+      "en audio is aac": true,
+      "disabled subtitles": true
+    },
+    "pass": true
+  },
+  "switchProfile": {
+    "file": "h264_aac_720p50.mp4",
+    "initialHwdec": "videotoolbox",
+    "toSoftware": {
+      "to": "software",
+      "positionBeforeSec": 4.76,
+      "timePosAfterSec": 4.9,
+      "deltaSec": 0.14000000000000057,
+      "timePos1500msLaterSec": 6.42,
+      "keepsPlaying": true,
+      "statePlaying": true,
+      "switchMs": 57,
+      "hwdecCurrent": "no",
+      "statsProfile": "software",
+      "error": null
+    },
+    "toHardware": {
+      "to": "hardware",
+      "positionBeforeSec": 8.22,
+      "timePosAfterSec": 8.38,
+      "deltaSec": 0.16000000000000014,
+      "timePos1500msLaterSec": 9.88,
+      "keepsPlaying": true,
+      "statePlaying": true,
+      "switchMs": 60,
+      "hwdecCurrent": "videotoolbox",
+      "statsProfile": "hardware",
+      "error": null
+    },
+    "checks": {
+      "software: position kept (±1 s)": true,
+      "software: keeps playing": true,
+      "software: state.playing": true,
+      "software: hwdec-current=no": true,
+      "hardware: position kept (±1 s)": true,
+      "hardware: keeps playing": true,
+      "hardware: state.playing": true,
+      "hardware: hwdec active": true
+    },
+    "pass": true
+  },
+  "zap": {
+    "files": [
+      "h264_aac_1080p25.ts",
+      "h264_ac3_51_1080p25.ts"
+    ],
+    "count": 200,
+    "ok": 200,
+    "failures": 0,
+    "totalSec": 49.197,
+    "ttffMs": {
+      "min": 62,
+      "median": 83,
+      "p95": 147,
+      "max": 266,
+      "mean": 92
+    },
+    "rssBeforeEngineMb": 369.1,
+    "rss": [
+      {
+        "zap": 0,
+        "rssMb": 363.2
+      },
+      {
+        "zap": 20,
+        "rssMb": 231.8
+      },
+      {
+        "zap": 40,
+        "rssMb": 237.0
+      },
+      {
+        "zap": 60,
+        "rssMb": 239.6
+      },
+      {
+        "zap": 80,
+        "rssMb": 241.9
+      },
+      {
+        "zap": 100,
+        "rssMb": 237.3
+      },
+      {
+        "zap": 120,
+        "rssMb": 238.2
+      },
+      {
+        "zap": 140,
+        "rssMb": 210.4
+      },
+      {
+        "zap": 160,
+        "rssMb": 197.7
+      },
+      {
+        "zap": 180,
+        "rssMb": 180.7
+      },
+      {
+        "zap": 200,
+        "rssMb": 188.4
+      }
+    ],
+    "rssAfterStopMb": 182.1,
+    "rssAfterDisposeMb": 183.6,
+    "audioCodecAtEnd": "ac3",
+    "budgetMs": 1200,
+    "rssGrowthAfterWarmupMb": -43.4,
+    "checks": {
+      "all zaps showed video": true,
+      "p95 < 1200 ms": true,
+      "no runaway memory (<150 MB growth after 20 zaps)": true
+    },
+    "pass": true
+  },
+  "errors": [
+    {
+      "name": "http404",
+      "expectedKind": "http",
+      "expectedCode": 404,
+      "kind": "http",
+      "statusCode": 404,
+      "message": "Stream not found (HTTP 404).",
+      "detail": "HTTP 404 from http://127***:55324/…/404.ts",
+      "elapsedMs": 366,
+      "maxReconnectAttempt": 0,
+      "pass": true
+    },
+    {
+      "name": "http403",
+      "expectedKind": "http",
+      "expectedCode": 403,
+      "kind": "http",
+      "statusCode": 403,
+      "message": "Access forbidden (HTTP 403). The provider refused the stream; the connection limit may be reached.",
+      "detail": "HTTP 403 from http://127***:55324/…/403.ts",
+      "elapsedMs": 310,
+      "maxReconnectAttempt": 0,
+      "pass": true
+    },
+    {
+      "name": "http401",
+      "expectedKind": "http",
+      "expectedCode": 401,
+      "kind": "http",
+      "statusCode": 401,
+      "message": "Access denied (HTTP 401). Check the playlist username and password.",
+      "detail": "HTTP 401 from http://127***:55324/…/401.ts",
+      "elapsedMs": 313,
+      "maxReconnectAttempt": 0,
+      "pass": true
+    },
+    {
+      "name": "http500",
+      "expectedKind": "http",
+      "expectedCode": 500,
+      "kind": "http",
+      "statusCode": 500,
+      "message": "Server error (HTTP 500). Try again later.",
+      "detail": "HTTP 500 from http://127***:55324/…/500.ts",
+      "elapsedMs": 313,
+      "maxReconnectAttempt": 0,
+      "pass": true
+    },
+    {
+      "name": "htmlPage",
+      "expectedKind": "codec",
+      "expectedCode": null,
+      "kind": "codec",
+      "statusCode": null,
+      "message": "Unrecognized stream format. The server may have sent an error page instead of video.",
+      "detail": "[cplayer] Failed to recognize file format.",
+      "elapsedMs": 330,
+      "maxReconnectAttempt": 0,
+      "pass": true
+    },
+    {
+      "name": "connectionRefused",
+      "expectedKind": "network",
+      "expectedCode": null,
+      "kind": "network",
+      "statusCode": null,
+      "message": "Could not connect to the server. Check your connection.",
+      "detail": "http://127***:9/…/x.ts: Connection refused Connection refused",
+      "elapsedMs": 317,
+      "maxReconnectAttempt": 0,
+      "pass": true
+    },
+    {
+      "name": "timeout",
+      "expectedKind": "timeout",
+      "expectedCode": null,
+      "kind": "timeout",
+      "statusCode": null,
+      "message": "The stream did not respond in time (timeout).",
+      "detail": null,
+      "elapsedMs": 3477,
+      "maxReconnectAttempt": 0,
+      "pass": true
+    },
+    {
+      "name": "liveRetryThen404",
+      "expectedKind": "http",
+      "expectedCode": 404,
+      "kind": "http",
+      "statusCode": 404,
+      "message": "Stream not found (HTTP 404).",
+      "detail": "HTTP 404 from http://127***:55324/…/live404.ts",
+      "elapsedMs": 8285,
+      "maxReconnectAttempt": 3,
+      "serverRequests": 5,
+      "pass": true
+    },
+    {
+      "name": "liveDropEnded",
+      "expectedKind": "ended",
+      "expectedCode": null,
+      "kind": "ended",
+      "statusCode": null,
+      "message": "The stream ended.",
+      "detail": null,
+      "elapsedMs": 7029,
+      "maxReconnectAttempt": 2,
+      "serverRequests": 3,
+      "pass": true
+    }
+  ],
+  "errorMapping": {
+    "sampleMaskedUrl": "http://pro***:8080/…/1001.ts"
+  },
+  "rssEndMb": 305.4,
+  "finishedAt": "2026-10-17T06:10:05.374346",
+  "durationSec": 149.74,
+  "failures": [],
+  "pass": true
+}

@@ -1,0 +1,1822 @@
+{
+  "@@locale": "en",
+  "appName": "Carina",
+  "back": "Back",
+  "cancel": "Cancel",
+  "close": "Close",
+  "coreAvatarAbstract": "Abstract",
+  "coreAvatarAnimals": "Animals",
+  "coreAvatarCars": "Cars",
+  "coreAvatarCharacters": "Characters",
+  "coreAvatarInitials": "Initials",
+  "coreAvatarObjects": "Objects",
+  "coreBuffering": "Buffering {percent}%",
+  "@coreBuffering": {
+    "description": "Spinner label while the player buffers.",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "coreCategories": "Categories",
+  "@coreCategories": {
+    "description": "Tooltip of the floating red menu button that opens the category sidebar."
+  },
+  "coreChecking": "Checking…",
+  "coreDecrease": "Decrease",
+  "coreDismiss": "Dismiss",
+  "coreErrorTitle": "Something went wrong",
+  "coreHidePassword": "Hide password",
+  "coreIncrease": "Increase",
+  "coreLive": "LIVE",
+  "@coreLive": {
+    "description": "Red live pill on players and previews."
+  },
+  "coreNewEpisodes": "NEW EPISODES",
+  "@coreNewEpisodes": {
+    "description": "Red badge on shows with episodes added in the last 7 days."
+  },
+  "coreNewMovie": "NEW MOVIE",
+  "@coreNewMovie": {
+    "description": "Red badge on movies added in the last 7 days."
+  },
+  "coreNewShow": "NEW SHOW",
+  "@coreNewShow": {
+    "description": "Red badge on shows added in the last 7 days."
+  },
+  "corePinDeleteDigit": "Delete last digit",
+  "corePinWrong": "Wrong PIN. Try again.",
+  "coreScrollLeft": "Scroll left",
+  "coreScrollRight": "Scroll right",
+  "coreShowPassword": "Show password",
+  "coreSwitchPlaylist": "Switch playlist",
+  "@coreSwitchPlaylist": {
+    "description": "Tooltip of the avatar in the top navigation."
+  },
+  "coreWindowClose": "Close",
+  "coreWindowMaximize": "Maximize",
+  "coreWindowMinimize": "Minimize",
+  "coreWindowRestore": "Restore Down",
+  "delete": "Delete",
+  "edit": "Edit",
+  "guideArchiveEmpty": "No archived programmes yet.",
+  "guideArchiveOnAir": "{time} – ON AIR",
+  "@guideArchiveOnAir": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "guideArchiveTitle": "TV ARCHIVE • CATCH-UP",
+  "guideArchiveUnavailable": "This channel has no TV archive.",
+  "guideCategoryLabel": "Category",
+  "guideChooseDay": "Choose a day",
+  "guideCloseGuide": "Close guide",
+  "guideDurationMinutes": "{minutes} min",
+  "@guideDurationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "guideEpisodeLabel": "Episode",
+  "guideJumpToNow": "Jump to the current time",
+  "guideLoadError": "The TV guide couldn't be loaded.",
+  "guideMiniCategoryHint": "← → Categories",
+  "guideMiniEmpty": "No channels in this category",
+  "guideMiniNext": "Next: {title}",
+  "@guideMiniNext": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "guideNoChannels": "No channels in this category",
+  "guideNoChannelsHint": "Pick another category with the red menu button.",
+  "guideNoDescription": "No description for this programme.",
+  "guideNoEpg": "No EPG data available",
+  "guideNoEpgHint": "This playlist has no TV guide data yet. Reload the EPG in Settings → TV Live & TV Guide.",
+  "guideNotInArchive": "This programme isn't available in the TV archive.",
+  "guideNow": "Now",
+  "guideOnAir": "ON AIR",
+  "guidePlayFromStart": "Play from start",
+  "guidePreviewHidden": "Video preview hidden",
+  "guidePreviewLocked": "Locked channel",
+  "guideProgrammeNotFound": "This programme is no longer in the guide.",
+  "guideRatingLabel": "Rating",
+  "guideRemindMe": "Remind me",
+  "guideReminderNote": "Carina must be running to remind you.",
+  "guideReminderSet": "Reminder set",
+  "guideToday": "Today",
+  "guideTomorrow": "Tomorrow",
+  "guideWatchLive": "Watch live",
+  "guideYesterday": "Yesterday",
+  "libraryAboutTagline": "A free, local IPTV player. No ads, no accounts, no telemetry.",
+  "libraryAccessPin": "Playlist access PIN",
+  "libraryAccessPinCurrent": "Current access PIN",
+  "libraryAccessPinHint": "Asked when this playlist is opened from the Playlist Manager.",
+  "libraryAccessPinNew": "New access PIN",
+  "libraryAccessPinRemoved": "Playlist access PIN removed",
+  "libraryAccessPinSet": "Playlist access PIN set",
+  "libraryActionFailed": "Something went wrong. Try again.",
+  "libraryAspectCrop": "Crop",
+  "libraryAspectFill": "Fill",
+  "libraryAutomatic": "Automatic",
+  "libraryAutomaticAppLanguage": "Automatic (app language)",
+  "libraryBackToPlaylists": "Playlists",
+  "libraryCacheNote": "Posters and logos are downloaded again when they are needed.",
+  "libraryChange": "Change",
+  "libraryClear": "Clear",
+  "libraryClearImageCache": "Clear image cache",
+  "libraryClearProgrammes": "Clear programmes",
+  "libraryClearProgrammesConfirm": "Clear every programme?",
+  "libraryClearProgrammesHint": "The guide of every playlist is emptied and downloaded again on its next EPG reload.",
+  "libraryCopyDiagnostics": "Copy diagnostics",
+  "libraryCustom": "Custom",
+  "libraryCustomEpg": "Custom EPG assignments",
+  "libraryCustomEpgAssigned": "Guide channel: {epgId}",
+  "@libraryCustomEpgAssigned": {
+    "placeholders": {
+      "epgId": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryCustomEpgEmpty": "No custom EPG assignments. Use Assign Custom EPG in a channel's right-click menu.",
+  "libraryCustomEpgNote": "These channels take their programmes from the guide channel you chose.",
+  "libraryCustomEpgReset": "{channel} uses the matched guide again",
+  "@libraryCustomEpgReset": {
+    "placeholders": {
+      "channel": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryDefault": "Default",
+  "libraryDefaultTrack": "Default track",
+  "libraryDiagnosticsCopied": "Diagnostics copied",
+  "libraryDiagnosticsNote": "Diagnostics never include passwords, PINs or keys; servers, user names and addresses are masked.",
+  "libraryDisabled": "Disabled",
+  "libraryDownloadsEmptyMessage": "Movies, episodes and archive programmes you download will appear here.",
+  "libraryDownloadsEmptyTitle": "No downloads",
+  "libraryDownloadsTab": "Downloads",
+  "libraryDownloadsTitle": "Downloads",
+  "libraryEditSource": "Edit source",
+  "libraryEditSourceHint": "Server, credentials, M3U and EPG addresses",
+  "libraryEnabled": "Enabled",
+  "libraryEngineHardware": "MPV · Hardware",
+  "libraryEngineLowLatency": "MPV · Low latency",
+  "libraryEngineSoftware": "MPV · Software",
+  "libraryEpgDatabase": "EPG database",
+  "libraryEpgShift": "EPG time shift",
+  "libraryEpgShiftHint": "Moves every programme by whole hours when the guide's times are off.",
+  "libraryEpgShiftSaved": "EPG time shift: {shift}. Reloading the guide",
+  "@libraryEpgShiftSaved": {
+    "placeholders": {
+      "shift": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryEveryDays": "{days, plural, =1{Every day} other{Every {days} days}}",
+  "@libraryEveryDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryEveryHours": "{hours, plural, =1{Every hour} other{Every {hours} hours}}",
+  "@libraryEveryHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryFieldRequired": "This field can't be empty",
+  "libraryForceReload": "Force reload",
+  "libraryForceReloadEpg": "Force reload EPG",
+  "libraryGigabytes": "{value} GB",
+  "@libraryGigabytes": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryGroupAudioSubtitles": "Audio & subtitles",
+  "libraryGroupBuffering": "Buffering",
+  "libraryGroupCustomization": "Customization",
+  "libraryGroupEpg": "EPG",
+  "libraryGroupGuideData": "Guide data",
+  "libraryGroupHome": "Home rows & sidebar",
+  "libraryGroupImages": "Images",
+  "libraryGroupLanguage": "Language & time",
+  "libraryGroupLegal": "Legal",
+  "libraryGroupNetwork": "Network",
+  "libraryGroupNotifications": "Notifications",
+  "libraryGroupPicture": "Picture",
+  "libraryGroupPin": "PIN",
+  "libraryGroupPlayback": "Playback",
+  "libraryGroupPlayers": "Players",
+  "libraryGroupSections": "Sections",
+  "libraryGroupSectionsNote": "Hidden sections leave the top bar; their content stays in the playlist.",
+  "libraryGroupSorting": "Sorting",
+  "libraryGroupSource": "Source",
+  "libraryGroupStartup": "Startup",
+  "libraryGroupSupport": "Support",
+  "libraryGroupTmdbKey": "API key",
+  "libraryGroupTmdbOptions": "Options",
+  "libraryGroupTopBar": "Top bar",
+  "libraryGroupUpdates": "Updates",
+  "libraryGuideZoomMinutes": "{minutes} minutes",
+  "@libraryGuideZoomMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryHiddenCategories": "Categories ({count})",
+  "@libraryHiddenCategories": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryHiddenChannels": "Channels ({count})",
+  "@libraryHiddenChannels": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryHiddenEmpty": "Nothing is hidden. Hide channels, categories, movies or shows from their right-click menu.",
+  "libraryHiddenItems": "Hidden items",
+  "libraryHiddenMovies": "Movies ({count})",
+  "@libraryHiddenMovies": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryHiddenNote": "Hidden items are left out of lists, rows and search.",
+  "libraryHiddenShows": "Shows ({count})",
+  "@libraryHiddenShows": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryHide": "Hide",
+  "libraryImageCache": "Image cache",
+  "libraryImageCacheCleared": "Image cache cleared",
+  "libraryItemCount": "{count, plural, =0{None} =1{1 item} other{{count} items}}",
+  "@libraryItemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryKilobytes": "{value} KB",
+  "@libraryKilobytes": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryKindMovie": "Movie",
+  "libraryKindShow": "Show",
+  "libraryLangArabic": "Arabic",
+  "libraryLangAzerbaijani": "Azerbaijani",
+  "libraryLangDutch": "Dutch",
+  "libraryLangEnglish": "English",
+  "libraryLangFrench": "French",
+  "libraryLangGerman": "German",
+  "libraryLangGreek": "Greek",
+  "libraryLangItalian": "Italian",
+  "libraryLangJapanese": "Japanese",
+  "libraryLangKurdish": "Kurdish",
+  "libraryLangPersian": "Persian",
+  "libraryLangPolish": "Polish",
+  "libraryLangPortuguese": "Portuguese",
+  "libraryLangRussian": "Russian",
+  "libraryLangSpanish": "Spanish",
+  "libraryLangTurkish": "Turkish",
+  "libraryLastUsed": "Last used",
+  "libraryLayoutHorizontal": "Horizontal",
+  "libraryLayoutVertical": "Vertical",
+  "libraryLicenses": "Licenses",
+  "libraryLockedCategories": "Locked categories",
+  "libraryLockedCategoriesEmpty": "No locked categories.",
+  "libraryLockedChannels": "Locked channels",
+  "libraryLockedChannelsEmpty": "No locked channels.",
+  "libraryManageReminders": "Manage reminders",
+  "libraryMegabytes": "{value} MB",
+  "@libraryMegabytes": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryMilliseconds": "{value} ms",
+  "@libraryMilliseconds": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryMinutes": "{minutes} min",
+  "@libraryMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryMinutesBefore": "{minutes, plural, =0{When it starts} =1{1 minute before} other{{minutes} minutes before}}",
+  "@libraryMinutesBefore": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryMoreChannels": "+{count} more",
+  "@libraryMoreChannels": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryNoDelay": "No delay",
+  "libraryNoGuide": "No programme information",
+  "libraryNoShift": "None",
+  "libraryNotSet": "Not set",
+  "libraryOnAir": "On air",
+  "libraryOpenFailed": "Could not open it",
+  "libraryOrderCustom": "Custom",
+  "libraryOrderDateAdded": "Date added",
+  "libraryOrderLastAdded": "Last added",
+  "libraryOrderLastWatched": "Last watched",
+  "libraryOrderLeastRecent": "Least recent",
+  "libraryOrderName": "Name",
+  "libraryOrderNumber": "Channel number",
+  "libraryOrderPlaylist": "Playlist order",
+  "libraryParentalChangePin": "Change PIN",
+  "libraryParentalConfirmPin": "Confirm PIN",
+  "libraryParentalConfirmPinHint": "Enter the same PIN again.",
+  "libraryParentalCreateFirst": "This content is locked. Create a parental PIN to open it.",
+  "libraryParentalCreatePin": "Create a PIN",
+  "libraryParentalCreatePinHint": "4 digits that open locked channels and categories.",
+  "libraryParentalCurrentPin": "Current PIN",
+  "libraryParentalEnterPin": "Enter PIN",
+  "libraryParentalIsLocked": "{name} is locked",
+  "@libraryParentalIsLocked": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryParentalModeAsk": "Ask PIN on open",
+  "libraryParentalModeHide": "Hide locked content entirely",
+  "libraryParentalNewPin": "New PIN",
+  "libraryParentalNote": "Lock a channel or a category from its right-click menu (Add to Parental Control). A correct PIN unlocks it until Carina restarts or you switch playlists.",
+  "libraryParentalPin": "Parental PIN",
+  "libraryParentalPinChanged": "Parental PIN changed",
+  "libraryParentalPinHint": "The PIN that opens locked channels and categories.",
+  "libraryParentalPinRemoved": "Parental PIN removed",
+  "libraryParentalPinSet": "Parental PIN set",
+  "libraryParentalProtectedTitle": "Parental Control is protected",
+  "libraryParentalRemovePin": "Remove PIN",
+  "libraryParentalSettingsLocked": "Enter the parental PIN to change these settings.",
+  "libraryParentalUnlocked": "{name} unlocked",
+  "@libraryParentalUnlocked": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryPersonRole": "Cast",
+  "libraryPreviewOnFocus": "Focus",
+  "libraryPreviewOnSelect": "Select",
+  "libraryProgrammeCount": "{count, plural, =0{No programmes} =1{1 programme} other{{formatted} programmes}}",
+  "@libraryProgrammeCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "formatted": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryProgrammesCleared": "Programmes cleared",
+  "libraryRecordingsEmptyMessage": "Programmes you record from TV Live will appear here.",
+  "libraryRecordingsEmptyTitle": "No recordings",
+  "libraryRecordingsTab": "Recordings",
+  "libraryRegionFrance": "France",
+  "libraryRegionGermany": "Germany",
+  "libraryRegionItaly": "Italy",
+  "libraryRegionNetherlands": "Netherlands",
+  "libraryRegionSpain": "Spain",
+  "libraryRegionTurkiye": "Türkiye",
+  "libraryRegionUnitedKingdom": "United Kingdom",
+  "libraryRegionUnitedStates": "United States",
+  "libraryReloadEpgStarted": "Reloading the guide",
+  "libraryReloadFrequency": "Reload frequency",
+  "libraryReloadFrequencyHint": "How often the playlist is reloaded in the background when you open it.",
+  "libraryReloadNever": "Never",
+  "libraryReloadRunning": "An update is already running",
+  "libraryReloadStarted": "Reloading the playlist",
+  "libraryReminderCancel": "Cancel reminder",
+  "libraryReminderDeleted": "Reminder deleted",
+  "libraryReminderSet": "Remind me",
+  "libraryRemindersEmpty": "No reminders. Set one from a programme in TV Live, TV Guide or Search.",
+  "libraryRemindersNote": "Carina must be running to show reminders.",
+  "libraryRenameCategories": "Rename categories",
+  "libraryRenameReset": "Name reset to {name}",
+  "@libraryRenameReset": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryRenamedEmpty": "No renamed categories. Rename a category from its right-click menu in the sidebar.",
+  "libraryRenamedNote": "Reset gives a category its name from the provider back.",
+  "libraryRenamedOriginal": "Original: {original} · {section}",
+  "@libraryRenamedOriginal": {
+    "placeholders": {
+      "original": {
+        "type": "String"
+      },
+      "section": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryReportProblem": "Report a problem",
+  "libraryReportProblemHint": "Opens a prefilled text report you can send to whoever helps you",
+  "libraryReportSaved": "Report saved: {file}",
+  "@libraryReportSaved": {
+    "placeholders": {
+      "file": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryReportTemplate": "CARINA PROBLEM REPORT\n\nWhat happened?\n\n\nWhat did you expect?\n\n\nSteps to reproduce:\n1.\n2.\n3.\n\n---------------------------------------------\nDiagnostics (passwords, PINs and keys are never included):",
+  "libraryReset": "Reset",
+  "libraryResolutionLabel": "Label (ex. \"HD\")",
+  "libraryResolutionSize": "Size (ex. \"1920×1080\")",
+  "librarySearchBackToResults": "Back to results",
+  "librarySearchByActor": "Search by actor",
+  "librarySearchChannels": "Live channels",
+  "librarySearchClear": "Clear",
+  "librarySearchFailed": "Search failed. Try again.",
+  "librarySearchFilterAll": "All",
+  "librarySearchFilterLive": "Live",
+  "librarySearchFilterMovies": "Movies",
+  "librarySearchFilterPeople": "People",
+  "librarySearchFilterShows": "Shows",
+  "librarySearchHint": "Movies, shows, channels, programmes or people",
+  "librarySearchIdleMessage": "Type a title, a channel, a programme or an actor. Results appear as you type.",
+  "librarySearchIdleTitle": "Search your library",
+  "librarySearchMovies": "Movies",
+  "librarySearchNoResults": "No results for \"{query}\"",
+  "@librarySearchNoResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "librarySearchNoTitlesWith": "No movies or shows with {name} in this playlist.",
+  "@librarySearchNoTitlesWith": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "librarySearchPeople": "People",
+  "librarySearchProgrammes": "Programmes",
+  "librarySearchShows": "Shows",
+  "librarySecondsShort": "{value} s",
+  "@librarySecondsShort": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "librarySectionAbout": "About",
+  "librarySectionCache": "Cache",
+  "librarySectionDiagnostics": "Diagnostics",
+  "librarySectionGeneral": "General",
+  "librarySectionLive": "TV Live & TV Guide",
+  "librarySectionManagement": "Playlist Management",
+  "librarySectionParental": "Parental Control",
+  "librarySectionPlayer": "Player",
+  "librarySectionPlaylistGeneral": "General",
+  "librarySectionReminders": "Reminders",
+  "librarySectionTmdb": "TMDb",
+  "librarySetAlwaysResume": "Always resume",
+  "librarySetAlwaysResumeHint": "Continue where you left off without asking.",
+  "librarySetAspect": "Aspect ratio",
+  "librarySetAspectHint": "The default picture shape (you can change it in the player).",
+  "librarySetAudioDelay": "Default audio delay",
+  "librarySetAudioDelayHint": "Shift the sound against the picture.",
+  "librarySetAudioLanguage": "Default audio language",
+  "librarySetAudioLanguageHint": "The audio track chosen when a video has several.",
+  "librarySetAutoOpen": "Auto-open last playlist",
+  "librarySetAutoOpenHint": "Skip the Playlist Manager and open the playlist you used last.",
+  "librarySetAutoPlayOnClose": "AutoPlay when closing progress bar",
+  "librarySetAutoPlayOnCloseHint": "Resume playback when the progress bar hides.",
+  "librarySetAutoplayNext": "Autoplay next episode",
+  "librarySetAutoplayNextHint": "Start the next episode when one ends.",
+  "librarySetBuffer": "Buffering",
+  "librarySetBufferCustom": "Custom buffer",
+  "librarySetBufferCustomHint": "Seconds of video loaded ahead.",
+  "librarySetBufferHint": "How much video is loaded ahead. Larger buffers ride out network hiccups but start slower.",
+  "librarySetCategoriesOrder": "Categories order",
+  "librarySetCategoriesOrderHint": "How categories are sorted in the sidebar and on the home rows.",
+  "librarySetChannelsOrder": "Channels order",
+  "librarySetChannelsOrderHint": "How channels are sorted inside a category.",
+  "librarySetContinueOpensPlayer": "Continue watching opens the player",
+  "librarySetContinueOpensPlayerHint": "Resume right away instead of opening the details first.",
+  "librarySetContinueWatchingOrder": "Continue watching order",
+  "librarySetContinueWatchingOrderHint": "How the Continue watching row is sorted.",
+  "librarySetDeinterlace": "Deinterlace",
+  "librarySetDeinterlaceHint": "Remove combing from interlaced channels.",
+  "librarySetDeinterlaceMethod": "Deinterlace method",
+  "librarySetDeinterlaceMethodHint": "The filter used when deinterlacing.",
+  "librarySetFavoritesOrder": "Favorites order",
+  "librarySetFavoritesOrderHint": "How favorites are sorted.",
+  "librarySetFocusDelay": "Focus delay",
+  "librarySetFocusDelayHint": "How long a channel stays focused before its preview starts.",
+  "librarySetGuideZoom": "Guide zoom",
+  "librarySetGuideZoomHint": "How much time the TV Guide shows across the screen.",
+  "librarySetHardwareAcceleration": "Hardware acceleration",
+  "librarySetHardwareAccelerationHint": "Decode video on the graphics card when possible.",
+  "librarySetInitialTab": "Initial tab",
+  "librarySetInitialTabHint": "The tab this playlist opens on.",
+  "librarySetLanguage": "Language",
+  "librarySetLanguageHint": "The language of Carina's menus and messages.",
+  "librarySetLiveFormat": "Live stream format",
+  "librarySetLiveFormatHint": "The format requested from the Xtream server for live channels.",
+  "librarySetLiveLayout": "Layout",
+  "librarySetLiveLayoutHint": "Horizontal shows the channel list next to the preview; vertical shows a grid of channel cards.",
+  "librarySetLivePreview": "Live preview",
+  "librarySetLivePreviewHint": "Play the focused channel in the preview.",
+  "librarySetNumberZapping": "Channel number zapping",
+  "librarySetNumberZappingHint": "Type a channel number in the live player to switch to it.",
+  "librarySetParentalMode": "Locked content",
+  "librarySetParentalModeHint": "Ask for the PIN when locked content is opened, or hide it until the PIN is entered.",
+  "librarySetPlayerArchive": "TV Archive player",
+  "librarySetPlayerArchiveHint": "The player used for catch-up programmes.",
+  "librarySetPlayerLive": "TV Live player",
+  "librarySetPlayerLiveHint": "The player used for live channels. Low latency starts faster but buffers less.",
+  "librarySetPlayerVod": "Movies & episodes player",
+  "librarySetPlayerVodHint": "The player used for movies and episodes. Automatic picks hardware decoding and falls back to software.",
+  "librarySetPreviewAudio": "Preview audio",
+  "librarySetPreviewAudioHint": "Play the sound of the preview.",
+  "librarySetPreviewStartsOn": "Preview starts on",
+  "librarySetPreviewStartsOnHint": "Start the preview when a channel gets focus, or only when you select it.",
+  "librarySetReconnect": "Live reconnect attempts",
+  "librarySetReconnectHint": "How often a dropped live stream is retried before giving up.",
+  "librarySetReferer": "Referer",
+  "librarySetRefererHint": "Sent with stream requests when your provider needs it. Leave empty to send none.",
+  "librarySetReminderLead": "Notify",
+  "librarySetReminderLeadHint": "When the reminder appears before the programme starts.",
+  "librarySetResolutionIndicator": "Resolution indicator",
+  "librarySetResolutionIndicatorHint": "How the player shows the video resolution.",
+  "librarySetShowClock": "Clock in the top bar",
+  "librarySetShowClockHint": "Show the date and time next to the logo.",
+  "librarySetShowLastWatched": "Show Last watched",
+  "librarySetShowLastWatchedHint": "List the channels you watched recently in the TV Live sidebar.",
+  "librarySetShowRecentlyAdded": "Show Recently added",
+  "librarySetShowRecentlyAddedHint": "Show the Recently added rows and sidebar entries.",
+  "librarySetShowSectionHint": "Show the {section} tab in the top bar.",
+  "@librarySetShowSectionHint": {
+    "placeholders": {
+      "section": {
+        "type": "String"
+      }
+    }
+  },
+  "librarySetShowTrending": "Show Trending",
+  "librarySetShowTrendingHint": "Show this week's trending rows (needs a TMDb key).",
+  "librarySetStartFullscreen": "Start in full screen",
+  "librarySetStartFullscreenHint": "Open the window in full screen when Carina starts (F11 toggles it).",
+  "librarySetSubtitleLanguage": "Default subtitle language",
+  "librarySetSubtitleLanguageHint": "The subtitle track turned on automatically. Disabled starts without subtitles.",
+  "librarySetSubtitleSize": "Subtitle size",
+  "librarySetSubtitleSizeHint": "The size of the subtitles.",
+  "librarySetTimeFormat": "Time format",
+  "librarySetTimeFormatHint": "How times are written. Automatic follows the language (Turkish uses 24-hour).",
+  "librarySetTmdbEnabled": "Use TMDb",
+  "librarySetTmdbEnabledHint": "Fetch artwork, cast, ratings and trending lists when a key is saved.",
+  "librarySetTmdbLanguage": "Metadata language",
+  "librarySetTmdbLanguageHint": "Language of titles, overviews and artwork from TMDb.",
+  "librarySetTmdbRegion": "Region for age ratings",
+  "librarySetTmdbRegionHint": "Whose age ratings to show (falls back to the United States).",
+  "librarySetUserAgent": "User-Agent",
+  "librarySetUserAgentCustom": "Custom User-Agent",
+  "librarySetUserAgentCustomHint": "Sent with every stream request of this playlist.",
+  "librarySetUserAgentHint": "How Carina introduces itself to the stream server. Some providers only accept certain players.",
+  "librarySetWheelZaps": "Mouse wheel zaps in the player",
+  "librarySetWheelZapsHint": "Scroll the mouse wheel in the live player to change channel.",
+  "librarySettingChanged": "{setting}: {value}",
+  "@librarySettingChanged": {
+    "placeholders": {
+      "setting": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "librarySettingsAppHeader": "App",
+  "librarySettingsAppScope": "App settings · every playlist",
+  "librarySettingsPlaylistScope": "Playlist settings",
+  "libraryShiftHours": "{value} h",
+  "@libraryShiftHours": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryShow": "Show",
+  "libraryShowLogs": "Show logs folder",
+  "librarySizeLarge": "Large",
+  "librarySizeMedium": "Medium",
+  "librarySizeSmall": "Small",
+  "libraryStatusLabel": "Status:",
+  "libraryStatusNever": "Not downloaded yet",
+  "libraryStatusStored": "{count} programmes stored",
+  "@libraryStatusStored": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryStepCancelled": "Cancelled",
+  "libraryStepChannels": "Live channels ({count})…",
+  "@libraryStepChannels": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryStepCleaning": "Cleaning programs…",
+  "libraryStepCompleted": "Completed ({count} programmes)",
+  "@libraryStepCompleted": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryStepCompletedNoGuide": "Completed, but the guide could not be loaded",
+  "libraryStepConnecting": "Connecting…",
+  "libraryStepDownloading": "Downloading…",
+  "libraryStepDownloadingPercent": "Downloading… {percent}%",
+  "@libraryStepDownloadingPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryStepFailed": "Failed. Check the source and try again.",
+  "libraryStepMovies": "Movies ({count})…",
+  "@libraryStepMovies": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryStepParsing": "Parsing… {count} programmes",
+  "@libraryStepParsing": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryStepSeries": "Series ({count})…",
+  "@libraryStepSeries": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "librarySystemDefault": "System",
+  "libraryTagsAdd": "Add",
+  "libraryTagsAddedToFavorites": "Added to favorites",
+  "libraryTagsDelete": "Delete tag",
+  "libraryTagsDeleted": "Tag deleted",
+  "libraryTagsHeader": "Tags",
+  "libraryTagsNameTaken": "A tag with this name already exists",
+  "libraryTagsNewHint": "New tag",
+  "libraryTagsNone": "No tags yet. Create one below.",
+  "libraryTagsRename": "Rename tag",
+  "libraryTagsRenamed": "Tag renamed",
+  "libraryTagsSaved": "Favorite tags updated",
+  "libraryTagsTitle": "Add to favorite with tags",
+  "libraryTime12h": "12-hour (3:15 PM)",
+  "libraryTime24h": "24-hour (15:15)",
+  "libraryTimes": "{count, plural, =0{Never} =1{Once} other{{count} times}}",
+  "@libraryTimes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryTitleCount": "{count, plural, =0{No titles} =1{1 title} other{{count} titles}}",
+  "@libraryTitleCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryTmdbAttribution": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+  "libraryTmdbIntro": "Carina can add artwork, cast, ratings and trending lists from The Movie Database. Paste a v3 API key or a v4 read access token from your TMDb account.",
+  "libraryTmdbKeyHint": "API key or read access token",
+  "libraryTmdbKeyInvalid": "TMDb rejected this key",
+  "libraryTmdbKeyLabel": "TMDb API key or read access token",
+  "libraryTmdbKeyMissing": "Enter a key first",
+  "libraryTmdbKeyNone": "No key saved. Carina works without TMDb too.",
+  "libraryTmdbKeyOk": "The key works",
+  "libraryTmdbKeyRemoved": "TMDb key removed",
+  "libraryTmdbKeyReplaceHint": "Paste a new key to replace the saved one",
+  "libraryTmdbKeySaved": "TMDb key saved",
+  "libraryTmdbKeyStored": "A key is saved on this computer (stored securely).",
+  "libraryTmdbRemoveKey": "Remove the saved key",
+  "libraryTmdbTest": "Test",
+  "libraryTmdbUnreachable": "TMDb could not be reached",
+  "libraryToday": "Today",
+  "libraryTomorrow": "Tomorrow",
+  "libraryUnhidden": "{name} is visible again",
+  "@libraryUnhidden": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryUnhide": "Unhide",
+  "libraryUnlock": "Unlock",
+  "libraryVersion": "Version {version}",
+  "@libraryVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "liveActive": "Active",
+  "liveAddCategoryToParental": "Add category to Parental Control",
+  "liveAddToFavoriteWithTags": "Add to favorite with tags",
+  "liveAddToFavorites": "Add to favorites",
+  "liveAddToMultiview": "Add to Multi-channel",
+  "liveAddToParental": "Add to Parental Control",
+  "liveAddedToFavorites": "Added to favorites",
+  "liveArchiveDays": "Available · {days, plural, =1{1 day} other{{days} days}}",
+  "@liveArchiveDays": {
+    "description": "TV Archive tile when the channel has catch-up.",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "liveAssignCustomEpg": "Assign Custom EPG",
+  "liveCancelReminder": "Cancel Reminder",
+  "liveCategoryHidden": "Category hidden",
+  "liveCategoryNameReset": "Category name reset",
+  "liveCategoryRenamed": "Category renamed",
+  "liveChannelFunctions": "CHANNEL FUNCTIONS",
+  "@liveChannelFunctions": {
+    "description": "Small grey sub-header inside NOW ON AIR (already uppercase)."
+  },
+  "liveChannelHidden": "Channel hidden",
+  "liveChannelNotFound": "No channel {number}",
+  "@liveChannelNotFound": {
+    "description": "Number zapping OSD when no channel has the typed number.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "liveChooseCategory": "Choose a category",
+  "liveConfirmPinTitle": "Enter the new PIN again",
+  "liveCopyStreamUrl": "Copy stream URL",
+  "liveCreatePinSubtitle": "Choose 4 digits. Locked channels ask for it.",
+  "liveCreatePinTitle": "Create a parental PIN",
+  "liveCustomEpgAssigned": "Custom EPG assigned",
+  "liveCustomEpgAutomatic": "Automatic",
+  "liveCustomEpgCurrent": "Assigned",
+  "liveCustomEpgFor": "Guide for {channel}",
+  "@liveCustomEpgFor": {
+    "placeholders": {
+      "channel": {
+        "type": "String"
+      }
+    }
+  },
+  "liveCustomEpgHint": "The channel uses the chosen guide channel's programmes. Reset goes back to the automatic match.",
+  "liveCustomEpgNoGuide": "This playlist has no guide channels yet. Add an EPG URL to the playlist, then reload the EPG.",
+  "liveCustomEpgNoMatch": "No EPG channel matches “{query}”.",
+  "@liveCustomEpgNoMatch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "liveCustomEpgNoProgramme": "No programme on air",
+  "liveCustomEpgNow": "Now: {title}",
+  "@liveCustomEpgNow": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "liveCustomEpgRemoved": "Custom EPG removed",
+  "liveCustomEpgSearch": "Search EPG channels",
+  "liveDumpCategory": "Dump Category",
+  "liveDumpChannel": "Dump Channel",
+  "liveDumpFailed": "The file could not be written.",
+  "liveDumpSaved": "Saved to Desktop: {file}",
+  "@liveDumpSaved": {
+    "placeholders": {
+      "file": {
+        "type": "String"
+      }
+    }
+  },
+  "liveDuration": "Duration",
+  "liveEmptyCategory": "This category has no channels. Pick another one from the categories.",
+  "liveEmptyCategoryTitle": "No channels here",
+  "liveEmptyFavorites": "Right-click a channel (or press the Menu key) and choose Add to favorites.",
+  "liveEmptyFavoritesTitle": "No favorite channels yet",
+  "liveEmptyLastWatched": "Channels you watch show up here.",
+  "liveEmptyLastWatchedTitle": "Nothing watched yet",
+  "liveEmptyRecent": "No channels were added in the last 7 days.",
+  "liveEnterPinSubtitle": "Needed to remove a lock.",
+  "liveEnterPinTitle": "Enter the parental PIN",
+  "liveEpgBy": "EPG by {source}",
+  "@liveEpgBy": {
+    "description": "Appended to the programme description: the guide's source host.",
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "liveEpgNotAvailable": "EPG not available",
+  "@liveEpgNotAvailable": {
+    "description": "Channel card line when the guide has no programme for the channel."
+  },
+  "liveHideCategory": "Hide category",
+  "liveHideChannel": "Hide channel",
+  "liveInactive": "Inactive",
+  "liveLoadError": "The channels could not be loaded.",
+  "liveLockedHint": "Press Enter or click to enter the parental PIN.",
+  "liveLockedTitle": "Locked channel",
+  "liveMinutes": "{minutes} min",
+  "@liveMinutes": {
+    "description": "Programme duration.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "liveMoreActions": "More actions",
+  "liveNoChannels": "This playlist has no live TV channels.",
+  "liveNoChannelsTitle": "No live channels",
+  "liveNoDescription": "No description for this programme.",
+  "liveNoProgrammeInfo": "No programme information for this channel.",
+  "liveNoUpcoming": "No programmes in the next 24 hours.",
+  "liveNotActive": "Not active",
+  "liveNotAvailable": "Not available",
+  "liveNowOnAir": "NOW ON AIR",
+  "@liveNowOnAir": {
+    "description": "Panel header above the programme on air (already uppercase; Turkish needs İ)."
+  },
+  "liveParental": "Parental",
+  "liveParentalCategoriesUpdated": "Parental control categories updated",
+  "liveParentalChannelsUpdated": "Parental control channels updated",
+  "liveParentalPinSet": "Parental PIN saved",
+  "livePreviewError": "This channel can't be played right now.",
+  "livePreviewOff": "Live preview is off",
+  "livePreviewSelectHint": "Press Enter or click to start the preview",
+  "livePreviewUnsupported": "This channel is DRM protected and can't be played.",
+  "livePreviewWatchHint": "Press Enter or click to watch",
+  "liveRecording": "Recording",
+  "liveRemoveCategoryFromParental": "Remove category from Parental Control",
+  "liveRemoveFromFavorites": "Remove from favorites",
+  "liveRemoveFromLastWatched": "Remove from Last watched",
+  "liveRemoveFromParental": "Remove from Parental Control",
+  "liveRemovedFromFavorites": "Removed from favorites",
+  "liveRemovedFromLastWatched": "Removed from Last watched",
+  "liveRenameCategory": "Change category's name",
+  "liveRenameHint": "Category name",
+  "liveRenameOriginal": "Original name: {name}",
+  "@liveRenameOriginal": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "liveReset": "Reset",
+  "liveScheduleReminder": "Schedule Reminder",
+  "liveStreamUrlCopied": "Stream URL copied (credentials hidden)",
+  "liveStreamUrlCopiedFull": "Full stream URL copied",
+  "liveTime": "Time",
+  "liveTodayCaps": "TODAY",
+  "@liveTodayCaps": {
+    "description": "Red small caps label above an upcoming programme time."
+  },
+  "liveTomorrowCaps": "TOMORROW",
+  "liveTvArchive": "TV Archive",
+  "liveUpcoming": "UPCOMING",
+  "@liveUpcoming": {
+    "description": "Panel header of the next programmes (already uppercase)."
+  },
+  "liveWatch": "Watch",
+  "loading": "Loading…",
+  "multiviewAddChannel": "Add channel",
+  "multiviewAdded": "Added to multi-channel",
+  "multiviewAudioOn": "Sound on",
+  "multiviewChangeChannel": "Change channel",
+  "multiviewClose": "Close multi-channel",
+  "multiviewCloseTile": "Close",
+  "multiviewClosed": "Channel closed",
+  "multiviewEmptyMessage": "Add channels here, from TV Live or from the live player.",
+  "multiviewEmptyTitle": "Watch up to 4 channels at once",
+  "multiviewFullTile": "Full screen",
+  "multiviewFullTileHint": "Esc to return to all channels",
+  "multiviewLayoutGrid": "2 × 2",
+  "multiviewLayoutGridHint": "Grid",
+  "multiviewLayoutOnePlusThree": "1 + 3",
+  "multiviewLayoutOnePlusThreeHint": "One big, three small",
+  "multiviewLayoutSideBySide": "1 + 1",
+  "multiviewLayoutSideBySideHint": "Side by side",
+  "multiviewMaxReached": "Multi-channel shows up to 4 channels",
+  "multiviewNoResults": "No channels match “{query}”",
+  "@multiviewNoResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "multiviewOpenAnyway": "Open anyway",
+  "multiviewPickerTitle": "Choose a channel",
+  "multiviewSearchHint": "Search channels",
+  "multiviewSwapWithMain": "Swap with main",
+  "multiviewTitle": "Multi-channel",
+  "multiviewWarnMessage": "Most IPTV accounts allow only 1–2 connections at the same time. Your account allows {count}.",
+  "@multiviewWarnMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "multiviewWarnMessageUnknown": "Most IPTV accounts allow only 1–2 connections at the same time; extra streams may not play.",
+  "multiviewWarnTitle": "Open another stream?",
+  "no": "No",
+  "off": "Off",
+  "ok": "Ok",
+  "on": "On",
+  "playerActionAddChannel": "Add channel (multi-channel)",
+  "playerActionFullGuide": "Full TV Guide (change channel)",
+  "playerActionMiniGuide": "Mini TV Guide (change channel)",
+  "playerActionQuestion": "What do you need to do?",
+  "playerArchive": "TV Archive",
+  "playerAspectAuto": "Auto",
+  "playerAspectCrop": "Crop",
+  "playerAspectFill": "Fill",
+  "playerAspectRatio": "Aspect ratio",
+  "playerAudio": "Audio",
+  "playerAudioDelay": "Audio delay",
+  "playerBack": "Back",
+  "playerDeinterlace": "Deinterlace",
+  "playerDeinterlaceAuto": "Auto",
+  "playerDeinterlaceOff": "Off",
+  "playerDeinterlaceOn": "On",
+  "playerDelayOsd": "{label}: {value}",
+  "@playerDelayOsd": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "playerErrorCodec": "This video format is not supported.",
+  "playerErrorCredentials": "The playlist password is missing. Edit the playlist and enter it again.",
+  "playerErrorEnded": "The stream ended.",
+  "playerErrorHttp": "The server rejected the request.",
+  "playerErrorHttp401": "Access denied (HTTP 401). Check the playlist username and password.",
+  "playerErrorHttp403": "Access forbidden (HTTP 403). The provider refused the stream; the connection limit may be reached.",
+  "playerErrorHttp404": "Stream not found (HTTP 404).",
+  "playerErrorHttpServer": "Server error (HTTP {status}). Try again later.",
+  "@playerErrorHttpServer": {
+    "placeholders": {
+      "status": {
+        "type": "int"
+      }
+    }
+  },
+  "playerErrorHttpStatus": "The server rejected the request (HTTP {status}).",
+  "@playerErrorHttpStatus": {
+    "placeholders": {
+      "status": {
+        "type": "int"
+      }
+    }
+  },
+  "playerErrorNetwork": "Network error. Check your internet connection.",
+  "playerErrorNoCatchup": "This channel has no TV archive for this programme.",
+  "playerErrorNoUrl": "This entry has no stream address.",
+  "playerErrorNotFound": "This item is no longer in the playlist.",
+  "playerErrorPlaylistGone": "The playlist no longer exists.",
+  "playerErrorTimeout": "The server did not respond in time.",
+  "playerErrorTitle": "Can't play this stream",
+  "playerErrorUnknown": "Playback failed.",
+  "playerErrorUnsupported": "This channel is DRM-protected and can't be played.",
+  "playerExitFullscreen": "Exit full screen",
+  "playerExternalSubtitles": "External subtitles",
+  "playerExternalTrack": "External",
+  "playerFromBeginning": "From the beginning",
+  "playerFullscreen": "Full screen",
+  "playerGuideHint": "↑ ↓ choose  ·  Enter watch  ·  Esc close",
+  "playerInfo": "Info",
+  "playerInfoHint": "↓ for info",
+  "playerLiveHint": "Enter for options  ·  ↑ ↓ change channel",
+  "playerLoadSubtitleFile": "Load from file…",
+  "playerMinutesLeft": "{minutes} min left",
+  "@playerMinutesLeft": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "playerMore": "More",
+  "playerMuted": "Muted",
+  "playerNextEpisode": "Next episode",
+  "playerNextEpisodeIn": "Playing in {seconds}",
+  "@playerNextEpisodeIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "playerNextLabel": "Next:",
+  "playerNoAudioTracks": "No audio tracks",
+  "playerNoChannelNumber": "No channel with number {number}",
+  "@playerNoChannelNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "playerNoChannels": "No channels in this category.",
+  "playerNoEpg": "No programme information",
+  "playerOpenGuide": "Open TV Guide",
+  "playerOptions": "Options",
+  "playerOptionsHint": "↑ for options",
+  "playerPause": "Pause",
+  "playerPicture": "Picture",
+  "playerPlay": "Play",
+  "playerPlayNow": "Play now",
+  "playerProfileAuto": "Auto",
+  "playerProfileHardware": "MPV · Hardware ({api})",
+  "@playerProfileHardware": {
+    "placeholders": {
+      "api": {
+        "type": "String"
+      }
+    }
+  },
+  "playerProfileLowLatency": "MPV · Low latency",
+  "playerProfileSoftware": "MPV · Software",
+  "playerReconnecting": "Reconnecting… ({attempt}/{total})",
+  "@playerReconnecting": {
+    "placeholders": {
+      "attempt": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "playerResumeFrom": "Resume from {time}",
+  "@playerResumeFrom": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "playerResumeTitle": "Continue watching",
+  "playerSeconds": "{value} s",
+  "@playerSeconds": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "playerSizeLarge": "Large",
+  "playerSizeMedium": "Medium",
+  "playerSizeSmall": "Small",
+  "playerSkipIntro": "Skip intro",
+  "playerSpeed": "Speed",
+  "playerSpeedNormal": "Normal",
+  "playerStatistics": "Statistics",
+  "playerStatsAudio": "Audio",
+  "playerStatsBitrate": "Bitrate",
+  "playerStatsBuffering": "Buffering",
+  "playerStatsCache": "Cache",
+  "playerStatsDecoder": "Decoder",
+  "playerStatsDeinterlace": "Deinterlacing",
+  "playerStatsDropped": "Dropped frames",
+  "playerStatsFallback": "Hardware fallback",
+  "playerStatsFps": "Frame rate",
+  "playerStatsHint": "Ctrl+Shift+D to close",
+  "playerStatsPosition": "Position",
+  "playerStatsProfile": "Player",
+  "playerStatsResolution": "Resolution",
+  "playerStatsSource": "Source",
+  "playerStatsVideo": "Video codec",
+  "playerSubtitleDelay": "Subtitle delay",
+  "playerSubtitleLoaded": "Subtitle loaded",
+  "playerSubtitleSize": "Subtitle size",
+  "playerSubtitles": "Subtitles",
+  "playerSubtitlesDisabled": "Disabled",
+  "playerSwitchPlayer": "Switch player",
+  "playerSwitchedTo": "Player: {name}",
+  "@playerSwitchedTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "playerTrackNumber": "Track {number}",
+  "@playerTrackNumber": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "playerVolume": "Volume",
+  "playlistsAbout": "About",
+  "playlistsAddPlaylist": "Add playlist",
+  "playlistsAvatarCurrent": "Current avatar",
+  "playlistsAvatarUpdated": "Avatar updated",
+  "playlistsCheckAccountActive": "account active",
+  "playlistsCheckAccountBanned": "Account banned",
+  "playlistsCheckAccountDisabled": "Account disabled",
+  "playlistsCheckAccountExpired": "Account expired",
+  "playlistsCheckAccountInactive": "Account {status}",
+  "@playlistsCheckAccountInactive": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsCheckConnections": "{count, plural, =1{1 connection} other{{count} connections}}",
+  "@playlistsCheckConnections": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "playlistsCheckEmpty": "The server sent an empty response",
+  "playlistsCheckEnded": "ended {date}",
+  "@playlistsCheckEnded": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsCheckExpires": "expires {date}",
+  "@playlistsCheckExpires": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsCheckFileMissing": "File not found",
+  "playlistsCheckFileOk": "File ready · M3U",
+  "playlistsCheckForbidden": "Access denied (403)",
+  "playlistsCheckGuideFromPlaylist": "Filled in from the playlist",
+  "playlistsCheckGuideOk": "Guide reachable · XMLTV",
+  "playlistsCheckGuideOkGzip": "Guide reachable · XMLTV (compressed)",
+  "playlistsCheckHttp": "The server answered with an error (HTTP {code})",
+  "@playlistsCheckHttp": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsCheckNoExpiry": "no expiry date",
+  "playlistsCheckNotFound": "Not found (404): check the address",
+  "playlistsCheckNotM3u": "This is not an M3U playlist",
+  "playlistsCheckNotXml": "This is not an XMLTV guide",
+  "playlistsCheckNotXtream": "This doesn't look like an Xtream server",
+  "playlistsCheckPlaylistOk": "Playlist reachable · M3U",
+  "playlistsCheckPlaylistOkGuide": "Playlist reachable · M3U · guide link found",
+  "playlistsCheckServerReachable": "Server reachable",
+  "playlistsCheckTimeout": "No answer from the server (timed out)",
+  "playlistsCheckTrial": "trial",
+  "playlistsCheckUnauthorized": "Wrong username or password (401)",
+  "playlistsCheckUnreachable": "Unreachable: check the address and your connection",
+  "playlistsChooseAvatarTitle": "Choose Avatar",
+  "playlistsChooseFile": "Choose file…",
+  "playlistsDetailsAccount": "Account",
+  "playlistsDetailsActiveConnections": "Active connections",
+  "playlistsDetailsCreated": "Created",
+  "playlistsDetailsDateTime": "{date} at {time}",
+  "@playlistsDetailsDateTime": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsDetailsEpgShift": "EPG time shift",
+  "playlistsDetailsExpires": "Expires",
+  "playlistsDetailsFile": "File",
+  "playlistsDetailsGuide": "Guide",
+  "playlistsDetailsGuideCustom": "Custom URL",
+  "playlistsDetailsGuideHeader": "From the playlist",
+  "playlistsDetailsGuideOff": "Off",
+  "playlistsDetailsGuideProvider": "Provider guide",
+  "playlistsDetailsLastEpgReload": "Last guide update",
+  "playlistsDetailsLastReload": "Last reload",
+  "playlistsDetailsLive": "Live channels",
+  "playlistsDetailsMaxConnections": "Max connections",
+  "playlistsDetailsMovies": "Movies",
+  "playlistsDetailsNever": "Never",
+  "playlistsDetailsNoAccount": "Account details appear after the first import.",
+  "playlistsDetailsNotYet": "Not yet",
+  "playlistsDetailsPlaylistUrl": "Playlist URL",
+  "playlistsDetailsProgrammes": "Programmes",
+  "playlistsDetailsReloadFrequency": "Reload frequency",
+  "playlistsDetailsSeries": "Series",
+  "playlistsDetailsServer": "Server",
+  "playlistsDetailsSource": "Source",
+  "playlistsDetailsStatus": "Status",
+  "playlistsDetailsTitle": "Playlist details",
+  "playlistsDetailsTrial": "Trial account",
+  "playlistsDetailsType": "Type",
+  "playlistsDetailsUpdates": "Updates",
+  "playlistsDetailsUserAgent": "User-Agent",
+  "playlistsDetailsUsername": "Username",
+  "playlistsDisableGuide": "Disable guide",
+  "playlistsDownloads": "Downloads",
+  "playlistsEditPlaylist": "Edit playlist",
+  "playlistsEmptyMessage": "Carina plays Xtream Codes and M3U playlists. Keep the details from your provider at hand.",
+  "playlistsEmptyTitle": "Add your first playlist",
+  "playlistsEnableGuide": "Enable guide",
+  "playlistsErrorEpgInvalid": "Enter a complete http:// or https:// link, or leave it empty",
+  "playlistsErrorFile": "Choose a playlist file",
+  "playlistsErrorName": "Enter a name",
+  "playlistsErrorPassword": "Enter your password",
+  "playlistsErrorServer": "Enter the server address",
+  "playlistsErrorServerInvalid": "This is not a valid server address",
+  "playlistsErrorServerPort": "Include the port, e.g. :8080 (use :80 if your provider gave none)",
+  "playlistsErrorServerScheme": "Start with http:// or https://",
+  "playlistsErrorUrl": "Enter the playlist URL",
+  "playlistsErrorUrlInvalid": "Enter a complete http:// or https:// link",
+  "playlistsErrorUsername": "Enter your username",
+  "playlistsFieldEpgDefault": "EPG URL · Default: provider guide",
+  "playlistsFieldEpgM3u": "EPG URL (XMLTV)",
+  "playlistsFieldEpgOff": "Guide disabled",
+  "playlistsFieldFile": "Choose a .m3u or .m3u8 file",
+  "playlistsFieldName": "Playlist name",
+  "playlistsFieldPassword": "Your password",
+  "playlistsFieldPlaylistUrl": "Playlist URL (http://…/playlist.m3u)",
+  "playlistsFieldReload": "Reload frequency",
+  "playlistsFieldServer": "Server (i.e. https://domain.com:port)",
+  "playlistsFieldShift": "EPG time shift (in hours)",
+  "playlistsFieldUserAgent": "Custom User-Agent (optional)",
+  "playlistsFieldUsername": "Your username",
+  "playlistsFilePickerTitle": "Choose an M3U playlist",
+  "playlistsHideUsername": "Hide username",
+  "playlistsImportBytesOf": "{received} of {total}",
+  "@playlistsImportBytesOf": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsImportCancelHint": "Press Esc to cancel",
+  "playlistsImportCancelledStep": "Cancelled",
+  "playlistsImportCancelledToast": "Import cancelled",
+  "playlistsImportCancelling": "Cancelling…",
+  "playlistsImportCheckNote": "A green check during setup only means the server answered; it can't guarantee the import.",
+  "playlistsImportDone": "Playlist updated",
+  "playlistsImportEmptyMessage": "Nothing was found in: {sections}. Your subscription may not include them.",
+  "@playlistsImportEmptyMessage": {
+    "placeholders": {
+      "sections": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsImportEmptyTitle": "Imported, but some sections are empty",
+  "playlistsImportEpgFailedMessage": "Channels, movies and series were imported and are ready. {reason}",
+  "@playlistsImportEpgFailedMessage": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsImportEpgFailedTitle": "The guide could not be loaded",
+  "playlistsImportEpgReasonEmpty": "The guide file was empty.",
+  "playlistsImportEpgReasonGeneric": "Try Force reload EPG later.",
+  "playlistsImportEpgReasonHttp": "The guide server answered with an error (HTTP {code}).",
+  "@playlistsImportEpgReasonHttp": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsImportEpgReasonInvalid": "The guide file is not valid XMLTV.",
+  "playlistsImportEpgReasonUnreachable": "The guide server could not be reached.",
+  "playlistsImportErrorEmpty": "The server sent an empty response. The link may be incomplete, or your provider is having trouble.",
+  "playlistsImportErrorForbidden": "The server denied access (403). Your provider may block this device or connection.",
+  "playlistsImportErrorGeneric": "Something went wrong while importing.",
+  "playlistsImportErrorHttp": "The server answered with an error (HTTP {code}).",
+  "@playlistsImportErrorHttp": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsImportErrorInactive": "The provider reports the account as {status}.",
+  "@playlistsImportErrorInactive": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsImportErrorNotFound": "The address was not found (404). Check the link.",
+  "playlistsImportErrorTimeout": "The server didn't answer in time. It may be busy; try again later.",
+  "playlistsImportErrorTitle": "The playlist could not be imported",
+  "playlistsImportErrorUnauthorized": "The server refused the username or password.",
+  "playlistsImportErrorUnparseable": "The response could not be read as a playlist. The link may lead to a web page instead.",
+  "playlistsImportErrorUnreachable": "Carina couldn't reach the server. Check the address, the port and your internet connection.",
+  "playlistsImportFailed": "Failed",
+  "playlistsImportGuideFailed": "Guide failed",
+  "playlistsImportProgrammes": "{count} programmes",
+  "@playlistsImportProgrammes": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsImportReady": "Playlist ready",
+  "playlistsImportRemoved": "{count} removed",
+  "@playlistsImportRemoved": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsImportStepCompleted": "Completed",
+  "playlistsImportStepConnecting": "Connecting",
+  "playlistsImportStepEpgCleaning": "EPG: Cleaning programs",
+  "playlistsImportStepEpgDownloading": "EPG: Downloading",
+  "playlistsImportStepEpgParsing": "EPG: Parsing",
+  "playlistsImportStepLiveCategories": "Live categories",
+  "playlistsImportStepLiveChannels": "Live channels",
+  "playlistsImportStepMovies": "Movies",
+  "playlistsImportStepSeries": "Series",
+  "playlistsImportTitleEpg": "Updating the guide of {name}",
+  "@playlistsImportTitleEpg": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsImportTitleNew": "Importing {name}",
+  "@playlistsImportTitleNew": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsImportTitleReload": "Updating {name}",
+  "@playlistsImportTitleReload": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsLoadError": "Your playlists could not be loaded.",
+  "playlistsMenuChooseAvatar": "Choose Avatar",
+  "playlistsMenuDetails": "Playlist details",
+  "playlistsMenuEdit": "Edit",
+  "playlistsMenuForceReload": "Force reload",
+  "playlistsMenuForceReloadEpg": "Force reload EPG",
+  "playlistsMenuOpenSettings": "Open playlist's settings",
+  "playlistsMenuRemove": "Remove",
+  "playlistsMenuRemovePin": "Remove PIN",
+  "playlistsMenuSetPin": "Set Playlist Access PIN",
+  "playlistsMoreActions": "More actions",
+  "playlistsNoGuideMessage": "This playlist has no EPG URL, or its guide is turned off. You can add one with Edit.",
+  "playlistsNoGuideTitle": "No guide to reload",
+  "playlistsNotFound": "This playlist no longer exists.",
+  "playlistsPinConfirmTitle": "Enter the PIN again",
+  "playlistsPinCurrentTitle": "Enter the current PIN",
+  "playlistsPinEnterTitle": "Enter PIN",
+  "playlistsPinProtectedSubtitle": "{name} is protected",
+  "@playlistsPinProtectedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsPinRemoved": "Access PIN removed",
+  "playlistsPinSet": "Access PIN set",
+  "playlistsPinSetSubtitle": "4 digits to open {name}",
+  "@playlistsPinSetSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsPinSetTitle": "Set an access PIN",
+  "playlistsProtected": "Protected with a PIN",
+  "playlistsReload12h": "12 Hours",
+  "playlistsReload1d": "1 Day",
+  "playlistsReload1w": "1 Week",
+  "playlistsReload3d": "3 Days",
+  "playlistsReloadChooserDescription": "When you open the playlist and this much time has passed, Carina refreshes it in the background.",
+  "playlistsReloadHours": "{hours} Hours",
+  "@playlistsReloadHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "playlistsReloadNever": "Never",
+  "playlistsRemoveMessage": "Its channels, favorites, watch history and settings will be deleted from this computer. Your subscription is not affected.",
+  "playlistsRemoveTitle": "Remove “{name}”?",
+  "@playlistsRemoveTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsRemoved": "Playlist removed",
+  "playlistsSaveFailed": "The playlist could not be saved.",
+  "playlistsSaved": "Playlist saved",
+  "playlistsSettings": "Settings",
+  "playlistsShiftChooserDescription": "Move the guide's times when they don't match your clock. For example, if programmes always start an hour later than the guide says, choose +1.",
+  "playlistsShiftHours": "{value} h",
+  "@playlistsShiftHours": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsShowUsername": "Show username",
+  "playlistsSourceHint": "Xtream credentials  |  Complete M3U URL  |  Local .m3u file",
+  "playlistsStatusActive": "Active",
+  "playlistsStatusBanned": "Banned",
+  "playlistsStatusDisabled": "Disabled",
+  "playlistsStatusExpired": "Expired",
+  "playlistsStepEpg": "EPG URL",
+  "playlistsStepEpgHintM3u": "Filled in from the playlist when it has one",
+  "playlistsStepEpgHintXtream": "Leave it empty to use your provider's guide",
+  "playlistsStepFile": "Playlist file",
+  "playlistsStepFileHint": "A .m3u or .m3u8 file on this computer",
+  "playlistsStepLabel": "{number} / {title}",
+  "@playlistsStepLabel": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsStepName": "Name your playlist",
+  "playlistsStepNameHint": "A name you can recognize",
+  "playlistsStepPassword": "Password",
+  "playlistsStepPasswordHint": "Stored securely on this computer",
+  "playlistsStepPlaylistUrl": "Playlist URL",
+  "playlistsStepPlaylistUrlHint": "The complete M3U link from your provider",
+  "playlistsStepReload": "Reload frequency",
+  "playlistsStepReloadHint": "How often Carina refreshes the playlist",
+  "playlistsStepSave": "Save",
+  "playlistsStepSaveHintEdit": "Changing the source reloads the playlist",
+  "playlistsStepSaveHintNew": "Then the import starts",
+  "playlistsStepServer": "Server address",
+  "playlistsStepServerHint": "Include the scheme and port",
+  "playlistsStepShift": "EPG time shift",
+  "playlistsStepShiftHint": "Start at zero; change it only if the times are off",
+  "playlistsStepSource": "Choose a source",
+  "playlistsStepSourceHint": "Use the details you received",
+  "playlistsStepUserAgent": "Custom User-Agent",
+  "playlistsStepUserAgentHint": "Optional; only if your provider asks for one",
+  "playlistsStepUsername": "Username",
+  "playlistsStepUsernameHint": "Copy it carefully and keep it private",
+  "playlistsSwitchToXtream": "Switch to Xtream",
+  "playlistsTypeM3u": "M3U playlist via URL",
+  "playlistsTypeM3uFile": "M3U file",
+  "playlistsTypeXtream": "Xtream (Recommended)",
+  "playlistsUpdatingPercent": "Updating {percent}%",
+  "@playlistsUpdatingPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "playlistsXtreamDetected": "This is an Xtream link. Xtream gives richer data (archive, account details).",
+  "playlistsXtreamFilled": "Server, username and password filled in from the link",
+  "remindersAlreadyStarted": "This programme has already started",
+  "remindersDismiss": "Dismiss",
+  "remindersNotFound": "This programme is no longer in the guide",
+  "remindersOnAirNow": "{channel} · on air now",
+  "@remindersOnAirNow": {
+    "placeholders": {
+      "channel": {
+        "type": "String"
+      }
+    }
+  },
+  "remindersRemoved": "Reminder removed",
+  "remindersSet": "Reminder set — keep Carina running to get it",
+  "remindersStartsAt": "{channel} · starts at {time}",
+  "@remindersStartsAt": {
+    "placeholders": {
+      "channel": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "remindersWatchNow": "Watch now",
+  "remove": "Remove",
+  "retry": "Retry",
+  "save": "Save",
+  "seeAll": "See All",
+  "shellAllChannels": "All",
+  "shellCategories": "Categories",
+  "shellCategoriesHeader": "Categories",
+  "shellCategoriesOrder": "Categories Order",
+  "shellChannelsOrder": "Channels Order",
+  "shellFavorites": "Favorites",
+  "shellFullscreenHint": "Press F11 to leave full screen",
+  "shellGuide": "TV Guide",
+  "shellHome": "Home",
+  "shellLastWatched": "Last watched",
+  "shellLive": "TV Live",
+  "shellMovies": "Movies",
+  "shellNoCategories": "No categories in this playlist.",
+  "shellNoSections": "This playlist has nothing to show yet.",
+  "shellOrderCustom": "Custom",
+  "shellOrderDate": "Date",
+  "shellOrderName": "Name",
+  "shellOrderNumber": "Number",
+  "shellOrderPlaylist": "Playlist",
+  "shellPlaylistManager": "Playlist Manager",
+  "shellRecentlyAdded": "Recently added",
+  "shellReloading": "Updating {percent}%",
+  "@shellReloading": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "shellReloadingEpg": "Updating guide",
+  "shellSearch": "Search",
+  "shellSettings": "Settings",
+  "shellShows": "Shows",
+  "shellSorting": "Sorting",
+  "shellSwitchPlaylist": "Switch playlist",
+  "vodAddToFavoriteWithTags": "Add to favorite with tags",
+  "vodAddToFavorites": "Add to favorites",
+  "vodAllMovies": "All movies",
+  "vodAllShows": "All shows",
+  "vodBackToMovies": "Movies",
+  "vodBackToShows": "Shows",
+  "vodCastLabel": "Cast:",
+  "vodClearFilter": "Clear",
+  "vodContinueWatching": "Continue watching",
+  "vodDetailsCached": "The provider didn't answer, so saved details are shown.",
+  "vodDetailsMissing": "This title is no longer in the playlist.",
+  "vodDirectorLabel": "Director:",
+  "vodEmptyCategory": "Nothing in this category yet.",
+  "vodEmptyContinue": "Nothing to continue yet. Titles you start show up here.",
+  "vodEmptyFavorites": "No favorites yet. Right-click a title and choose Add to favorites.",
+  "vodEmptyMoviesMessage": "This playlist doesn't have any movies. Reload it from the Playlist Manager or pick another playlist.",
+  "vodEmptyMoviesTitle": "No movies yet",
+  "vodEmptyRecent": "Nothing was added in the last 7 days.",
+  "vodEmptyShowsMessage": "This playlist doesn't have any shows. Reload it from the Playlist Manager or pick another playlist.",
+  "vodEmptyShowsTitle": "No shows yet",
+  "vodEpisodes": "{count, plural, =1{1 episode} other{{count} episodes}}",
+  "@vodEpisodes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vodFavorites": "Favorites",
+  "vodFilterHint": "Filter this list",
+  "vodFromBeginning": "From the beginning",
+  "vodGenresLabel": "Genres:",
+  "vodHide": "Hide",
+  "vodHome": "Home",
+  "vodInfo": "Info",
+  "vodLoadError": "This list couldn't be loaded.",
+  "vodMarkPreviousWatched": "Mark all previous as watched",
+  "vodMarkUnwatched": "Mark as unwatched",
+  "vodMarkWatched": "Mark as watched",
+  "vodNoEpisodes": "No episodes yet. Try Refresh episodes.",
+  "vodNoResults": "No results for “{query}”",
+  "@vodNoResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "vodPlay": "Play",
+  "vodPlayEpisode": "Play {episode}",
+  "@vodPlayEpisode": {
+    "placeholders": {
+      "episode": {
+        "type": "String"
+      }
+    }
+  },
+  "vodRecentlyAdded": "Recently added",
+  "vodRefreshEpisodes": "Refresh episodes",
+  "vodRemoveFromContinue": "Remove from Continue watching",
+  "vodRemoveFromFavorites": "Remove from favorites",
+  "vodResumeFrom": "Resume from {time}",
+  "@vodResumeFrom": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "vodReviews": "({count} reviews)",
+  "@vodReviews": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "vodSeasonTab": "Season {number}",
+  "@vodSeasonTab": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "vodSeasons": "{count, plural, =1{1 season} other{{count} seasons}}",
+  "@vodSeasons": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vodSeasonsUpper": "{count, plural, =1{1 SEASON} other{{count} SEASONS}}",
+  "@vodSeasonsUpper": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vodSortDateAdded": "Date added",
+  "vodSortDefault": "Default order",
+  "vodSortHeader": "Sort by",
+  "vodSortName": "Name",
+  "vodSortRating": "Rating",
+  "vodSortYear": "Year",
+  "vodSpecialContents": "Special contents",
+  "vodTimeLeft": "{time} left",
+  "@vodTimeLeft": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "vodTitlesCount": "{count, plural, =1{1 title} other{{count} titles}}",
+  "@vodTitlesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vodToastAddedToFavorites": "Added to favorites",
+  "vodToastEpisodesFailed": "Couldn't refresh the episodes",
+  "vodToastEpisodesUpdated": "Episodes updated",
+  "vodToastHidden": "Hidden. Restore it in Settings › Hidden items.",
+  "vodToastMarkedPrevious": "{count, plural, =0{No earlier episodes to mark} =1{1 episode marked as watched} other{{count} episodes marked as watched}}",
+  "@vodToastMarkedPrevious": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vodToastMarkedUnwatched": "Marked as unwatched",
+  "vodToastMarkedWatched": "Marked as watched",
+  "vodToastNoEpisodes": "There are no episodes to play yet",
+  "vodToastRemovedFromContinue": "Removed from Continue watching",
+  "vodToastRemovedFromFavorites": "Removed from favorites",
+  "vodTrendingThisWeek": "Trending this week",
+  "vodUntitled": "Untitled",
+  "vodWatched": "Watched",
+  "yes": "Yes"
+}

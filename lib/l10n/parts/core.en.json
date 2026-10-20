@@ -1,0 +1,56 @@
+{
+  "coreLive": "LIVE",
+  "@coreLive": {
+    "description": "Red live pill on players and previews."
+  },
+  "coreBuffering": "Buffering {percent}%",
+  "@coreBuffering": {
+    "description": "Spinner label while the player buffers.",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "coreNewMovie": "NEW MOVIE",
+  "@coreNewMovie": {
+    "description": "Red badge on movies added in the last 7 days."
+  },
+  "coreNewShow": "NEW SHOW",
+  "@coreNewShow": {
+    "description": "Red badge on shows added in the last 7 days."
+  },
+  "coreNewEpisodes": "NEW EPISODES",
+  "@coreNewEpisodes": {
+    "description": "Red badge on shows with episodes added in the last 7 days."
+  },
+  "coreScrollLeft": "Scroll left",
+  "coreScrollRight": "Scroll right",
+  "coreShowPassword": "Show password",
+  "coreHidePassword": "Hide password",
+  "coreChecking": "Checking…",
+  "corePinWrong": "Wrong PIN. Try again.",
+  "corePinDeleteDigit": "Delete last digit",
+  "coreWindowMinimize": "Minimize",
+  "coreWindowMaximize": "Maximize",
+  "coreWindowRestore": "Restore Down",
+  "coreWindowClose": "Close",
+  "coreCategories": "Categories",
+  "@coreCategories": {
+    "description": "Tooltip of the floating red menu button that opens the category sidebar."
+  },
+  "coreSwitchPlaylist": "Switch playlist",
+  "@coreSwitchPlaylist": {
+    "description": "Tooltip of the avatar in the top navigation."
+  },
+  "coreDismiss": "Dismiss",
+  "coreErrorTitle": "Something went wrong",
+  "coreDecrease": "Decrease",
+  "coreIncrease": "Increase",
+  "coreAvatarCharacters": "Characters",
+  "coreAvatarAnimals": "Animals",
+  "coreAvatarCars": "Cars",
+  "coreAvatarObjects": "Objects",
+  "coreAvatarAbstract": "Abstract",
+  "coreAvatarInitials": "Initials"
+}

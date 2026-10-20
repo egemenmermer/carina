@@ -1,0 +1,177 @@
+{
+  "liveNowOnAir": "NOW ON AIR",
+  "@liveNowOnAir": {
+    "description": "Panel header above the programme on air (already uppercase; Turkish needs İ)."
+  },
+  "liveUpcoming": "UPCOMING",
+  "@liveUpcoming": {
+    "description": "Panel header of the next programmes (already uppercase)."
+  },
+  "liveChannelFunctions": "CHANNEL FUNCTIONS",
+  "@liveChannelFunctions": {
+    "description": "Small grey sub-header inside NOW ON AIR (already uppercase)."
+  },
+  "liveTime": "Time",
+  "liveDuration": "Duration",
+  "liveRecording": "Recording",
+  "liveNotActive": "Not active",
+  "liveTvArchive": "TV Archive",
+  "liveArchiveDays": "Available · {days, plural, =1{1 day} other{{days} days}}",
+  "@liveArchiveDays": {
+    "description": "TV Archive tile when the channel has catch-up.",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "liveNotAvailable": "Not available",
+  "liveParental": "Parental",
+  "liveActive": "Active",
+  "liveInactive": "Inactive",
+  "liveTodayCaps": "TODAY",
+  "@liveTodayCaps": {
+    "description": "Red small caps label above an upcoming programme time."
+  },
+  "liveTomorrowCaps": "TOMORROW",
+  "liveMinutes": "{minutes} min",
+  "@liveMinutes": {
+    "description": "Programme duration.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "liveEpgNotAvailable": "EPG not available",
+  "@liveEpgNotAvailable": {
+    "description": "Channel card line when the guide has no programme for the channel."
+  },
+  "liveNoDescription": "No description for this programme.",
+  "liveEpgBy": "EPG by {source}",
+  "@liveEpgBy": {
+    "description": "Appended to the programme description: the guide's source host.",
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "liveNoUpcoming": "No programmes in the next 24 hours.",
+  "liveNoProgrammeInfo": "No programme information for this channel.",
+  "liveEmptyCategoryTitle": "No channels here",
+  "liveEmptyCategory": "This category has no channels. Pick another one from the categories.",
+  "liveEmptyFavoritesTitle": "No favorite channels yet",
+  "liveEmptyFavorites": "Right-click a channel (or press the Menu key) and choose Add to favorites.",
+  "liveEmptyLastWatchedTitle": "Nothing watched yet",
+  "liveEmptyLastWatched": "Channels you watch show up here.",
+  "liveEmptyRecent": "No channels were added in the last 7 days.",
+  "liveNoChannelsTitle": "No live channels",
+  "liveNoChannels": "This playlist has no live TV channels.",
+  "liveChooseCategory": "Choose a category",
+  "liveLoadError": "The channels could not be loaded.",
+  "livePreviewOff": "Live preview is off",
+  "livePreviewWatchHint": "Press Enter or click to watch",
+  "livePreviewSelectHint": "Press Enter or click to start the preview",
+  "liveWatch": "Watch",
+  "livePreviewError": "This channel can't be played right now.",
+  "livePreviewUnsupported": "This channel is DRM protected and can't be played.",
+  "liveLockedTitle": "Locked channel",
+  "liveLockedHint": "Press Enter or click to enter the parental PIN.",
+  "liveChannelNotFound": "No channel {number}",
+  "@liveChannelNotFound": {
+    "description": "Number zapping OSD when no channel has the typed number.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "liveMoreActions": "More actions",
+  "liveAddToFavoriteWithTags": "Add to favorite with tags",
+  "liveAddToFavorites": "Add to favorites",
+  "liveRemoveFromFavorites": "Remove from favorites",
+  "liveAssignCustomEpg": "Assign Custom EPG",
+  "liveScheduleReminder": "Schedule Reminder",
+  "liveCancelReminder": "Cancel Reminder",
+  "liveAddToParental": "Add to Parental Control",
+  "liveRemoveFromParental": "Remove from Parental Control",
+  "liveAddCategoryToParental": "Add category to Parental Control",
+  "liveRemoveCategoryFromParental": "Remove category from Parental Control",
+  "liveHideChannel": "Hide channel",
+  "liveHideCategory": "Hide category",
+  "liveRenameCategory": "Change category's name",
+  "liveAddToMultiview": "Add to Multi-channel",
+  "liveRemoveFromLastWatched": "Remove from Last watched",
+  "liveCopyStreamUrl": "Copy stream URL",
+  "liveDumpChannel": "Dump Channel",
+  "liveDumpCategory": "Dump Category",
+  "liveAddedToFavorites": "Added to favorites",
+  "liveRemovedFromFavorites": "Removed from favorites",
+  "liveParentalChannelsUpdated": "Parental control channels updated",
+  "liveParentalCategoriesUpdated": "Parental control categories updated",
+  "liveParentalPinSet": "Parental PIN saved",
+  "liveChannelHidden": "Channel hidden",
+  "liveCategoryHidden": "Category hidden",
+  "liveCategoryRenamed": "Category renamed",
+  "liveCategoryNameReset": "Category name reset",
+  "liveRemovedFromLastWatched": "Removed from Last watched",
+  "liveCustomEpgAssigned": "Custom EPG assigned",
+  "liveCustomEpgRemoved": "Custom EPG removed",
+  "liveStreamUrlCopied": "Stream URL copied (credentials hidden)",
+  "liveStreamUrlCopiedFull": "Full stream URL copied",
+  "liveDumpSaved": "Saved to Desktop: {file}",
+  "@liveDumpSaved": {
+    "placeholders": {
+      "file": {
+        "type": "String"
+      }
+    }
+  },
+  "liveDumpFailed": "The file could not be written.",
+  "liveCreatePinTitle": "Create a parental PIN",
+  "liveCreatePinSubtitle": "Choose 4 digits. Locked channels ask for it.",
+  "liveConfirmPinTitle": "Enter the new PIN again",
+  "liveEnterPinTitle": "Enter the parental PIN",
+  "liveEnterPinSubtitle": "Needed to remove a lock.",
+  "liveRenameOriginal": "Original name: {name}",
+  "@liveRenameOriginal": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "liveRenameHint": "Category name",
+  "liveReset": "Reset",
+  "liveCustomEpgFor": "Guide for {channel}",
+  "@liveCustomEpgFor": {
+    "placeholders": {
+      "channel": {
+        "type": "String"
+      }
+    }
+  },
+  "liveCustomEpgSearch": "Search EPG channels",
+  "liveCustomEpgCurrent": "Assigned",
+  "liveCustomEpgAutomatic": "Automatic",
+  "liveCustomEpgNow": "Now: {title}",
+  "@liveCustomEpgNow": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "liveCustomEpgNoProgramme": "No programme on air",
+  "liveCustomEpgNoMatch": "No EPG channel matches “{query}”.",
+  "@liveCustomEpgNoMatch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "liveCustomEpgNoGuide": "This playlist has no guide channels yet. Add an EPG URL to the playlist, then reload the EPG.",
+  "liveCustomEpgHint": "The channel uses the chosen guide channel's programmes. Reset goes back to the automatic match."
+}

@@ -1,0 +1,193 @@
+{
+  "playerBack": "Back",
+  "playerPlay": "Play",
+  "playerPause": "Pause",
+  "playerSwitchPlayer": "Switch player",
+  "playerAudio": "Audio",
+  "playerSubtitles": "Subtitles",
+  "playerPicture": "Picture",
+  "playerSpeed": "Speed",
+  "playerMore": "More",
+  "playerInfo": "Info",
+  "playerInfoHint": "↓ for info",
+  "playerOptionsHint": "↑ for options",
+  "playerLiveHint": "Enter for options  ·  ↑ ↓ change channel",
+  "playerProfileAuto": "Auto",
+  "playerProfileHardware": "MPV · Hardware ({api})",
+  "@playerProfileHardware": {
+    "placeholders": {
+      "api": {
+        "type": "String"
+      }
+    }
+  },
+  "playerProfileSoftware": "MPV · Software",
+  "playerProfileLowLatency": "MPV · Low latency",
+  "playerSwitchedTo": "Player: {name}",
+  "@playerSwitchedTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "playerNoAudioTracks": "No audio tracks",
+  "playerAudioDelay": "Audio delay",
+  "playerSubtitlesDisabled": "Disabled",
+  "playerExternalSubtitles": "External subtitles",
+  "playerLoadSubtitleFile": "Load from file…",
+  "playerSubtitleLoaded": "Subtitle loaded",
+  "playerSubtitleDelay": "Subtitle delay",
+  "playerSubtitleSize": "Subtitle size",
+  "playerSizeSmall": "Small",
+  "playerSizeMedium": "Medium",
+  "playerSizeLarge": "Large",
+  "playerTrackNumber": "Track {number}",
+  "@playerTrackNumber": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "playerExternalTrack": "External",
+  "playerAspectRatio": "Aspect ratio",
+  "playerAspectAuto": "Auto",
+  "playerAspectFill": "Fill",
+  "playerAspectCrop": "Crop",
+  "playerDeinterlace": "Deinterlace",
+  "playerDeinterlaceAuto": "Auto",
+  "playerDeinterlaceOn": "On",
+  "playerDeinterlaceOff": "Off",
+  "playerSpeedNormal": "Normal",
+  "playerOptions": "Options",
+  "playerStatistics": "Statistics",
+  "playerFullscreen": "Full screen",
+  "playerExitFullscreen": "Exit full screen",
+  "playerSeconds": "{value} s",
+  "@playerSeconds": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "playerDelayOsd": "{label}: {value}",
+  "@playerDelayOsd": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "playerResumeTitle": "Continue watching",
+  "playerResumeFrom": "Resume from {time}",
+  "@playerResumeFrom": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "playerFromBeginning": "From the beginning",
+  "playerNextEpisode": "Next episode",
+  "playerNextEpisodeIn": "Playing in {seconds}",
+  "@playerNextEpisodeIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "playerPlayNow": "Play now",
+  "playerSkipIntro": "Skip intro",
+  "playerNoEpg": "No programme information",
+  "playerNextLabel": "Next:",
+  "playerMinutesLeft": "{minutes} min left",
+  "@playerMinutesLeft": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "playerActionQuestion": "What do you need to do?",
+  "playerActionFullGuide": "Full TV Guide (change channel)",
+  "playerActionMiniGuide": "Mini TV Guide (change channel)",
+  "playerActionAddChannel": "Add channel (multi-channel)",
+  "playerOpenGuide": "Open TV Guide",
+  "playerNoChannelNumber": "No channel with number {number}",
+  "@playerNoChannelNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "playerArchive": "TV Archive",
+  "playerErrorTitle": "Can't play this stream",
+  "playerErrorHttp401": "Access denied (HTTP 401). Check the playlist username and password.",
+  "playerErrorHttp403": "Access forbidden (HTTP 403). The provider refused the stream; the connection limit may be reached.",
+  "playerErrorHttp404": "Stream not found (HTTP 404).",
+  "playerErrorHttpServer": "Server error (HTTP {status}). Try again later.",
+  "@playerErrorHttpServer": {
+    "placeholders": {
+      "status": {
+        "type": "int"
+      }
+    }
+  },
+  "playerErrorHttpStatus": "The server rejected the request (HTTP {status}).",
+  "@playerErrorHttpStatus": {
+    "placeholders": {
+      "status": {
+        "type": "int"
+      }
+    }
+  },
+  "playerErrorHttp": "The server rejected the request.",
+  "playerErrorNetwork": "Network error. Check your internet connection.",
+  "playerErrorTimeout": "The server did not respond in time.",
+  "playerErrorEnded": "The stream ended.",
+  "playerErrorCodec": "This video format is not supported.",
+  "playerErrorUnknown": "Playback failed.",
+  "playerErrorNotFound": "This item is no longer in the playlist.",
+  "playerErrorNoCatchup": "This channel has no TV archive for this programme.",
+  "playerErrorUnsupported": "This channel is DRM-protected and can't be played.",
+  "playerErrorCredentials": "The playlist password is missing. Edit the playlist and enter it again.",
+  "playerErrorNoUrl": "This entry has no stream address.",
+  "playerErrorPlaylistGone": "The playlist no longer exists.",
+  "playerReconnecting": "Reconnecting… ({attempt}/{total})",
+  "@playerReconnecting": {
+    "placeholders": {
+      "attempt": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "playerMuted": "Muted",
+  "playerVolume": "Volume",
+  "playerStatsProfile": "Player",
+  "playerStatsDecoder": "Decoder",
+  "playerStatsResolution": "Resolution",
+  "playerStatsFps": "Frame rate",
+  "playerStatsVideo": "Video codec",
+  "playerStatsAudio": "Audio",
+  "playerStatsCache": "Cache",
+  "playerStatsBuffering": "Buffering",
+  "playerStatsDropped": "Dropped frames",
+  "playerStatsBitrate": "Bitrate",
+  "playerStatsDeinterlace": "Deinterlacing",
+  "playerStatsFallback": "Hardware fallback",
+  "playerStatsPosition": "Position",
+  "playerStatsSource": "Source",
+  "playerStatsHint": "Ctrl+Shift+D to close",
+  "playerGuideHint": "↑ ↓ choose  ·  Enter watch  ·  Esc close",
+  "playerNoChannels": "No channels in this category."
+}

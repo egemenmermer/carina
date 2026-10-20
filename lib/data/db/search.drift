@@ -1,0 +1,24 @@
+-- Full-text search over titles. `normalized` is produced in Dart by
+-- normalizeForSearch() (lowercase, Turkish-aware diacritics folding, quality
+-- tokens removed). kind: movie | series | channel | person.
+-- ref_id is the provider id of the referenced item (for person rows: the
+-- person name; title holds the display name).
+CREATE VIRTUAL TABLE search_index USING fts5(
+  normalized,
+  title UNINDEXED,
+  kind UNINDEXED,
+  ref_id UNINDEXED,
+  playlist_id UNINDEXED,
+  tokenize = 'unicode61 remove_diacritics 2',
+  prefix = '2 3'
+);
+
+-- Programme titles for "Live TV search" (current and upcoming window only;
+-- rebuilt on every EPG import).
+CREATE VIRTUAL TABLE programme_search USING fts5(
+  normalized,
+  programme_id UNINDEXED,
+  playlist_id UNINDEXED,
+  tokenize = 'unicode61 remove_diacritics 2',
+  prefix = '2 3'
+);

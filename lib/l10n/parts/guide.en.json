@@ -1,0 +1,57 @@
+{
+  "guideToday": "Today",
+  "guideYesterday": "Yesterday",
+  "guideTomorrow": "Tomorrow",
+  "guideNow": "Now",
+  "guideJumpToNow": "Jump to the current time",
+  "guideChooseDay": "Choose a day",
+  "guideNoEpg": "No EPG data available",
+  "guideNoEpgHint": "This playlist has no TV guide data yet. Reload the EPG in Settings → TV Live & TV Guide.",
+  "guideDurationMinutes": "{minutes} min",
+  "@guideDurationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "guideNoChannels": "No channels in this category",
+  "guideNoChannelsHint": "Pick another category with the red menu button.",
+  "guideLoadError": "The TV guide couldn't be loaded.",
+  "guidePreviewHidden": "Video preview hidden",
+  "guidePreviewLocked": "Locked channel",
+  "guideWatchLive": "Watch live",
+  "guidePlayFromStart": "Play from start",
+  "guideRemindMe": "Remind me",
+  "guideReminderSet": "Reminder set",
+  "guideReminderNote": "Carina must be running to remind you.",
+  "guideOnAir": "ON AIR",
+  "guideCategoryLabel": "Category",
+  "guideEpisodeLabel": "Episode",
+  "guideRatingLabel": "Rating",
+  "guideNoDescription": "No description for this programme.",
+  "guideProgrammeNotFound": "This programme is no longer in the guide.",
+  "guideNotInArchive": "This programme isn't available in the TV archive.",
+  "guideArchiveTitle": "TV ARCHIVE • CATCH-UP",
+  "guideArchiveOnAir": "{time} – ON AIR",
+  "@guideArchiveOnAir": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "guideArchiveUnavailable": "This channel has no TV archive.",
+  "guideArchiveEmpty": "No archived programmes yet.",
+  "guideCloseGuide": "Close guide",
+  "guideMiniCategoryHint": "← → Categories",
+  "guideMiniNext": "Next: {title}",
+  "@guideMiniNext": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "guideMiniEmpty": "No channels in this category"
+}

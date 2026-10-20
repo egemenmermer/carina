@@ -1,0 +1,399 @@
+{
+  "playlistsAddPlaylist": "Add playlist",
+  "playlistsDownloads": "Downloads",
+  "playlistsSettings": "Settings",
+  "playlistsAbout": "About",
+  "playlistsEmptyTitle": "Add your first playlist",
+  "playlistsEmptyMessage": "Carina plays Xtream Codes and M3U playlists. Keep the details from your provider at hand.",
+  "playlistsLoadError": "Your playlists could not be loaded.",
+  "playlistsMoreActions": "More actions",
+  "playlistsUpdatingPercent": "Updating {percent}%",
+  "@playlistsUpdatingPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "playlistsProtected": "Protected with a PIN",
+  "playlistsMenuChooseAvatar": "Choose Avatar",
+  "playlistsMenuDetails": "Playlist details",
+  "playlistsMenuForceReload": "Force reload",
+  "playlistsMenuSetPin": "Set Playlist Access PIN",
+  "playlistsMenuRemovePin": "Remove PIN",
+  "playlistsMenuForceReloadEpg": "Force reload EPG",
+  "playlistsMenuEdit": "Edit",
+  "playlistsMenuOpenSettings": "Open playlist's settings",
+  "playlistsMenuRemove": "Remove",
+  "playlistsRemoveTitle": "Remove “{name}”?",
+  "@playlistsRemoveTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsRemoveMessage": "Its channels, favorites, watch history and settings will be deleted from this computer. Your subscription is not affected.",
+  "playlistsRemoved": "Playlist removed",
+  "playlistsNotFound": "This playlist no longer exists.",
+  "playlistsNoGuideTitle": "No guide to reload",
+  "playlistsNoGuideMessage": "This playlist has no EPG URL, or its guide is turned off. You can add one with Edit.",
+  "playlistsPinEnterTitle": "Enter PIN",
+  "playlistsPinProtectedSubtitle": "{name} is protected",
+  "@playlistsPinProtectedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsPinSetTitle": "Set an access PIN",
+  "playlistsPinSetSubtitle": "4 digits to open {name}",
+  "@playlistsPinSetSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsPinConfirmTitle": "Enter the PIN again",
+  "playlistsPinSet": "Access PIN set",
+  "playlistsPinRemoved": "Access PIN removed",
+  "playlistsPinCurrentTitle": "Enter the current PIN",
+  "playlistsChooseAvatarTitle": "Choose Avatar",
+  "playlistsAvatarUpdated": "Avatar updated",
+  "playlistsAvatarCurrent": "Current avatar",
+  "playlistsDetailsTitle": "Playlist details",
+  "playlistsDetailsLive": "Live channels",
+  "playlistsDetailsMovies": "Movies",
+  "playlistsDetailsSeries": "Series",
+  "playlistsDetailsProgrammes": "Programmes",
+  "playlistsDetailsSource": "Source",
+  "playlistsDetailsType": "Type",
+  "playlistsDetailsServer": "Server",
+  "playlistsDetailsUsername": "Username",
+  "playlistsDetailsPlaylistUrl": "Playlist URL",
+  "playlistsDetailsFile": "File",
+  "playlistsDetailsAccount": "Account",
+  "playlistsDetailsStatus": "Status",
+  "playlistsDetailsExpires": "Expires",
+  "playlistsDetailsNever": "Never",
+  "playlistsDetailsMaxConnections": "Max connections",
+  "playlistsDetailsActiveConnections": "Active connections",
+  "playlistsDetailsTrial": "Trial account",
+  "playlistsDetailsCreated": "Created",
+  "playlistsDetailsUpdates": "Updates",
+  "playlistsDetailsLastReload": "Last reload",
+  "playlistsDetailsLastEpgReload": "Last guide update",
+  "playlistsDetailsNotYet": "Not yet",
+  "playlistsDetailsReloadFrequency": "Reload frequency",
+  "playlistsDetailsEpgShift": "EPG time shift",
+  "playlistsDetailsGuide": "Guide",
+  "playlistsDetailsGuideProvider": "Provider guide",
+  "playlistsDetailsGuideHeader": "From the playlist",
+  "playlistsDetailsGuideCustom": "Custom URL",
+  "playlistsDetailsGuideOff": "Off",
+  "playlistsDetailsNoAccount": "Account details appear after the first import.",
+  "playlistsDetailsUserAgent": "User-Agent",
+  "playlistsDetailsDateTime": "{date} at {time}",
+  "@playlistsDetailsDateTime": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsShowUsername": "Show username",
+  "playlistsHideUsername": "Hide username",
+  "playlistsShiftHours": "{value} h",
+  "@playlistsShiftHours": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsTypeXtream": "Xtream (Recommended)",
+  "playlistsTypeM3u": "M3U playlist via URL",
+  "playlistsTypeM3uFile": "M3U file",
+  "playlistsSourceHint": "Xtream credentials  |  Complete M3U URL  |  Local .m3u file",
+  "playlistsStepLabel": "{number} / {title}",
+  "@playlistsStepLabel": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsStepSource": "Choose a source",
+  "playlistsStepSourceHint": "Use the details you received",
+  "playlistsStepName": "Name your playlist",
+  "playlistsStepNameHint": "A name you can recognize",
+  "playlistsStepServer": "Server address",
+  "playlistsStepServerHint": "Include the scheme and port",
+  "playlistsStepUsername": "Username",
+  "playlistsStepUsernameHint": "Copy it carefully and keep it private",
+  "playlistsStepPassword": "Password",
+  "playlistsStepPasswordHint": "Stored securely on this computer",
+  "playlistsStepEpg": "EPG URL",
+  "playlistsStepEpgHintXtream": "Leave it empty to use your provider's guide",
+  "playlistsStepEpgHintM3u": "Filled in from the playlist when it has one",
+  "playlistsStepShift": "EPG time shift",
+  "playlistsStepShiftHint": "Start at zero; change it only if the times are off",
+  "playlistsStepReload": "Reload frequency",
+  "playlistsStepReloadHint": "How often Carina refreshes the playlist",
+  "playlistsStepPlaylistUrl": "Playlist URL",
+  "playlistsStepPlaylistUrlHint": "The complete M3U link from your provider",
+  "playlistsStepFile": "Playlist file",
+  "playlistsStepFileHint": "A .m3u or .m3u8 file on this computer",
+  "playlistsStepUserAgent": "Custom User-Agent",
+  "playlistsStepUserAgentHint": "Optional; only if your provider asks for one",
+  "playlistsStepSave": "Save",
+  "playlistsStepSaveHintNew": "Then the import starts",
+  "playlistsStepSaveHintEdit": "Changing the source reloads the playlist",
+  "playlistsFieldName": "Playlist name",
+  "playlistsFieldServer": "Server (i.e. https://domain.com:port)",
+  "playlistsFieldUsername": "Your username",
+  "playlistsFieldPassword": "Your password",
+  "playlistsFieldEpgDefault": "EPG URL · Default: provider guide",
+  "playlistsFieldEpgM3u": "EPG URL (XMLTV)",
+  "playlistsFieldEpgOff": "Guide disabled",
+  "playlistsFieldPlaylistUrl": "Playlist URL (http://…/playlist.m3u)",
+  "playlistsFieldUserAgent": "Custom User-Agent (optional)",
+  "playlistsFieldShift": "EPG time shift (in hours)",
+  "playlistsFieldReload": "Reload frequency",
+  "playlistsFieldFile": "Choose a .m3u or .m3u8 file",
+  "playlistsChooseFile": "Choose file…",
+  "playlistsDisableGuide": "Disable guide",
+  "playlistsEnableGuide": "Enable guide",
+  "playlistsReloadNever": "Never",
+  "playlistsReload12h": "12 Hours",
+  "playlistsReload1d": "1 Day",
+  "playlistsReload3d": "3 Days",
+  "playlistsReload1w": "1 Week",
+  "playlistsReloadHours": "{hours} Hours",
+  "@playlistsReloadHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "playlistsShiftChooserDescription": "Move the guide's times when they don't match your clock. For example, if programmes always start an hour later than the guide says, choose +1.",
+  "playlistsReloadChooserDescription": "When you open the playlist and this much time has passed, Carina refreshes it in the background.",
+  "playlistsFilePickerTitle": "Choose an M3U playlist",
+  "playlistsErrorName": "Enter a name",
+  "playlistsErrorServer": "Enter the server address",
+  "playlistsErrorServerScheme": "Start with http:// or https://",
+  "playlistsErrorServerPort": "Include the port, e.g. :8080 (use :80 if your provider gave none)",
+  "playlistsErrorServerInvalid": "This is not a valid server address",
+  "playlistsErrorUsername": "Enter your username",
+  "playlistsErrorPassword": "Enter your password",
+  "playlistsErrorUrl": "Enter the playlist URL",
+  "playlistsErrorUrlInvalid": "Enter a complete http:// or https:// link",
+  "playlistsErrorFile": "Choose a playlist file",
+  "playlistsErrorEpgInvalid": "Enter a complete http:// or https:// link, or leave it empty",
+  "playlistsSaveFailed": "The playlist could not be saved.",
+  "playlistsSaved": "Playlist saved",
+  "playlistsCheckServerReachable": "Server reachable",
+  "playlistsCheckAccountActive": "account active",
+  "playlistsCheckTrial": "trial",
+  "playlistsCheckExpires": "expires {date}",
+  "@playlistsCheckExpires": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsCheckNoExpiry": "no expiry date",
+  "playlistsCheckConnections": "{count, plural, =1{1 connection} other{{count} connections}}",
+  "@playlistsCheckConnections": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "playlistsCheckAccountInactive": "Account {status}",
+  "@playlistsCheckAccountInactive": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsCheckAccountExpired": "Account expired",
+  "playlistsCheckAccountBanned": "Account banned",
+  "playlistsCheckAccountDisabled": "Account disabled",
+  "playlistsStatusActive": "Active",
+  "playlistsStatusExpired": "Expired",
+  "playlistsStatusBanned": "Banned",
+  "playlistsStatusDisabled": "Disabled",
+  "playlistsCheckEnded": "ended {date}",
+  "@playlistsCheckEnded": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsCheckUnreachable": "Unreachable: check the address and your connection",
+  "playlistsCheckTimeout": "No answer from the server (timed out)",
+  "playlistsCheckUnauthorized": "Wrong username or password (401)",
+  "playlistsCheckForbidden": "Access denied (403)",
+  "playlistsCheckNotFound": "Not found (404): check the address",
+  "playlistsCheckHttp": "The server answered with an error (HTTP {code})",
+  "@playlistsCheckHttp": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsCheckEmpty": "The server sent an empty response",
+  "playlistsCheckNotXtream": "This doesn't look like an Xtream server",
+  "playlistsCheckNotM3u": "This is not an M3U playlist",
+  "playlistsCheckNotXml": "This is not an XMLTV guide",
+  "playlistsCheckPlaylistOk": "Playlist reachable · M3U",
+  "playlistsCheckPlaylistOkGuide": "Playlist reachable · M3U · guide link found",
+  "playlistsCheckGuideOk": "Guide reachable · XMLTV",
+  "playlistsCheckGuideOkGzip": "Guide reachable · XMLTV (compressed)",
+  "playlistsCheckGuideFromPlaylist": "Filled in from the playlist",
+  "playlistsCheckFileOk": "File ready · M3U",
+  "playlistsCheckFileMissing": "File not found",
+  "playlistsXtreamDetected": "This is an Xtream link. Xtream gives richer data (archive, account details).",
+  "playlistsSwitchToXtream": "Switch to Xtream",
+  "playlistsXtreamFilled": "Server, username and password filled in from the link",
+  "playlistsImportTitleNew": "Importing {name}",
+  "@playlistsImportTitleNew": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsImportTitleReload": "Updating {name}",
+  "@playlistsImportTitleReload": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsImportTitleEpg": "Updating the guide of {name}",
+  "@playlistsImportTitleEpg": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsImportStepConnecting": "Connecting",
+  "playlistsImportStepLiveCategories": "Live categories",
+  "playlistsImportStepLiveChannels": "Live channels",
+  "playlistsImportStepMovies": "Movies",
+  "playlistsImportStepSeries": "Series",
+  "playlistsImportStepEpgCleaning": "EPG: Cleaning programs",
+  "playlistsImportStepEpgDownloading": "EPG: Downloading",
+  "playlistsImportStepEpgParsing": "EPG: Parsing",
+  "playlistsImportStepCompleted": "Completed",
+  "playlistsImportProgrammes": "{count} programmes",
+  "@playlistsImportProgrammes": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsImportRemoved": "{count} removed",
+  "@playlistsImportRemoved": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsImportBytesOf": "{received} of {total}",
+  "@playlistsImportBytesOf": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsImportFailed": "Failed",
+  "playlistsImportGuideFailed": "Guide failed",
+  "playlistsImportCancelledStep": "Cancelled",
+  "playlistsImportCancelHint": "Press Esc to cancel",
+  "playlistsImportCancelling": "Cancelling…",
+  "playlistsImportCancelledToast": "Import cancelled",
+  "playlistsImportDone": "Playlist updated",
+  "playlistsImportReady": "Playlist ready",
+  "playlistsImportErrorTitle": "The playlist could not be imported",
+  "playlistsImportErrorUnreachable": "Carina couldn't reach the server. Check the address, the port and your internet connection.",
+  "playlistsImportErrorTimeout": "The server didn't answer in time. It may be busy; try again later.",
+  "playlistsImportErrorUnauthorized": "The server refused the username or password.",
+  "playlistsImportErrorForbidden": "The server denied access (403). Your provider may block this device or connection.",
+  "playlistsImportErrorInactive": "The provider reports the account as {status}.",
+  "@playlistsImportErrorInactive": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsImportErrorNotFound": "The address was not found (404). Check the link.",
+  "playlistsImportErrorHttp": "The server answered with an error (HTTP {code}).",
+  "@playlistsImportErrorHttp": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsImportErrorEmpty": "The server sent an empty response. The link may be incomplete, or your provider is having trouble.",
+  "playlistsImportErrorUnparseable": "The response could not be read as a playlist. The link may lead to a web page instead.",
+  "playlistsImportErrorGeneric": "Something went wrong while importing.",
+  "playlistsImportCheckNote": "A green check during setup only means the server answered; it can't guarantee the import.",
+  "playlistsImportEmptyTitle": "Imported, but some sections are empty",
+  "playlistsImportEmptyMessage": "Nothing was found in: {sections}. Your subscription may not include them.",
+  "@playlistsImportEmptyMessage": {
+    "placeholders": {
+      "sections": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsImportEpgFailedTitle": "The guide could not be loaded",
+  "playlistsImportEpgFailedMessage": "Channels, movies and series were imported and are ready. {reason}",
+  "@playlistsImportEpgFailedMessage": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsImportEpgReasonUnreachable": "The guide server could not be reached.",
+  "playlistsImportEpgReasonEmpty": "The guide file was empty.",
+  "playlistsImportEpgReasonInvalid": "The guide file is not valid XMLTV.",
+  "playlistsImportEpgReasonHttp": "The guide server answered with an error (HTTP {code}).",
+  "@playlistsImportEpgReasonHttp": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "playlistsImportEpgReasonGeneric": "Try Force reload EPG later.",
+  "playlistsEditPlaylist": "Edit playlist"
+}

@@ -1,0 +1,37 @@
+{
+  "shellMovies": "Movies",
+  "shellShows": "Shows",
+  "shellLive": "TV Live",
+  "shellGuide": "TV Guide",
+  "shellSearch": "Search",
+  "shellSettings": "Settings",
+  "shellSwitchPlaylist": "Switch playlist",
+  "shellPlaylistManager": "Playlist Manager",
+  "shellCategories": "Categories",
+  "shellReloading": "Updating {percent}%",
+  "@shellReloading": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "shellReloadingEpg": "Updating guide",
+  "shellNoSections": "This playlist has nothing to show yet.",
+  "shellFullscreenHint": "Press F11 to leave full screen",
+  "shellSorting": "Sorting",
+  "shellCategoriesHeader": "Categories",
+  "shellCategoriesOrder": "Categories Order",
+  "shellChannelsOrder": "Channels Order",
+  "shellOrderPlaylist": "Playlist",
+  "shellOrderName": "Name",
+  "shellOrderCustom": "Custom",
+  "shellOrderNumber": "Number",
+  "shellOrderDate": "Date",
+  "shellFavorites": "Favorites",
+  "shellLastWatched": "Last watched",
+  "shellRecentlyAdded": "Recently added",
+  "shellAllChannels": "All",
+  "shellNoCategories": "No categories in this playlist.",
+  "shellHome": "Home"
+}

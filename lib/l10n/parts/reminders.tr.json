@@ -1,0 +1,10 @@
+{
+  "remindersSet": "Hatırlatıcı kuruldu — bildirim için Carina açık kalmalı",
+  "remindersRemoved": "Hatırlatıcı kaldırıldı",
+  "remindersAlreadyStarted": "Bu program zaten başladı",
+  "remindersNotFound": "Bu program artık rehberde yok",
+  "remindersStartsAt": "{channel} · başlangıç {time}",
+  "remindersOnAirNow": "{channel} · şimdi yayında",
+  "remindersWatchNow": "Şimdi izle",
+  "remindersDismiss": "Kapat"
+}

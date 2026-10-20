@@ -1,0 +1,268 @@
+name: windows
+
+on:
+  push:
+  workflow_dispatch:
+
+concurrency:
+  group: windows-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  FLUTTER_VERSION: 3.47.7
+  MOCK_URL: http://127.0.0.1:8787
+  RELEASE_DIR: build\windows\x64\runner\Release
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      # pubspec "version: 1.0.0+1" -> CARINA_VERSION=1.0.0 for every later step.
+      - name: Read version from pubspec.yaml
+        run: |
+          $m = Select-String -Path pubspec.yaml -Pattern '^version:\s*(\d+\.\d+\.\d+)' | Select-Object -First 1
+          if (-not $m) { throw "pubspec.yaml has no 'version: x.y.z' line" }
+          $version = $m.Matches[0].Groups[1].Value
+          "CARINA_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          Write-Host "Carina $version, build ${{ github.run_number }}"
+
+      - name: Flutter pub get
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $true
+          flutter config --enable-windows-desktop --no-analytics
+          flutter --version
+          flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Unit tests
+        run: |
+          $tests = @(Get-ChildItem test -Recurse -Filter '*_test.dart' -ErrorAction SilentlyContinue)
+          if ($tests.Count -eq 0) { Write-Host 'No tests under test/ yet.'; exit 0 }
+          Write-Host "$($tests.Count) test files"
+          flutter test
+
+      - name: Install ffmpeg
+        run: |
+          if (Get-Command ffmpeg -ErrorAction SilentlyContinue) {
+            Write-Host 'ffmpeg is already installed.'
+          } else {
+            choco install ffmpeg -y --no-progress
+            if ($LASTEXITCODE -ne 0) { throw "choco install ffmpeg failed ($LASTEXITCODE)" }
+          }
+          $versionLines = @(ffmpeg -hide_banner -version)
+          Write-Host $versionLines[0]
+
+      # Uses tools/gen_media.sh as soon as it exists on the branch. The M0 probe
+      # file is generated inline whenever the script did not produce it.
+      - name: Generate test media
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="/c/ProgramData/chocolatey/bin:$PATH"
+          mkdir -p tools/mock_server/media
+          if [[ -f tools/gen_media.sh ]]; then
+            bash tools/gen_media.sh --quick
+          else
+            echo "tools/gen_media.sh is not on this commit yet; generating the M0 probe file only."
+          fi
+          probe=tools/mock_server/media/m0_check_ac3.ts
+          if [[ ! -f "$probe" ]]; then
+            ffmpeg -hide_banner -loglevel error -y \
+              -f lavfi -i "testsrc2=size=1280x720:rate=25" \
+              -f lavfi -i "sine=frequency=440:sample_rate=48000" \
+              -t 10 -map 0:v -map 1:a -c:v libx264 -preset ultrafast -pix_fmt yuv420p \
+              -c:a ac3 -ac 6 -b:a 384k -f mpegts "$probe"
+          fi
+          ls -la tools/mock_server/media
+
+      # Keeps running in the background for the rest of the job (smoke,
+      # integration, capture); output in mock-server.log.
+      - name: Start mock server
+        if: hashFiles('tools/mock_server/bin/mock_server.dart') != ''
+        run: |
+          & tools/ci/mock_server.ps1 -Start -Url $env:MOCK_URL -Port 8787 -Scale small `
+            -Media tools/mock_server/media -TimeoutSec 60
+
+      - name: Build Windows release
+        run: flutter build windows --release --build-name $env:CARINA_VERSION --build-number ${{ github.run_number }}
+
+      # M0 check: plays the AC-3 TS and asserts mpv decoded AC-3. Skipped once
+      # the app no longer has a --probe mode.
+      - name: M0 playback probe
+        run: |
+          $hasProbe = Get-ChildItem lib -Recurse -Filter *.dart | Select-String -SimpleMatch "'--probe'" -List
+          if (-not $hasProbe) { Write-Host 'The app has no --probe mode any more; skipping.'; exit 0 }
+          $exe = "$env:RELEASE_DIR\carina.exe"
+          $media = (Resolve-Path "tools\mock_server\media\m0_check_ac3.ts").Path
+          $out = Join-Path $PWD "m0-probe.json"
+          $p = Start-Process -FilePath $exe -ArgumentList @("--probe", "--media", "`"$media`"", "--probe-out", "`"$out`"") -PassThru
+          if (-not $p.WaitForExit(60000)) { $p.Kill(); throw "probe timed out" }
+          if (-not (Test-Path $out)) { throw "probe did not write $out" }
+          Get-Content $out
+          $j = Get-Content $out | ConvertFrom-Json
+          if ($j.'audio-codec-name' -ne 'ac3') { throw "audio codec was $($j.'audio-codec-name')" }
+
+      # --- Activate automatically once the code lands -------------------------
+
+      - name: Smoke test
+        if: hashFiles('lib/app/smoke/smoke_runner.dart') != ''
+        timeout-minutes: 10
+        run: |
+          & tools/ci/mock_server.ps1 -Check -Url $env:MOCK_URL
+          $out = Join-Path $PWD 'smoke-result.json'
+          & tools/ci/run_app.ps1 -Exe "$env:RELEASE_DIR\carina.exe" -TimeoutSec 480 `
+            -Arguments '--smoke-test', '--mock-url', $env:MOCK_URL, '--smoke-out', $out
+          $code = $LASTEXITCODE
+          if (Test-Path $out) { Get-Content $out }
+          if ($code -ne 0) { throw "Smoke test failed (exit code $code)" }
+          if (-not (Test-Path $out)) { throw 'Smoke test did not write smoke-result.json' }
+
+      - name: Integration tests
+        if: hashFiles('integration_test/**/*_test.dart') != ''
+        timeout-minutes: 20
+        run: flutter test integration_test -d windows
+
+      - name: Capture mode
+        if: hashFiles('lib/app/capture/capture_runner.dart') != ''
+        timeout-minutes: 10
+        run: |
+          & tools/ci/mock_server.ps1 -Check -Url $env:MOCK_URL
+          $out = Join-Path $PWD 'capture-out'
+          & tools/ci/run_app.ps1 -Exe "$env:RELEASE_DIR\carina.exe" -TimeoutSec 480 `
+            -Arguments '--capture', $out, '--mock-url', $env:MOCK_URL
+          if ($LASTEXITCODE -ne 0) { throw "Capture mode failed (exit code $LASTEXITCODE)" }
+          Get-ChildItem $out -Recurse -File | Format-Table Length, FullName -AutoSize
+
+      # --- Always ----------------------------------------------------------------
+
+      # Real desktop screenshot of the app started normally (no flags), plus
+      # the icon Windows extracts from carina.exe. Also runs after a failed
+      # smoke/integration/capture step, to help diagnose it.
+      - name: Desktop screenshot
+        if: ${{ !cancelled() && hashFiles('build/windows/x64/runner/Release/carina.exe') != '' }}
+        timeout-minutes: 5
+        run: |
+          & tools/ci/desktop_screenshot.ps1 -Exe "$env:RELEASE_DIR\carina.exe" -OutFile desktop.png -WaitSec 10
+          Add-Type -AssemblyName System.Drawing
+          $exe = (Resolve-Path "$env:RELEASE_DIR\carina.exe").Path
+          $icon = $null
+          try { $icon = [System.Drawing.Icon]::ExtractIcon($exe, 0, 256) } catch { }
+          if (-not $icon) { $icon = [System.Drawing.Icon]::ExtractAssociatedIcon($exe) }
+          $icon.ToBitmap().Save((Join-Path $PWD 'exe-icon.png'), [System.Drawing.Imaging.ImageFormat]::Png)
+          Write-Host "carina.exe icon: $($icon.Width)x$($icon.Height)"
+
+      - name: Upload screenshots-windows
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: screenshots-windows
+          path: |
+            desktop.png
+            exe-icon.png
+            capture-out/
+          if-no-files-found: warn
+
+      - name: Package portable zip
+        run: |
+          $release = (Resolve-Path $env:RELEASE_DIR).Path
+          Get-ChildItem $release -Recurse -File | Sort-Object FullName |
+            ForEach-Object { '{0,12:N0}  {1}' -f $_.Length, $_.FullName.Substring($release.Length + 1) }
+          $stage = Join-Path $env:RUNNER_TEMP 'carina-portable'
+          if (Test-Path $stage) { Remove-Item $stage -Recurse -Force }
+          New-Item -ItemType Directory -Path $stage | Out-Null
+          Copy-Item -Path $release -Destination (Join-Path $stage 'Carina') -Recurse
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          $zip = Join-Path $PWD "dist\Carina-$env:CARINA_VERSION-win-x64-portable.zip"
+          if (Test-Path $zip) { Remove-Item $zip }
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          [System.IO.Compression.ZipFile]::CreateFromDirectory((Join-Path $stage 'Carina'), $zip, [System.IO.Compression.CompressionLevel]::Optimal, $true)
+          $archive = [System.IO.Compression.ZipFile]::OpenRead($zip)
+          try {
+            $outside = @($archive.Entries | Where-Object { -not $_.FullName.StartsWith('Carina/') })
+            if ($outside.Count -gt 0) { throw "Zip entries outside Carina/: $($outside[0].FullName)" }
+            if (-not ($archive.Entries | Where-Object FullName -eq 'Carina/carina.exe')) { throw 'Carina/carina.exe missing from the zip' }
+            Write-Host "$($archive.Entries.Count) entries under Carina/"
+          } finally { $archive.Dispose() }
+          Write-Host "$zip : $((Get-Item $zip).Length) bytes"
+
+      - name: Build installer (Inno Setup)
+        run: |
+          $iscc = @("${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe", "$env:ProgramFiles\Inno Setup 6\ISCC.exe") |
+            Where-Object { Test-Path $_ } | Select-Object -First 1
+          if (-not $iscc) { $iscc = (Get-Command iscc.exe -ErrorAction SilentlyContinue).Source }
+          if (-not $iscc) {
+            choco install innosetup -y --no-progress
+            if ($LASTEXITCODE -ne 0) { throw "choco install innosetup failed ($LASTEXITCODE)" }
+            $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          }
+          Write-Host "ISCC: $iscc"
+          & $iscc "/DMyAppVersion=$env:CARINA_VERSION" installer\carina.iss
+          if ($LASTEXITCODE -ne 0) { throw "ISCC failed ($LASTEXITCODE)" }
+
+      - name: Checksums and size check
+        run: |
+          $setup = Get-Item "dist\Carina-Setup-$env:CARINA_VERSION-x64.exe"
+          $zip = Get-Item "dist\Carina-$env:CARINA_VERSION-win-x64-portable.zip"
+          if ($setup.Length -lt 10MB) { throw "Installer is only $($setup.Length) bytes" }
+          if ($zip.Length -lt 20MB) { throw "Portable zip is only $($zip.Length) bytes" }
+          $lines = foreach ($f in @($setup, $zip)) {
+            '{0}  {1}' -f (Get-FileHash $f.FullName -Algorithm SHA256).Hash.ToLowerInvariant(), $f.Name
+          }
+          [System.IO.File]::WriteAllText((Join-Path $PWD 'dist\SHA256SUMS.txt'), (($lines -join "`n") + "`n"))
+          Get-Content dist\SHA256SUMS.txt
+          Get-ChildItem dist | Format-Table Name, Length -AutoSize
+
+      - name: Upload carina-windows
+        uses: actions/upload-artifact@v6
+        with:
+          name: carina-windows
+          path: dist/
+          if-no-files-found: error
+          compression-level: 0
+
+      # Silent per-user install, checks (files, shortcut AppUserModelID,
+      # uninstall entry, toast registration), then silent uninstall.
+      - name: Installer install/uninstall test
+        timeout-minutes: 5
+        run: |
+          & tools/ci/test_installer.ps1 -Installer "dist\Carina-Setup-$env:CARINA_VERSION-x64.exe" `
+            -ExpectedVersion $env:CARINA_VERSION -LogDir $PWD
+          Add-Type -AssemblyName System.Drawing
+          $setup = (Resolve-Path "dist\Carina-Setup-$env:CARINA_VERSION-x64.exe").Path
+          $icon = $null
+          try { $icon = [System.Drawing.Icon]::ExtractIcon($setup, 0, 256) } catch { }
+          if (-not $icon) { $icon = [System.Drawing.Icon]::ExtractAssociatedIcon($setup) }
+          $icon.ToBitmap().Save((Join-Path $PWD 'setup-icon.png'), [System.Drawing.Imaging.ImageFormat]::Png)
+
+      - name: Upload test-results-windows
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: test-results-windows
+          path: |
+            m0-probe.json
+            smoke-result.json
+            mock-server.log
+            install.log
+            uninstall.log
+            setup-icon.png
+          if-no-files-found: ignore

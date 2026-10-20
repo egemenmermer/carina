@@ -1,0 +1,3 @@
+tags:
+  bench:
+    timeout: 10x

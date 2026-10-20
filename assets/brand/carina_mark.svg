@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Carina">
+  <!-- Carina: the keel of the Argo, Vela's sibling. Vela is the sails, Carina the hull,
+       carrying a play button, under Canopus, the star sailors steered by. -->
+  <defs>
+    <linearGradient id="carina-g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFB46B"/>
+      <stop offset="1" stop-color="#FF5E57"/>
+    </linearGradient>
+  </defs>
+  <circle cx="47" cy="18" r="3.4" fill="url(#carina-g)"/>
+  <path fill="url(#carina-g)" fill-rule="evenodd" d="M8 31H58L48.6 48.3C48 49.4 46.8 50 45.6 50H20.6C19 50 17.6 49.1 17 47.7ZM28.6 35.6v9.8c0 .8.9 1.3 1.6.9l8-4.9c.6-.4.6-1.3 0-1.7l-8-4.9c-.7-.4-1.6.1-1.6.8Z"/>
+</svg>

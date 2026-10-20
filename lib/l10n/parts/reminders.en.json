@@ -1,0 +1,27 @@
+{
+  "remindersSet": "Reminder set — keep Carina running to get it",
+  "remindersRemoved": "Reminder removed",
+  "remindersAlreadyStarted": "This programme has already started",
+  "remindersNotFound": "This programme is no longer in the guide",
+  "remindersStartsAt": "{channel} · starts at {time}",
+  "@remindersStartsAt": {
+    "placeholders": {
+      "channel": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "remindersOnAirNow": "{channel} · on air now",
+  "@remindersOnAirNow": {
+    "placeholders": {
+      "channel": {
+        "type": "String"
+      }
+    }
+  },
+  "remindersWatchNow": "Watch now",
+  "remindersDismiss": "Dismiss"
+}
