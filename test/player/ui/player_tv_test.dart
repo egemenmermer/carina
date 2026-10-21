@@ -11,6 +11,7 @@ import 'package:carina/data/repositories/repository_models.dart';
 import 'package:carina/player/player_api.dart';
 import 'package:carina/player/ui/player_menus.dart';
 import 'package:carina/player/ui/player_screen.dart';
+import 'package:carina/player/ui/widgets/player_button.dart';
 
 import 'player_test_support.dart';
 
@@ -338,6 +339,37 @@ void main() {
     await closePlayer(tester);
   });
 
+  testWidgets('live: the previous-channel button is disabled until a switch '
+      'and the D-pad reaches it', (tester) async {
+    final factory = manualFactory();
+    final player = await openTv(tester, channel(0), factory);
+    final button = find.byKey(const ValueKey('player-previous-channel'));
+    PlayerIconButton widget() => tester.widget<PlayerIconButton>(button);
+    expect(widget().onPressed, isNull);
+
+    await hideControls(tester, player);
+    await press(tester, LogicalKeyboardKey.arrowDown);
+    await settleDrift(tester, rounds: 3);
+    await tester.pump(const Duration(milliseconds: 200));
+    await settleDrift(tester, rounds: 4);
+    expect(factory.last.openedSources.last.title, ulusal[1].displayName);
+    expect(widget().onPressed, isNotNull);
+
+    // ←/→ bring the controls, ↑ reaches the buttons, ← walks to the left.
+    await press(tester, LogicalKeyboardKey.arrowRight);
+    await press(tester, LogicalKeyboardKey.arrowUp);
+    for (var i = 0; i < 8 && !_hasFocusWithin(tester, button); i++) {
+      await press(tester, LogicalKeyboardKey.arrowLeft);
+    }
+    expect(_hasFocusWithin(tester, button), isTrue);
+    await press(tester, LogicalKeyboardKey.select);
+    await settleDrift(tester, rounds: 3);
+    await tester.pump(const Duration(milliseconds: 200));
+    await settleDrift(tester, rounds: 4);
+    expect(factory.last.openedSources.last.title, ulusal[0].displayName);
+    await closePlayer(tester);
+  });
+
   testWidgets('live: the action sheet is reached with OK; the mini guide '
       'moves with ↓ and tunes with OK', (tester) async {
     final factory = manualFactory();
@@ -361,4 +393,17 @@ void main() {
     expect(focusLabel(), 'player');
     await closePlayer(tester);
   });
+}
+
+/// Whether the focused node sits inside the widget found by [finder].
+bool _hasFocusWithin(WidgetTester tester, Finder finder) {
+  final focus = FocusManager.instance.primaryFocus;
+  final context = focus?.context;
+  if (context == null) return false;
+  var inside = false;
+  context.visitAncestorElements((e) {
+    if (e == tester.element(finder)) inside = true;
+    return !inside;
+  });
+  return inside;
 }

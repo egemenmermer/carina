@@ -12,6 +12,7 @@
   "playerInfoHint": "↓ for info",
   "playerOptionsHint": "↑ for options",
   "playerLiveHint": "Enter for options  ·  ↑ ↓ change channel",
+  "playerPreviousChannel": "Previous channel",
   "playerProfileAuto": "Auto",
   "playerProfileHardware": "MPV · Hardware ({api})",
   "@playerProfileHardware": {

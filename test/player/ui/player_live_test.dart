@@ -183,6 +183,11 @@ void main() {
     expect(find.text(trtNowNext.now!.title), findsOneWidget);
     expect(find.textContaining(trtNowNext.next!.title), findsOneWidget);
     expect(find.textContaining('Next:'), findsOneWidget);
+    // Desktop has Backspace: no on-screen previous-channel button.
+    expect(
+      find.byKey(const ValueKey('player-previous-channel')),
+      findsNothing,
+    );
     await closePlayer(tester);
   });
 

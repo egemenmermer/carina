@@ -356,11 +356,19 @@ class LiveBottomBar extends StatelessWidget {
     required this.activeMenu,
     required this.onOpenMenu,
     required this.onOptions,
+    this.onPreviousChannel,
+    this.hasPreviousChannel = false,
     this.tvFocus,
   });
 
   /// The hint under the bar (opens the action sheet).
   final VoidCallback onOptions;
+
+  /// TV: the "previous channel" button before the menu buttons (the remote
+  /// has no Backspace). Null hides it; it is disabled until a channel
+  /// switch left something to go back to ([hasPreviousChannel]).
+  final VoidCallback? onPreviousChannel;
+  final bool hasPreviousChannel;
 
   /// Set on TV: the buttons and the hint get nodes.
   final PlayerBarFocus? tvFocus;
@@ -466,6 +474,15 @@ class LiveBottomBar extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 24),
+            if (onPreviousChannel != null) ...[
+              PlayerIconButton(
+                key: const ValueKey('player-previous-channel'),
+                icon: PhosphorIconsLight.arrowUUpLeft,
+                tooltip: l10n.playerPreviousChannel,
+                onPressed: hasPreviousChannel ? onPreviousChannel : null,
+              ),
+              const SizedBox(width: 12),
+            ],
             PlayerMenuButtons(
               menus: menus,
               keys: menuKeys,

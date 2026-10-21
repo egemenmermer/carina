@@ -1037,6 +1037,14 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
                                       onOpenMenu: (m) => unawaited(openMenu(m)),
                                       onOptions: () =>
                                           unawaited(_openActionSheet()),
+                                      onPreviousChannel: _tv
+                                          ? () {
+                                              unawaited(c.previousChannel());
+                                              _showControls();
+                                            }
+                                          : null,
+                                      hasPreviousChannel:
+                                          c.previousChannelId != null,
                                       tvFocus: _barFocus,
                                     )
                                   : VodBottomBar(

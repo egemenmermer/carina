@@ -645,6 +645,7 @@
   "playerPicture": "Görüntü",
   "playerPlay": "Oynat",
   "playerPlayNow": "Şimdi oynat",
+  "playerPreviousChannel": "Önceki kanal",
   "playerProfileAuto": "Otomatik",
   "playerProfileHardware": "MPV · Donanım ({api})",
   "playerProfileLowLatency": "MPV · Düşük gecikme",

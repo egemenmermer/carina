@@ -12,6 +12,7 @@
   "playerInfoHint": "Bilgi için ↓",
   "playerOptionsHint": "Seçenekler için ↑",
   "playerLiveHint": "Seçenekler için Enter  ·  Kanal değiştirmek için ↑ ↓",
+  "playerPreviousChannel": "Önceki kanal",
   "playerProfileAuto": "Otomatik",
   "playerProfileHardware": "MPV · Donanım ({api})",
   "playerProfileSoftware": "MPV · Yazılım",

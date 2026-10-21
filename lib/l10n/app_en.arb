@@ -1143,6 +1143,7 @@
   "playerPicture": "Picture",
   "playerPlay": "Play",
   "playerPlayNow": "Play now",
+  "playerPreviousChannel": "Previous channel",
   "playerProfileAuto": "Auto",
   "playerProfileHardware": "MPV · Hardware ({api})",
   "@playerProfileHardware": {
