@@ -110,6 +110,8 @@ void main() {
     final gesture = await hover(tester, const Offset(700, 400));
     expect(player.controlsVisible, isTrue);
     expect(find.text('Kış Uykusu'), findsOneWidget);
+    // Space plays / pauses on desktop: no on-screen Play / Pause button.
+    expect(find.byKey(const ValueKey('player-play-pause')), findsNothing);
     await tester.pump(const Duration(milliseconds: 2900));
     expect(player.controlsVisible, isTrue);
     await tester.pump(const Duration(milliseconds: 200));

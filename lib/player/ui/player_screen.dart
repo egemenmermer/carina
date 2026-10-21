@@ -166,6 +166,7 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
         },
         seek: FocusNode(debugLabel: 'player seek bar'),
         hint: FocusNode(debugLabel: 'player hint'),
+        playPause: FocusNode(debugLabel: 'player play pause button'),
       );
     }
     controller = PlayerController(
@@ -204,6 +205,7 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
       }
       bar.seek.dispose();
       bar.hint.dispose();
+      bar.playPause.dispose();
     }
     super.dispose();
   }
@@ -1060,6 +1062,7 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
                                       },
                                       onInteraction: _showControls,
                                       onInfo: _openInfo,
+                                      onPlayPause: _tv ? _togglePlay : null,
                                       tvFocus: _barFocus,
                                     ),
                             ),

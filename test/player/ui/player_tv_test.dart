@@ -188,6 +188,35 @@ void main() {
     await closePlayer(tester);
   });
 
+  testWidgets('VOD: a Play / Pause button in the controls is reached with '
+      '↑ and toggles playback with OK', (tester) async {
+    final factory = manualFactory();
+    final player = await openTv(tester, movie(), factory);
+    final engine = factory.last;
+    final button = find.byKey(const ValueKey('player-play-pause'));
+    expect(button, findsOneWidget);
+    expect(find.byTooltip('Pause'), findsOneWidget);
+    await hideControls(tester, player);
+
+    // From the seek bar, ↑ and ← / → walk to the buttons.
+    await press(tester, LogicalKeyboardKey.arrowDown);
+    expect(focusLabel(), 'player seek bar');
+    await press(tester, LogicalKeyboardKey.arrowUp);
+    for (var i = 0; i < 8 && !_hasFocusWithin(tester, button); i++) {
+      await press(tester, LogicalKeyboardKey.arrowLeft);
+    }
+    expect(_hasFocusWithin(tester, button), isTrue);
+    expect(engine.state.playing, isTrue);
+
+    await press(tester, LogicalKeyboardKey.select);
+    expect(engine.state.playing, isFalse);
+    expect(find.byTooltip('Play'), findsWidgets);
+    expect(_hasFocusWithin(tester, button), isTrue);
+    await press(tester, LogicalKeyboardKey.select);
+    expect(engine.state.playing, isTrue);
+    await closePlayer(tester);
+  });
+
   testWidgets('auto-hide hands focus back to the player: ← / → still seek', (
     tester,
   ) async {
@@ -255,6 +284,9 @@ void main() {
     await hideControls(tester, player);
     await press(tester, LogicalKeyboardKey.arrowDown);
     await press(tester, LogicalKeyboardKey.arrowUp);
+    // ↑ lands on Play / Pause; → reaches the first menu button.
+    expect(focusLabel(), 'player play pause button');
+    await press(tester, LogicalKeyboardKey.arrowRight);
     expect(focusLabel(), endsWith(' button'));
     final button = FocusManager.instance.primaryFocus;
 

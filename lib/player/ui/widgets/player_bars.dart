@@ -37,6 +37,7 @@ class PlayerBarFocus {
     required this.menus,
     required this.seek,
     required this.hint,
+    required this.playPause,
   });
 
   final Map<PlayerMenu, FocusNode> menus;
@@ -46,6 +47,9 @@ class PlayerBarFocus {
 
   /// The hint under the bar (info panel / action sheet).
   final FocusNode hint;
+
+  /// The Play / Pause button (VOD / catch-up).
+  final FocusNode playPause;
 }
 
 /// The round buttons at the right of the bar: Switch player · Audio ·
@@ -138,11 +142,16 @@ class VodBottomBar extends StatelessWidget {
     required this.onSeek,
     required this.onInteraction,
     required this.onInfo,
+    this.onPlayPause,
     this.tvFocus,
   });
 
   /// Set on TV: the seek bar and the hint take focus, the buttons get nodes.
   final PlayerBarFocus? tvFocus;
+
+  /// TV: a Play / Pause button before the menu buttons (a remote has no
+  /// Space key). Null hides it.
+  final VoidCallback? onPlayPause;
 
   final PlayerController controller;
   final CarinaTimeFormat timeFormat;
@@ -212,6 +221,18 @@ class VodBottomBar extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 24),
+            if (onPlayPause != null) ...[
+              PlayerIconButton(
+                key: const ValueKey('player-play-pause'),
+                focusNode: tvFocus?.playPause,
+                icon: c.state.playing
+                    ? PhosphorIconsFill.pause
+                    : PhosphorIconsFill.play,
+                tooltip: c.state.playing ? l10n.playerPause : l10n.playerPlay,
+                onPressed: onPlayPause,
+              ),
+              const SizedBox(width: 12),
+            ],
             PlayerMenuButtons(
               menus: menus,
               keys: menuKeys,
