@@ -9,7 +9,6 @@ import '../../data/repositories/category_repository.dart';
 import '../../data/repositories/repository_models.dart';
 import '../../data/settings/settings_store.dart';
 import '../../l10n/gen/app_localizations.dart';
-import '../platform/form_factor.dart';
 import 'category_selection.dart';
 import 'shell_state.dart';
 
@@ -131,7 +130,6 @@ class _SidebarPanel extends ConsumerWidget {
     );
 
     void close() => ref.read(categorySidebarOpenProvider.notifier).close();
-    final tv = ref.watch(formFactorProvider).isTv;
 
     final panel = DecoratedBox(
       decoration: const BoxDecoration(
@@ -211,20 +209,9 @@ class _SidebarPanel extends ConsumerWidget {
       bindings: {const SingleActivator(LogicalKeyboardKey.escape): close},
       child: FocusScope(
         autofocus: true,
-        child: Builder(
-          builder: (context) {
-            // TV: when the selected row is not built (far down the lazy
-            // list), the panel's first row takes focus instead of the
-            // invisible scope.
-            if (tv) {
-              final scope = FocusScope.of(context);
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (scope.hasPrimaryFocus) kFocusFirstIn(scope);
-              });
-            }
-            return panel;
-          },
-        ),
+        // TV: when the selected row is not built (far down the lazy list),
+        // the panel's first row takes focus instead of the invisible scope.
+        child: KTvFocusFirst(child: panel),
       ),
     );
   }

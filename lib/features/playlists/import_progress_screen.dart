@@ -311,17 +311,19 @@ class _ImportProgressScreenState extends ConsumerState<ImportProgressScreen> {
         bindings: {const SingleActivator(LogicalKeyboardKey.escape): _cancel},
         child: FocusScope(
           autofocus: true,
-          child: Padding(
-            padding: EdgeInsets.only(top: macTitleBarInset() + 56),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(child: body),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(72, 8, 72, 30),
-                  child: CarinaWordmarkFooter(progress: fraction),
-                ),
-              ],
+          child: KTvFocusFirst(
+            child: Padding(
+              padding: EdgeInsets.only(top: macTitleBarInset() + 56),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(child: body),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(72, 8, 72, 30),
+                    child: CarinaWordmarkFooter(progress: fraction),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

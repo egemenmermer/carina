@@ -227,4 +227,33 @@ void main() {
       expect(tester.testTextInput.isVisible, isTrue);
     });
   });
+
+  testWidgets('KTvFocusFirst: on TV a focused scope hands focus to its '
+      'first item; desktop keeps the scope', (tester) async {
+    for (final tvMode in [true, false]) {
+      await tester.pumpWidget(
+        carinaTestApp(
+          FocusScope(
+            autofocus: true,
+            child: KTvFocusFirst(
+              child: Column(
+                children: [
+                  KButton.secondary(label: 'One', onPressed: () {}),
+                  KButton.secondary(label: 'Two', onPressed: () {}),
+                ],
+              ),
+            ),
+          ),
+          overrides: tvMode ? tv : const [],
+        ),
+      );
+      await tester.pumpAndSettle();
+      final primary = FocusManager.instance.primaryFocus!;
+      expect(primary is FocusScopeNode, !tvMode, reason: 'tv: $tvMode');
+      if (tvMode) {
+        expect(tester.getRect(find.text('One')).overlaps(primary.rect), isTrue);
+      }
+      await tester.pumpWidget(const SizedBox());
+    }
+  });
 }

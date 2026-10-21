@@ -59,3 +59,24 @@ bool kFocusFirstIn(FocusNode root) {
   target?.requestFocus();
   return target != null;
 }
+
+/// Place directly inside a `FocusScope(autofocus: true)`: under [KTvMode],
+/// whenever the scope itself holds focus (nothing in it is focused, which
+/// shows nothing on screen), its first visible target takes focus after
+/// the frame. Content that loads later is caught on its rebuild.
+class KTvFocusFirst extends StatelessWidget {
+  const KTvFocusFirst({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    if (KTvMode.of(context)) {
+      final scope = FocusScope.of(context);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (scope.hasPrimaryFocus) kFocusFirstIn(scope);
+      });
+    }
+    return child;
+  }
+}
