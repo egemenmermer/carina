@@ -275,6 +275,9 @@ void main() {
     await settle(tester, maxFrames: 8);
     expect(find.text('Full screen'), findsNothing);
     expect(find.text('Statistics'), findsOneWidget);
+    // No keyboard hints on a remote.
+    expect(find.text('Ctrl+Shift+D'), findsNothing);
+    expect(find.text('I'), findsNothing);
     await tester.tap(find.text('Muted'));
     await settle(tester, maxFrames: 8);
     expect(engine.state.muted, isTrue);
