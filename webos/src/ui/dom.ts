@@ -1,4 +1,5 @@
 // Tiny DOM helpers (no framework: webOS 4 CPUs are slow).
+import { imageGate, type ImgLike } from './imgload';
 
 type Child = Node | string | null | undefined | false;
 
@@ -44,13 +45,22 @@ export function toggle(el: Element, cls: string, on: boolean): void {
   else el.classList.remove(cls);
 }
 
-/** Image that hides itself on error (providers ship many dead logo URLs). */
+/**
+ * Image that hides itself on error (providers ship many dead logo URLs). The
+ * download goes through [imageGate], so only a few run at once.
+ */
 export function img(src: string | null, cls: string): HTMLImageElement {
   const i = h('img', { class: cls });
   i.onerror = () => i.classList.add('broken');
-  if (src) i.src = src;
+  if (src) imageGate.request(i as unknown as ImgLike, src);
   else i.classList.add('broken');
   return i;
+}
+
+/** Cancels pending downloads and clears the source of every <img> under [root] (call before dropping it). */
+export function releaseImages(root: Element): void {
+  const list = root.getElementsByTagName('img');
+  for (let k = list.length - 1; k >= 0; k--) imageGate.release(list[k] as unknown as ImgLike);
 }
 
 export function initials(name: string): string {

@@ -2,6 +2,7 @@
 // per category and kept in a small LRU so memory stays bounded.
 import type { M3uCatalog } from './m3u';
 import { loadM3uCatalog, type M3uProgress } from './m3u-loader';
+import { Lru } from './lru';
 import type { Category, Channel, Episode, Item, Movie, MovieDetails, Playlist, Programme, Section, Series, SeriesDetails } from './models';
 import { fetchXmltvText, parseXmltv } from './xmltv';
 import {
@@ -28,22 +29,6 @@ export interface Source {
   episodeUrl(e: Episode): string;
 }
 
-class Lru<T> {
-  private keys: string[] = [];
-  private map: Record<string, T> = {};
-  constructor(private max: number) {}
-  get(k: string): T | undefined {
-    return this.map[k];
-  }
-  set(k: string, v: T): void {
-    const i = this.keys.indexOf(k);
-    if (i >= 0) this.keys.splice(i, 1);
-    this.keys.push(k);
-    this.map[k] = v;
-    while (this.keys.length > this.max) delete this.map[this.keys.shift() as string];
-  }
-}
-
 const sectionAction: Record<Section, [string, string]> = {
   live: ['get_live_categories', 'get_live_streams'],
   movies: ['get_vod_categories', 'get_vod_streams'],
@@ -54,8 +39,10 @@ export class XtreamSource implements Source {
   private client: XtreamClient;
   private formats = ['m3u8', 'ts'];
   private cats: Partial<Record<Section, Category[]>> = {};
+  // Every cache is a bounded LRU: providers list 10k+ channels and 50k movies.
   private lists = new Lru<Item[]>(6);
   private epgCache = new Lru<{ at: number; list: Programme[] }>(400);
+  private seriesCache = new Lru<SeriesDetails>(8);
   private pending: Record<string, Promise<Item[]> | undefined> = {};
 
   constructor(readonly playlist: Playlist & { kind: 'xtream' }) {
@@ -84,6 +71,12 @@ export class XtreamSource implements Source {
     const key = section + '|' + categoryId;
     const hit = this.lists.get(key);
     if (hit) return Promise.resolve(hit);
+    if (section === 'live' && categoryId !== ALL) {
+      // The 10k-channel "All" list is already in memory: slice it instead of
+      // downloading and holding a second copy of the same channel objects.
+      const all = this.lists.get('live|' + ALL);
+      if (all) return Promise.resolve(all.filter((i) => i.categoryId === categoryId));
+    }
     const inflight = this.pending[key];
     if (inflight) return inflight;
     const params: Record<string, string> = { action: sectionAction[section][1] };
@@ -91,6 +84,8 @@ export class XtreamSource implements Source {
     const p = this.client.call(params, 45000).then((json) => {
       const list: Item[] = section === 'live' ? parseChannels(json) : section === 'movies' ? parseMovies(json) : parseSeriesList(json);
       this.lists.set(key, list);
+      // "All channels" supersedes the per-category copies of the same channels.
+      if (section === 'live' && categoryId === ALL) this.lists.deleteWhere((k) => k.indexOf('live|') === 0 && k !== key);
       delete this.pending[key];
       return list;
     }, (e) => {
@@ -106,7 +101,11 @@ export class XtreamSource implements Source {
   }
 
   async seriesDetails(s: Series): Promise<SeriesDetails> {
-    return parseSeriesInfo(await this.client.call({ action: 'get_series_info', series_id: s.id }));
+    const hit = this.seriesCache.get(s.id);
+    if (hit) return hit;
+    const d = parseSeriesInfo(await this.client.call({ action: 'get_series_info', series_id: s.id }));
+    this.seriesCache.set(s.id, d);
+    return d;
   }
 
   async epg(c: Channel): Promise<Programme[]> {

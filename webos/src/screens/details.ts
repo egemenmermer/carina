@@ -5,7 +5,7 @@ import type { Episode, Movie, MovieDetails, Series, SeriesDetails } from '../dat
 import type { Source } from '../data/source';
 import type { Key } from '../platform';
 import { resume, resumeKey } from '../resume';
-import { fmtDuration, h, img, initials } from '../ui/dom';
+import { fmtDuration, h, img, initials, releaseImages } from '../ui/dom';
 import { VList } from '../ui/vlist';
 import { Buttons } from '../ui/zone';
 import { errorDetail, StatusPanel, ZoneScreen } from './common';
@@ -71,6 +71,10 @@ export class DetailsScreen extends ZoneScreen implements Screen {
     this.refreshActions();
     this.paintMeta();
     this.episodes.refreshVisible();
+  }
+
+  onDestroy(): void {
+    releaseImages(this.el);
   }
 
   private keyOf(id: string): string {

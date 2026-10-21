@@ -3,6 +3,7 @@
 import { pop, push, toast, type Screen } from '../app';
 import { t } from '../i18n';
 import type { Category, Channel, Item, Movie, Programme, Section, Series } from '../data/models';
+import { Lru } from '../data/lru';
 import { ALL, type Source } from '../data/source';
 import type { Key } from '../platform';
 import { store } from '../store';
@@ -47,7 +48,7 @@ export class BrowseScreen extends ZoneScreen implements Screen {
   private categoryId = '';
   private base: Item[] = [];
   private shown: Item[] = [];
-  private epg: Record<string, Programme[]> = {};
+  private epg = new Lru<Programme[]>(600);
   private token = 0;
   private catTimer = 0;
   private searchTimer = 0;
@@ -119,6 +120,17 @@ export class BrowseScreen extends ZoneScreen implements Screen {
     );
     for (const z of [this.rail, this.cats, this.channels, this.posters, this.search, this.status.retry]) this.bindPointer(z);
     this.openSection('live');
+  }
+
+  onDestroy(): void {
+    clearTimeout(this.catTimer);
+    clearTimeout(this.searchTimer);
+    this.token++;
+    this.cats.destroy();
+    this.channels.destroy();
+    this.posters.destroy();
+    this.base = this.shown = [];
+    this.epg.clear();
   }
 
   onShow(): void {
@@ -316,7 +328,7 @@ export class BrowseScreen extends ZoneScreen implements Screen {
   // ---- rendering -------------------------------------------------------------
 
   private renderChannel(c: Channel): HTMLElement {
-    const [now, next] = nowNext(this.epg[c.id]);
+    const [now, next] = nowNext(this.epg.get(c.id));
     const fav = store.isFavourite(this.pid, c.id);
     let progress: HTMLElement | null = null;
     if (now) {
@@ -362,7 +374,7 @@ export class BrowseScreen extends ZoneScreen implements Screen {
     if (this.section !== 'live') return;
     const list = this.shown as Channel[];
     const todo: Channel[] = [];
-    for (let i = from; i <= to && i < list.length; i++) if (!this.epg[list[i].id]) todo.push(list[i]);
+    for (let i = from; i <= to && i < list.length; i++) if (!this.epg.has(list[i].id)) todo.push(list[i]);
     if (!todo.length) return;
     let running = 0;
     let changed = false;
@@ -371,7 +383,7 @@ export class BrowseScreen extends ZoneScreen implements Screen {
         const c = todo.shift() as Channel;
         running++;
         this.source.epg(c).then((p) => {
-          this.epg[c.id] = p;
+          this.epg.set(c.id, p);
           if (p.length) changed = true;
           running--;
           if (!todo.length && !running) {

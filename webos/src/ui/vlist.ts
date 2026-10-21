@@ -2,7 +2,7 @@
 // in the DOM, positioned with transforms; the whole strip scrolls with one
 // translateY. Providers list 10k+ channels and 50k movies.
 import { px, type Key } from '../platform';
-import { h, toggle } from './dom';
+import { h, releaseImages, toggle } from './dom';
 import type { Zone } from './zone';
 
 export interface VListOptions<T> {
@@ -58,7 +58,7 @@ export class VList<T> implements Zone {
 
   setItems(items: T[], index = 0): void {
     this.items = items;
-    for (const k of Object.keys(this.nodes)) this.inner.removeChild(this.nodes[+k]);
+    for (const k of Object.keys(this.nodes)) this.drop(this.nodes[+k]);
     this.nodes = {};
     this.index = Math.max(0, Math.min(index, items.length - 1));
     this.scroll = 0;
@@ -85,6 +85,7 @@ export class VList<T> implements Zone {
       const old = this.nodes[i];
       const n = this.makeNode(i);
       this.inner.replaceChild(n, old);
+      releaseImages(old);
       this.nodes[i] = n;
     }
     this.paintFocus();
@@ -184,7 +185,7 @@ export class VList<T> implements Zone {
     for (const k of Object.keys(this.nodes)) {
       const i = +k;
       if (i < from || i > to) {
-        this.inner.removeChild(this.nodes[i]);
+        this.drop(this.nodes[i]);
         delete this.nodes[i];
       }
     }
@@ -202,6 +203,17 @@ export class VList<T> implements Zone {
       const vt = Math.min(this.items.length - 1, Math.ceil((this.scroll + view) / rowH) * this.cols - 1);
       this.visibleTimer = window.setTimeout(() => this.o.onVisible && this.o.onVisible(vf, vt), 350);
     }
+  }
+
+  /** Removes a row from the DOM and frees its images (off-screen posters must not keep their bitmaps). */
+  private drop(n: HTMLElement): void {
+    releaseImages(n);
+    this.inner.removeChild(n);
+  }
+
+  /** Releases everything the list holds; call when its screen is destroyed. */
+  destroy(): void {
+    this.setItems([]);
   }
 
   private makeNode(i: number): HTMLElement {

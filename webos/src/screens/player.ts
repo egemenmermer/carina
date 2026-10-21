@@ -3,6 +3,7 @@
 // VOD: play/pause, seek, progress.
 import { pop, toast, type Screen } from '../app';
 import { t } from '../i18n';
+import type { Lru } from '../data/lru';
 import type { Channel, Programme } from '../data/models';
 import type { Source } from '../data/source';
 import type { Key } from '../platform';
@@ -19,7 +20,7 @@ export type PlayerArgs =
       channels: Channel[];
       index: number;
       categoryId: string;
-      epg: Record<string, Programme[]>;
+      epg: Lru<Programme[]>;
       onExit?: (index: number) => void;
     }
   | { kind: 'vod'; item: VodItem; startAt?: number; queue?: VodItem[]; queueIndex?: number };
@@ -301,9 +302,9 @@ export class PlayerScreen implements Screen {
     this.playingIndex = this.index;
     store.saveLastChannel(this.source.playlist.id, a.categoryId, c.id);
     this.load(this.source.liveUrls(c));
-    if (!a.epg[c.id]) {
+    if (!a.epg.has(c.id)) {
       this.source.epg(c).then((p) => {
-        a.epg[c.id] = p;
+        a.epg.set(c.id, p);
         if (this.channel() === c) this.paintLive();
       });
     }
@@ -328,7 +329,7 @@ export class PlayerScreen implements Screen {
     this.oLogo.appendChild(h('b', { text: initials(c.name) }));
     this.oLogo.appendChild(img(c.logo, 'logo-img'));
     setText(this.oName, c.name + (store.isFavourite(this.source.playlist.id, c.id) ? '  ★' : ''));
-    const [now, next] = nowNext(a.epg[c.id]);
+    const [now, next] = nowNext(a.epg.get(c.id));
     setText(this.oNow, now ? now.title : t('noProgramme'));
     setText(this.oTimes, now ? fmtTime(now.start) + ' – ' + fmtTime(now.stop) : '');
     const p = now ? Math.max(0, Math.min(1, (Date.now() - now.start) / (now.stop - now.start))) : 0;
