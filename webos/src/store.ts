@@ -1,6 +1,7 @@
 // localStorage persistence: playlist configs, favourites, last channel and
 // settings only — never catalogues (quota is ~5 MB).
 import type { Channel, Playlist } from './data/models';
+import { resume } from './resume';
 
 const PREFIX = 'carina.';
 
@@ -45,6 +46,7 @@ export const store = {
     store.savePlaylists(store.playlists().filter((x) => x.id !== id));
     write('fav.' + id, null);
     write('last.' + id, null);
+    resume.removePlaylist(id);
   },
   settings(): Settings {
     return read<Settings>('settings', { lang: 'auto', lastPlaylistId: null });

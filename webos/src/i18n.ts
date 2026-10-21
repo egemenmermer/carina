@@ -71,6 +71,10 @@ const en = {
   hintPlayerLive: '▲▼ / CH Zap · OK Info · Red Favourite · Back',
   hintPlayerVod: 'OK Pause · ◀▶ Seek · Back',
   hintKeyboard: 'OK to type',
+  resumeFrom: 'Resume from {time}',
+  startOver: 'Start over',
+  resumeTitle: 'Resume playback?',
+  watched: 'Watched',
   channels: '{n} channels',
   items: '{n} items',
 };
@@ -147,6 +151,10 @@ const tr: Strings = {
   hintPlayerLive: '▲▼ / CH Kanal · OK Bilgi · Kırmızı Favori · Geri',
   hintPlayerVod: 'OK Duraklat · ◀▶ Sar · Geri',
   hintKeyboard: 'Yazmak için OK',
+  resumeFrom: '{time} noktasından devam et',
+  startOver: 'Baştan başla',
+  resumeTitle: 'Kaldığın yerden devam edilsin mi?',
+  watched: 'İzlendi',
   channels: '{n} kanal',
   items: '{n} içerik',
 };

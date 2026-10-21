@@ -290,3 +290,5 @@ img.broken { display: none; }
 .player-error.show { display: block; }
 .player-error p { color: var(--text2); font-size: 1.8rem; margin: 1.2rem 0 2.8rem; }
 .player-error .buttons { -webkit-justify-content: center; justify-content: center; }
+
+.ep-seen { width: 3rem; margin-left: 1rem; color: var(--brand); font-size: 1.8rem; text-align: center; -webkit-flex-shrink: 0; flex-shrink: 0; }

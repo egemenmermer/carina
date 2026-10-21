@@ -6,6 +6,7 @@ import { t } from '../i18n';
 import type { Channel, Programme } from '../data/models';
 import type { Source } from '../data/source';
 import type { Key } from '../platform';
+import { resume } from '../resume';
 import { store } from '../store';
 import { fmtDuration, fmtTime, h, img, initials, setText, toggle } from '../ui/dom';
 import { Buttons } from '../ui/zone';
@@ -20,12 +21,20 @@ export type PlayerArgs =
       epg: Record<string, Programme[]>;
       onExit?: (index: number) => void;
     }
-  | { kind: 'vod'; title: string; url: string };
+  | { kind: 'vod'; item: VodItem; startAt?: number };
+
+/** One playable movie or episode; [key] is its resume key. */
+export interface VodItem {
+  title: string;
+  url: string;
+  key: string;
+}
 
 const START_TIMEOUT = 15000; // dead live streams often never fire "error"
 const STALL_TIMEOUT = 30000;
 const OSD_MS = 5000;
 const ZAP_DELAY = 500;
+const SAVE_EVERY_MS = 10000;
 
 function mimeFor(url: string): string {
   const path = url.split('?')[0].toLowerCase();
@@ -69,6 +78,10 @@ export class PlayerScreen implements Screen {
   private oNext = h('div', { class: 'osd-next' });
   private oState = h('span', { class: 'osd-state' });
   private listeners: [string, EventListener][] = [];
+  // VOD: resume + next-episode autoplay
+  private cur: VodItem | null = null;
+  private pendingStart = 0;
+  private lastSave = 0;
 
   constructor(private source: Source, private args: PlayerArgs) {
     this.errorButtons = new Buttons([
@@ -104,16 +117,22 @@ export class PlayerScreen implements Screen {
     this.on('waiting', () => this.onWaiting());
     this.on('error', () => this.onError());
     this.on('ended', () => this.onEnded());
-    this.on('timeupdate', () => this.args.kind === 'vod' && this.osd.classList.contains('show') && this.paintVod());
-    this.on('pause', () => this.paintState());
+    this.on('loadedmetadata', () => this.applyStart());
+    this.on('timeupdate', () => this.onTimeUpdate());
+    this.on('pause', () => {
+      this.paintState();
+      this.saveProgress();
+    });
     this.on('play', () => this.paintState());
     if (this.args.kind === 'live') {
       this.index = this.args.index;
       this.paintLive();
       this.startLive();
     } else {
-      setText(this.oName, this.args.title);
-      this.load([this.args.url]);
+      this.cur = this.args.item;
+      this.pendingStart = this.args.startAt || 0;
+      setText(this.oName, this.cur.title);
+      this.load([this.cur.url]);
     }
     this.showOsd();
   }
@@ -123,6 +142,7 @@ export class PlayerScreen implements Screen {
     this.listeners = [];
     for (const tm of [this.startTimer, this.stallTimer, this.osdTimer, this.tickTimer, this.zapTimer, this.seekTimer]) clearTimeout(tm);
     clearInterval(this.tickTimer);
+    this.saveProgress();
     this.release();
     document.body.classList.remove('playing');
     if (this.args.kind === 'live' && this.args.onExit) this.args.onExit(this.index);
@@ -250,8 +270,12 @@ export class PlayerScreen implements Screen {
   }
 
   private onEnded(): void {
-    if (this.args.kind === 'live') this.onError();
-    else pop();
+    if (this.args.kind === 'live') {
+      this.onError();
+      return;
+    }
+    if (this.cur) resume.markWatched(this.cur.key, isFinite(this.video.duration) ? this.video.duration : 0);
+    pop();
   }
 
   // ---- live ---------------------------------------------------------------------
@@ -305,6 +329,35 @@ export class PlayerScreen implements Screen {
   }
 
   // ---- vod ----------------------------------------------------------------------
+
+  /** Jumps to the saved position once the media is known. */
+  private applyStart(): void {
+    if (this.pendingStart <= 0) return;
+    const v = this.video;
+    const d = isFinite(v.duration) ? v.duration : 0;
+    const at = d ? Math.min(this.pendingStart, Math.max(0, d - 5)) : this.pendingStart;
+    this.pendingStart = 0;
+    try {
+      v.currentTime = at;
+    } catch (e) {
+      /* not seekable yet: start from the beginning */
+    }
+  }
+
+  private onTimeUpdate(): void {
+    if (this.args.kind !== 'vod') return;
+    if (this.osd.classList.contains('show')) this.paintVod();
+    if (!this.started || this.video.seeking) return;
+    const now = Date.now();
+    if (now - this.lastSave >= SAVE_EVERY_MS) this.saveProgress();
+  }
+
+  private saveProgress(): void {
+    if (!this.cur || !this.started || this.pendingStart > 0) return;
+    const v = this.video;
+    this.lastSave = Date.now();
+    resume.save(this.cur.key, v.currentTime, isFinite(v.duration) ? v.duration : 0);
+  }
 
   private paintVod(): void {
     const v = this.video;
