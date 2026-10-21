@@ -322,8 +322,13 @@ void main() {
         events.last.step,
         isIn([ImportStep.completed, ImportStep.cancelled]),
       );
-      expect(await h.count('programmes', id), programmes);
-      expect((await h.playlist(id)).programmeCount, programmes);
+      // The mock guide is generated around "now", so a completed second
+      // import may hold a few programmes more or less than the first.
+      final expected = events.last.step == ImportStep.cancelled
+          ? programmes
+          : events.last.countOf(ImportStep.epgParsing);
+      expect(await h.count('programmes', id), expected);
+      expect((await h.playlist(id)).programmeCount, expected);
       expect(await h.count('programme_search', id), greaterThan(0));
     });
 
