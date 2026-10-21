@@ -206,7 +206,7 @@ class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
     final l10n = L10n.of(context);
     final toasts = ref.read(toastControllerProvider);
     if (session.isFull) {
-      toasts.show(l10n.multiviewMaxReached);
+      toasts.show(l10n.multiviewMaxReached(session.maxTiles));
       return;
     }
     final id = await _pick(
@@ -337,7 +337,7 @@ class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
               child: session.isEmpty
                   ? KEmptyState(
                       icon: PhosphorIconsLight.squaresFour,
-                      title: l10n.multiviewEmptyTitle,
+                      title: l10n.multiviewEmptyTitle(session.maxTiles),
                       message: l10n.multiviewEmptyMessage,
                       actionLabel: l10n.multiviewAddChannel,
                       actionIcon: PhosphorIconsBold.plus,
@@ -454,16 +454,19 @@ class _TopBar extends StatelessWidget {
             Text(l10n.multiviewFullTileHint, style: KText.caption),
           ],
           const Spacer(),
-          for (final layout in MultiviewLayout.values) ...[
-            _LayoutButton(
-              layout: layout,
-              selected: session.layout == layout,
-              enabled: session.tiles.length <= layout.slots,
-              onTap: () => onLayout(layout),
-            ),
-            const SizedBox(width: 8),
+          // A single layout (TV: "1 + 1") needs no picker.
+          if (session.layouts.length > 1) ...[
+            for (final layout in session.layouts) ...[
+              _LayoutButton(
+                layout: layout,
+                selected: session.layout == layout,
+                enabled: session.tiles.length <= layout.slots,
+                onTap: () => onLayout(layout),
+              ),
+              const SizedBox(width: 8),
+            ],
+            const SizedBox(width: 12),
           ],
-          const SizedBox(width: 12),
           KButton.secondary(
             label: l10n.multiviewAddChannel,
             icon: PhosphorIconsBold.plus,

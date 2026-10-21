@@ -51,11 +51,16 @@ Future<void> addToMultiview(
   if (!unlocked || !context.mounted) return;
 
   if (layout != null) {
+    // A TV opens at most two tiles, whatever layout was asked for.
+    final maxTiles = container
+        .read(multiviewSessionProvider(playlistId))
+        .maxTiles;
+    final slots = layout.slots < maxTiles ? layout.slots : maxTiles;
     final ids = await multiviewFillChannels(
       container.read(liveRepositoryProvider),
       playlistId,
       channelId,
-      layout.slots,
+      slots,
     );
     notifier.replace(ids, layout: layout);
   } else {
@@ -63,7 +68,7 @@ Future<void> addToMultiview(
     if (session.contains(channelId)) {
       notifier.add(channelId);
     } else if (session.isFull) {
-      toasts.show(l10n.multiviewMaxReached);
+      toasts.show(l10n.multiviewMaxReached(session.maxTiles));
     } else {
       if (session.tiles.length >= 2) {
         final ok = await confirmExtraStream(context, playlistId: playlistId);

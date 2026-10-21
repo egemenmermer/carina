@@ -21,10 +21,28 @@ enum MultiviewLayout {
   /// How many tiles the layout shows.
   final int slots;
 
-  /// [preferred], or a 4-slot layout when [tiles] do not fit in it.
-  static MultiviewLayout fitting(int tiles, MultiviewLayout preferred) {
-    if (tiles <= preferred.slots) return preferred;
-    return MultiviewLayout.grid2x2;
+  /// The layouts that hold at most [maxTiles] tiles (all of them on desktop,
+  /// only "1 + 1" on a TV).
+  static List<MultiviewLayout> available(int maxTiles) => [
+    for (final layout in values)
+      if (layout.slots <= maxTiles) layout,
+  ];
+
+  /// [preferred], or the first layout that holds [tiles] when [preferred]
+  /// does not fit them or is more than [maxTiles] allow.
+  static MultiviewLayout fitting(
+    int tiles,
+    MultiviewLayout preferred, [
+    int maxTiles = 4,
+  ]) {
+    if (tiles <= preferred.slots && preferred.slots <= maxTiles) {
+      return preferred;
+    }
+    final layouts = available(maxTiles);
+    return layouts.firstWhere(
+      (layout) => tiles <= layout.slots,
+      orElse: () => layouts.last,
+    );
   }
 }
 
