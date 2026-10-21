@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../app/clock.dart';
+import '../../app/platform/form_factor.dart';
 import '../../app/router.dart';
 import '../../app/time_format.dart';
 import '../../core/core.dart';
@@ -180,7 +181,18 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         event.logicalKey != LogicalKeyboardKey.escape) {
       return KeyEventResult.ignored;
     }
-    if (!_fieldFocus.hasFocus) {
+    if (ref.read(formFactorProvider).isTv) {
+      // The remote's Back leaves the field (its text stays), then the page.
+      if (_fieldFocus.hasFocus &&
+          _fieldFocus.focusInDirection(TraversalDirection.down)) {
+        return KeyEventResult.handled;
+      }
+      if (_person != null) {
+        _exitPerson();
+      } else {
+        _leave();
+      }
+    } else if (!_fieldFocus.hasFocus) {
       _focusField();
     } else if (_controller.text.isNotEmpty) {
       _clear();
@@ -424,7 +436,8 @@ class _FieldSuffix extends StatelessWidget {
             icon: PhosphorIconsBold.x,
             size: 34,
             iconSize: 15,
-            focusable: false,
+            // A remote reaches it with → from the end of the text.
+            focusable: KTvMode.of(context),
             tooltip: clearLabel,
             onPressed: onClear,
           ),

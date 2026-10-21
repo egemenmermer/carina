@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path/path.dart' as p;
 
+import 'package:carina/app/platform/form_factor.dart';
 import 'package:carina/app/time_format.dart';
 import 'package:carina/core/core.dart';
 import 'package:carina/data/db/database.dart' show PlaylistType;
@@ -854,10 +855,16 @@ class _PlaylistWizardScreenState extends ConsumerState<PlaylistWizardScreen> {
     }
     return FocusTraversalGroup(
       child: CallbackShortcuts(
-        bindings: {
-          const SingleActivator(LogicalKeyboardKey.arrowDown): () => _move(1),
-          const SingleActivator(LogicalKeyboardKey.arrowUp): () => _move(-1),
-        },
+        // Field by field on a keyboard. A remote keeps plain directional
+        // traversal, which also reaches Cancel and the fields' own buttons.
+        bindings: ref.read(formFactorProvider).isTv
+            ? const {}
+            : {
+                const SingleActivator(LogicalKeyboardKey.arrowDown): () =>
+                    _move(1),
+                const SingleActivator(LogicalKeyboardKey.arrowUp): () =>
+                    _move(-1),
+              },
         child: AutofillGroup(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

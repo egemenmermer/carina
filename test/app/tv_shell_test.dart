@@ -165,4 +165,37 @@ void main() {
     expect(_path(c), Routes.tab(pid, MainTab.live));
     await disposeFixture(tester, fx);
   });
+
+  testWidgets('TV search: Back leaves the field with its text, then the page', (
+    tester,
+  ) async {
+    final fx = await importFixture(tester);
+    final pid = fx.playlistId;
+    final c = await _pumpTv(
+      tester,
+      fx,
+      '${Routes.search(pid)}?q=sicak',
+      size: const Size(1280, 720),
+    );
+    final field = find.byKey(const ValueKey('search-field'));
+    final fieldNode = _primary;
+    expect(
+      fieldNode!.context!.findAncestorWidgetOfExactType<KTextField>(),
+      isNotNull,
+    );
+    expect(tester.testTextInput.isVisible, isFalse, reason: 'OK opens it');
+
+    await _key(tester, LogicalKeyboardKey.escape);
+    expect(_path(c), Routes.search(pid));
+    expect(fieldNode.hasFocus, isFalse);
+    expect(kIsVisibleFocusTarget(_primary), isTrue, reason: '$_primary');
+    expect(
+      find.descendant(of: field, matching: find.text('sicak')),
+      findsOneWidget,
+    );
+
+    await _key(tester, LogicalKeyboardKey.escape);
+    expect(_path(c), Routes.tab(pid, MainTab.live));
+    await disposeFixture(tester, fx);
+  });
 }

@@ -5,6 +5,7 @@ import 'package:carina/core/icons/phosphor_icons.dart';
 import 'package:carina/core/strings.dart';
 import 'package:carina/core/tokens.dart';
 import 'package:carina/core/widgets/k_buttons.dart';
+import 'package:carina/core/widgets/k_tv.dart';
 
 /// Kind of a [KFieldStatus].
 enum KFieldStatusKind { ok, error, checking }
@@ -30,6 +31,11 @@ class KFieldStatus {
 /// wizard's "current field" — draws a 2 px red outline. Shows an optional
 /// [label] above, [errorText] or a [status] line below, and a show/hide
 /// toggle when [obscure] is true.
+///
+/// Under [KTvMode] the D-pad passes over the field without raising the
+/// on-screen keyboard (focusing an editable field would): OK starts typing
+/// and opens the keyboard, OK again reopens it. Arrows leave the field
+/// unless they move the caret inside the text.
 class KTextField extends StatefulWidget {
   const KTextField({
     super.key,
@@ -106,6 +112,9 @@ class _KTextFieldState extends State<KTextField> {
   bool _hovered = false;
   bool _revealed = false;
 
+  /// TV: OK was pressed, the field is editable and the keyboard may show.
+  bool _typing = false;
+
   FocusNode get _focus =>
       widget.focusNode ?? (_ownFocus ??= FocusNode(debugLabel: 'KTextField'));
 
@@ -132,12 +141,72 @@ class _KTextFieldState extends State<KTextField> {
   }
 
   void _onFocus() {
-    if (_focused != _focus.hasFocus) setState(() => _focused = _focus.hasFocus);
+    final focused = _focus.hasFocus;
+    if (_focused != focused || (!focused && _typing)) {
+      setState(() {
+        _focused = focused;
+        if (!focused) _typing = false;
+      });
+    }
+  }
+
+  static bool _isOk(LogicalKeyboardKey key) =>
+      key == LogicalKeyboardKey.enter ||
+      key == LogicalKeyboardKey.numpadEnter ||
+      key == LogicalKeyboardKey.select;
+
+  static final _directions = {
+    LogicalKeyboardKey.arrowUp: TraversalDirection.up,
+    LogicalKeyboardKey.arrowDown: TraversalDirection.down,
+    LogicalKeyboardKey.arrowLeft: TraversalDirection.left,
+    LogicalKeyboardKey.arrowRight: TraversalDirection.right,
+  };
+
+  EditableTextState? get _editable =>
+      _focus.context?.findAncestorStateOfType<EditableTextState>();
+
+  /// Remote keys on TV, before the text field's own key handling.
+  KeyEventResult _onTvKey(FocusNode node, KeyEvent event) {
+    if (!_focus.hasPrimaryFocus) return KeyEventResult.ignored;
+    final key = event.logicalKey;
+    if (_isOk(key)) {
+      if (event is KeyDownEvent) {
+        if (_typing) {
+          _editable?.requestKeyboard();
+        } else {
+          setState(() => _typing = true);
+        }
+      }
+      return KeyEventResult.handled;
+    }
+    final direction = _directions[key];
+    if (direction == null || event is KeyUpEvent) {
+      return KeyEventResult.ignored;
+    }
+    if (_typing && _movesCaret(direction)) return KeyEventResult.ignored;
+    return _focus.focusInDirection(direction)
+        ? KeyEventResult.handled
+        : KeyEventResult.ignored;
+  }
+
+  /// Whether an arrow in [direction] moves the caret within the text.
+  bool _movesCaret(TraversalDirection direction) {
+    final value = _editable?.textEditingValue;
+    if (value == null) return false;
+    final selection = value.selection;
+    return switch (direction) {
+      TraversalDirection.up || TraversalDirection.down => widget.maxLines > 1,
+      TraversalDirection.left =>
+        !selection.isCollapsed || selection.baseOffset > 0,
+      TraversalDirection.right =>
+        !selection.isCollapsed || selection.baseOffset < value.text.length,
+    };
   }
 
   @override
   Widget build(BuildContext context) {
     final strings = KStrings.of(context);
+    final tv = KTvMode.of(context);
     final hasError = widget.errorText != null;
     final outlined = widget.enabled && (_focused || widget.highlighted);
     final duration = KMotion.of(context, KDurations.hover);
@@ -163,6 +232,7 @@ class _KTextFieldState extends State<KTextField> {
       controller: widget.controller,
       focusNode: _focus,
       enabled: widget.enabled,
+      readOnly: tv && !_typing,
       autofocus: widget.autofocus,
       obscureText: widget.obscure && !_revealed,
       keyboardType: widget.keyboardType,
@@ -222,7 +292,16 @@ class _KTextFieldState extends State<KTextField> {
               ),
               const SizedBox(width: 10),
             ],
-            Expanded(child: field),
+            Expanded(
+              child: tv
+                  ? Focus(
+                      canRequestFocus: false,
+                      skipTraversal: true,
+                      onKeyEvent: _onTvKey,
+                      child: field,
+                    )
+                  : field,
+            ),
             if (widget.suffix != null) ...[
               const SizedBox(width: 8),
               widget.suffix!,
@@ -235,7 +314,8 @@ class _KTextFieldState extends State<KTextField> {
                     : PhosphorIconsLight.eye,
                 size: 34,
                 iconSize: 20,
-                focusable: false,
+                // A remote reaches it with → from the end of the text.
+                focusable: tv,
                 background: const Color(0x00000000),
                 tooltip: _revealed
                     ? strings.hidePassword

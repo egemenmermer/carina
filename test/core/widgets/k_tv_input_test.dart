@@ -142,4 +142,89 @@ void main() {
     await tester.pumpAndSettle();
     expect(chosen, 'first');
   });
+
+  group('KTextField on TV', () {
+    Future<(TextEditingController, FocusNode)> pumpField(
+      WidgetTester tester, {
+      bool tvMode = true,
+    }) async {
+      final controller = TextEditingController(text: 'abc');
+      final node = FocusNode(debugLabel: 'field');
+      addTearDown(controller.dispose);
+      addTearDown(node.dispose);
+      await tester.pumpWidget(
+        carinaTestApp(
+          Center(
+            child: SizedBox(
+              width: 300,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  KTextField(controller: controller, focusNode: node),
+                  const SizedBox(height: 20),
+                  KButton.secondary(
+                    key: const ValueKey('below'),
+                    label: 'Below',
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+            ),
+          ),
+          overrides: tvMode ? tv : const [],
+        ),
+      );
+      node.requestFocus();
+      await tester.pumpAndSettle();
+      return (controller, node);
+    }
+
+    testWidgets('D-pad focus keeps the keyboard down; OK opens it', (
+      tester,
+    ) async {
+      final (controller, node) = await pumpField(tester);
+      expect(node.hasPrimaryFocus, isTrue);
+      expect(tester.testTextInput.isVisible, isFalse);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.select);
+      await tester.pumpAndSettle();
+      expect(tester.testTextInput.isVisible, isTrue);
+      tester.testTextInput.enterText('abcd');
+      await tester.pump();
+      expect(controller.text, 'abcd');
+
+      // Hidden by the system (the remote's Back); OK raises it again.
+      tester.testTextInput.hide();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+      expect(tester.testTextInput.isVisible, isTrue);
+    });
+
+    testWidgets('↓ leaves the field; ← and → move the caret first', (
+      tester,
+    ) async {
+      final (controller, node) = await pumpField(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+      controller.selection = const TextSelection.collapsed(offset: 1);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(node.hasPrimaryFocus, isTrue, reason: 'caret moved inside');
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await tester.pumpAndSettle();
+      expect(node.hasFocus, isFalse);
+      expect(tester.testTextInput.isVisible, isFalse);
+      final below = Focus.of(tester.element(find.text('Below')))
+          .hasPrimaryFocus;
+      expect(below, isTrue);
+    });
+
+    testWidgets('desktop: focusing the field opens the input at once', (
+      tester,
+    ) async {
+      await pumpField(tester, tvMode: false);
+      expect(tester.testTextInput.isVisible, isTrue);
+    });
+  });
 }
