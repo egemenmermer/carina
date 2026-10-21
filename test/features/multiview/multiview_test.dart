@@ -489,5 +489,125 @@ void main() {
       expect(s.tiles.map((t) => t.channelId).toSet(), hasLength(4));
       await closePlayer(tester);
     });
+
+    group('on a TV remote', () {
+      bool inside(String label) =>
+          FocusManager.instance.primaryFocus?.ancestors.any(
+            (n) => (n.debugLabel ?? '').startsWith(label),
+          ) ??
+          false;
+      String? primary() => FocusManager.instance.primaryFocus?.debugLabel;
+
+      Future<FakeEngineFactory> pumpTv(
+        WidgetTester tester, {
+        required int channels,
+      }) async {
+        final factory = manualFactory();
+        await pumpScreen(
+          tester,
+          MultiviewScreen(
+            playlistId: fx.playlistId,
+            initialChannelIds: ulusal.take(channels).toList(),
+          ),
+          overrides: [
+            ...playerOverrides(fx, factory: factory),
+            formFactorProvider.overrideWithValue(FormFactor.tv),
+          ],
+        );
+        await settleDrift(tester, rounds: 12);
+        return factory;
+      }
+
+      Future<void> key(WidgetTester tester, LogicalKeyboardKey k) async {
+        await tester.sendKeyEvent(k);
+        await pumpUi(tester);
+      }
+
+      testWidgets('OK toggles the tile once, even while the key repeats', (
+        tester,
+      ) async {
+        await pumpTv(tester, channels: 2);
+        final hint = find.text('Esc to return to all channels');
+        expect(hint, findsNothing);
+        await tester.sendKeyDownEvent(LogicalKeyboardKey.enter);
+        await tester.sendKeyRepeatEvent(LogicalKeyboardKey.enter);
+        await tester.sendKeyRepeatEvent(LogicalKeyboardKey.enter);
+        await tester.sendKeyUpEvent(LogicalKeyboardKey.enter);
+        await pumpUi(tester);
+        expect(hint, findsOneWidget);
+        await key(tester, LogicalKeyboardKey.enter);
+        expect(hint, findsNothing);
+        await tester.pump(const Duration(seconds: 3));
+        await closePlayer(tester);
+      });
+
+      testWidgets('arrows reach the empty slot, the top bar and the tile '
+          'toolbar, and come back', (tester) async {
+        await pumpTv(tester, channels: 1);
+        expect(primary(), 'multiview');
+
+        await key(tester, LogicalKeyboardKey.arrowRight);
+        expect(primary(), 'multiview slot 1');
+        await key(tester, LogicalKeyboardKey.arrowLeft);
+        expect(primary(), 'multiview');
+
+        await key(tester, LogicalKeyboardKey.arrowUp);
+        expect(inside('multiview bar'), isTrue);
+        await key(tester, LogicalKeyboardKey.arrowDown);
+        expect(primary(), 'multiview');
+
+        await key(tester, LogicalKeyboardKey.arrowDown);
+        expect(inside('multiview toolbar'), isTrue);
+        // Change channel, full tile, close.
+        await key(tester, LogicalKeyboardKey.arrowRight);
+        await key(tester, LogicalKeyboardKey.arrowLeft);
+        await key(tester, LogicalKeyboardKey.arrowUp);
+        expect(primary(), 'multiview');
+
+        // OK on the toolbar's full-tile button.
+        await key(tester, LogicalKeyboardKey.arrowDown);
+        await key(tester, LogicalKeyboardKey.arrowRight);
+        await key(tester, LogicalKeyboardKey.enter);
+        expect(find.text('Esc to return to all channels'), findsOneWidget);
+        expect(primary(), 'multiview');
+        await key(tester, LogicalKeyboardKey.escape);
+        await tester.pump(const Duration(seconds: 3));
+        await closePlayer(tester);
+      });
+
+      testWidgets('OK on the empty slot opens the picker; OK on a row picks',
+          (tester) async {
+        await pumpTv(tester, channels: 1);
+        await key(tester, LogicalKeyboardKey.arrowRight);
+        await key(tester, LogicalKeyboardKey.enter);
+        await settleDrift(tester, rounds: 6);
+        expect(find.text('Choose a channel'), findsOneWidget);
+        // The list has focus: no keyboard for the search field yet.
+        expect(primary(), 'picker list');
+
+        // Up from the first row goes to the field, Down comes back.
+        await key(tester, LogicalKeyboardKey.arrowUp);
+        expect(primary(), 'picker search');
+        await key(tester, LogicalKeyboardKey.arrowDown);
+        expect(primary(), 'picker list');
+
+        await key(tester, LogicalKeyboardKey.arrowDown);
+        await key(tester, LogicalKeyboardKey.enter);
+        await settleDrift(tester, rounds: 6);
+        expect(find.text('Choose a channel'), findsNothing);
+        final container = ProviderScope.containerOf(
+          tester.element(find.byType(MultiviewScreen)),
+        );
+        final ids = container
+            .read(multiviewSessionProvider(fx.playlistId))
+            .tiles
+            .map((t) => t.channelId)
+            .toList();
+        expect(ids, hasLength(2));
+        expect(ids.first, ulusal.first);
+        await tester.pump(const Duration(seconds: 3));
+        await closePlayer(tester);
+      });
+    });
   });
 }

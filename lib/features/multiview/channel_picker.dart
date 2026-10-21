@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/platform/form_factor.dart';
 import '../../core/core.dart';
 import '../../data/repositories/live_repository.dart';
 import '../../data/repositories/repository_models.dart';
@@ -13,6 +14,9 @@ import '../../l10n/gen/app_localizations.dart';
 /// "Choose a channel": a sheet with a search field over every visible
 /// channel of the playlist. ↑/↓ move, Enter picks. Resolves to the channel
 /// id, or null.
+///
+/// On a TV the list takes focus first, so the on-screen keyboard stays
+/// closed until the user moves Up to the search field.
 Future<String?> showMultiviewChannelPicker(
   BuildContext context, {
   required int playlistId,
@@ -51,6 +55,8 @@ class _MultiviewChannelPickerState
 
   final TextEditingController _query = TextEditingController();
   final ScrollController _scroll = ScrollController();
+  final FocusNode _fieldFocus = FocusNode(debugLabel: 'picker search');
+  final FocusNode _listFocus = FocusNode(debugLabel: 'picker list');
   List<ChannelView>? _all;
   List<(ChannelView, String)> _keys = const [];
   List<ChannelView> _results = const [];
@@ -66,6 +72,8 @@ class _MultiviewChannelPickerState
   void dispose() {
     _query.dispose();
     _scroll.dispose();
+    _fieldFocus.dispose();
+    _listFocus.dispose();
     super.dispose();
   }
 
@@ -116,6 +124,25 @@ class _MultiviewChannelPickerState
       return KeyEventResult.ignored;
     }
     final key = event.logicalKey;
+    final tv = ref.read(formFactorProvider).isTv;
+    if (tv &&
+        _fieldFocus.hasPrimaryFocus &&
+        (key == LogicalKeyboardKey.arrowDown ||
+            key == LogicalKeyboardKey.arrowUp)) {
+      // The field keeps its arrows for the caret; Down leaves it.
+      if (key == LogicalKeyboardKey.arrowDown) _listFocus.requestFocus();
+      return key == LogicalKeyboardKey.arrowDown
+          ? KeyEventResult.handled
+          : KeyEventResult.ignored;
+    }
+    if (tv &&
+        key == LogicalKeyboardKey.arrowUp &&
+        !_results
+            .take(_selected)
+            .any((c) => !widget.exclude.contains(c.providerId))) {
+      _fieldFocus.requestFocus();
+      return KeyEventResult.handled;
+    }
     if (_results.isEmpty) return KeyEventResult.ignored;
     if (key == LogicalKeyboardKey.arrowDown ||
         key == LogicalKeyboardKey.arrowUp) {
@@ -128,7 +155,7 @@ class _MultiviewChannelPickerState
     }
     if (key == LogicalKeyboardKey.enter ||
         key == LogicalKeyboardKey.numpadEnter) {
-      _pick(_results[_selected]);
+      if (event is KeyDownEvent) _pick(_results[_selected]);
       return KeyEventResult.handled;
     }
     return KeyEventResult.ignored;
@@ -138,6 +165,7 @@ class _MultiviewChannelPickerState
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     final all = _all;
+    final tv = ref.watch(formFactorProvider).isTv;
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 22, 24, 16),
       child: Column(
@@ -152,7 +180,8 @@ class _MultiviewChannelPickerState
             onKeyEvent: _onKey,
             child: KTextField(
               controller: _query,
-              autofocus: true,
+              focusNode: _fieldFocus,
+              autofocus: !tv,
               hint: l10n.multiviewSearchHint,
               prefixIcon: PhosphorIconsLight.magnifyingGlass,
               onChanged: (_) => setState(_filter),
@@ -163,28 +192,33 @@ class _MultiviewChannelPickerState
           ),
           const SizedBox(height: 12),
           Expanded(
-            child: all == null
-                ? const KLoadingState()
-                : _results.isEmpty
-                ? KEmptyState(
-                    icon: PhosphorIconsLight.magnifyingGlass,
-                    message: l10n.multiviewNoResults(_query.text.trim()),
-                  )
-                : ListView.builder(
-                    controller: _scroll,
-                    itemExtent: _rowHeight,
-                    itemCount: _results.length,
-                    itemBuilder: (context, i) {
-                      final c = _results[i];
-                      final open = widget.exclude.contains(c.providerId);
-                      return _PickerRow(
-                        channel: c,
-                        selected: i == _selected,
-                        enabled: !open,
-                        onTap: () => _pick(c),
-                      );
-                    },
-                  ),
+            child: Focus(
+              focusNode: _listFocus,
+              autofocus: tv,
+              onKeyEvent: _onKey,
+              child: all == null
+                  ? const KLoadingState()
+                  : _results.isEmpty
+                  ? KEmptyState(
+                      icon: PhosphorIconsLight.magnifyingGlass,
+                      message: l10n.multiviewNoResults(_query.text.trim()),
+                    )
+                  : ListView.builder(
+                      controller: _scroll,
+                      itemExtent: _rowHeight,
+                      itemCount: _results.length,
+                      itemBuilder: (context, i) {
+                        final c = _results[i];
+                        final open = widget.exclude.contains(c.providerId);
+                        return _PickerRow(
+                          channel: c,
+                          selected: i == _selected,
+                          enabled: !open,
+                          onTap: () => _pick(c),
+                        );
+                      },
+                    ),
+            ),
           ),
         ],
       ),

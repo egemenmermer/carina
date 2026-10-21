@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../app/platform/form_factor.dart';
 import '../../app/platform/screen_awake.dart';
 import '../../app/router.dart' show MainTab, Routes;
 import '../../core/core.dart';
@@ -27,6 +28,10 @@ import 'multiview_state.dart';
 /// Enter shows it full screen inside multi-channel (Esc returns), and a
 /// hover toolbar per tile changes the channel, swaps it with the main tile
 /// or closes it. The layout picker (1 + 1, 2 × 2, 1 + 3) is in the top bar.
+///
+/// On a TV the arrows walk tiles, empty slots and the top bar; Down from a
+/// tile reaches its toolbar (shown while the tile is focused, bottom right)
+/// and Up from the top row reaches the top bar.
 class MultiviewScreen extends ConsumerStatefulWidget {
   const MultiviewScreen({
     super.key,
@@ -62,6 +67,24 @@ class _TileEngine {
 
 class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
   final FocusNode _focus = FocusNode(debugLabel: 'multiview');
+
+  /// Parent of the top bar controls (TV: Up from the top row enters it).
+  final FocusNode _barNode = FocusNode(
+    debugLabel: 'multiview bar',
+    canRequestFocus: false,
+    skipTraversal: true,
+  );
+
+  /// Parent of the empty-state content (TV: nothing to focus but its button).
+  final FocusNode _bodyNode = FocusNode(
+    debugLabel: 'multiview body',
+    canRequestFocus: false,
+    skipTraversal: true,
+  );
+
+  /// Per-tile toolbar parents and per-slot nodes (TV only).
+  final Map<int, FocusNode> _toolbarNodes = {};
+  final Map<int, FocusNode> _slotNodes = {};
   final Map<int, _TileEngine> _engines = {};
   int? _hoveredTile;
   bool _pickerOpen = false;
@@ -70,6 +93,8 @@ class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
   int get _pid => widget.playlistId;
 
   late final ScreenAwake _screenAwake;
+
+  bool get _tv => ref.read(formFactorProvider).isTv;
 
   MultiviewSessionNotifier get _notifier =>
       ref.read(multiviewSessionProvider(_pid).notifier);
@@ -83,6 +108,8 @@ class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
   void initState() {
     super.initState();
     _screenAwake = ref.read(screenAwakeProvider)..hold(this);
+    // The tile ring follows whether the tiles or a control hold focus.
+    _focus.addListener(_onFocusChanged);
     // Providers cannot change while the tree builds: apply the initial
     // channels / layout right after the first frame.
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -96,9 +123,13 @@ class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
       } else if (widget.initialLayout != null) {
         _notifier.setLayout(widget.initialLayout!);
       }
-      _focus.requestFocus();
+      _enterBody();
       _sync(ref.read(multiviewSessionProvider(_pid)));
     });
+  }
+
+  void _onFocusChanged() {
+    if (mounted && _tv) setState(() {});
   }
 
   @override
@@ -110,7 +141,13 @@ class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
       unawaited(e.engine.dispose());
     }
     _engines.clear();
+    _focus.removeListener(_onFocusChanged);
     _focus.dispose();
+    _barNode.dispose();
+    _bodyNode.dispose();
+    for (final n in [..._toolbarNodes.values, ..._slotNodes.values]) {
+      n.dispose();
+    }
     super.dispose();
   }
 
@@ -219,7 +256,7 @@ class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
       if (!ok || !mounted) return;
     }
     if (_notifier.add(id)) toasts.show(l10n.multiviewAdded);
-    _focus.requestFocus();
+    _enterBody();
   }
 
   Future<void> _changeChannel(int index) async {
@@ -230,7 +267,7 @@ class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
     if (id == null || !mounted) return;
     if (!await _unlock(id) || !mounted) return;
     _notifier.changeChannel(index, id);
-    _focus.requestFocus();
+    _enterBody();
   }
 
   Future<bool> _unlock(String channelId) =>
@@ -253,6 +290,7 @@ class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
   void _closeTile(int index) {
     _notifier.close(index);
     ref.read(toastControllerProvider).show(L10n.of(context).multiviewClosed);
+    _enterBody();
   }
 
   void _leave() {
@@ -262,6 +300,37 @@ class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
       return;
     }
     GoRouter.of(context).go(Routes.tab(_pid, MainTab.live));
+  }
+
+  FocusNode _toolbarNode(int tileId) => _toolbarNodes.putIfAbsent(
+    tileId,
+    () => FocusNode(
+      debugLabel: 'multiview toolbar $tileId',
+      canRequestFocus: false,
+      skipTraversal: true,
+    ),
+  );
+
+  FocusNode _slotNode(int slot) => _slotNodes.putIfAbsent(
+    slot,
+    () => FocusNode(debugLabel: 'multiview slot $slot'),
+  );
+
+  /// Moves focus into the tiles (or the empty state's button).
+  void _enterBody() {
+    final empty = ref.read(multiviewSessionProvider(_pid)).tiles.isEmpty;
+    if (!empty || !_tv) {
+      _focus.requestFocus();
+      return;
+    }
+    (_bodyNode.traversalDescendants.firstOrNull ?? _focus).requestFocus();
+  }
+
+  bool _focusFirstOf(FocusNode parent) {
+    final first = parent.traversalDescendants.firstOrNull;
+    if (first == null) return false;
+    first.requestFocus();
+    return true;
   }
 
   KeyEventResult _onKey(FocusNode node, KeyEvent event) {
@@ -278,12 +347,6 @@ class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
       }
       return KeyEventResult.handled;
     }
-    if (s.tiles.isEmpty) return KeyEventResult.ignored;
-    if (key == LogicalKeyboardKey.enter ||
-        key == LogicalKeyboardKey.numpadEnter) {
-      _notifier.setFullTile(s.fullTile == null ? s.focused : null);
-      return KeyEventResult.handled;
-    }
     final direction = switch (key) {
       LogicalKeyboardKey.arrowLeft => TraversalDirection.left,
       LogicalKeyboardKey.arrowRight => TraversalDirection.right,
@@ -291,6 +354,16 @@ class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
       LogicalKeyboardKey.arrowDown => TraversalDirection.down,
       _ => null,
     };
+    if (direction != null && _tv) return _onTvArrow(node, s, direction);
+    if (s.tiles.isEmpty) return KeyEventResult.ignored;
+    if (key == LogicalKeyboardKey.enter ||
+        key == LogicalKeyboardKey.numpadEnter) {
+      // A held key repeats: toggle once.
+      if (event is KeyDownEvent) {
+        _notifier.setFullTile(s.fullTile == null ? s.focused : null);
+      }
+      return KeyEventResult.handled;
+    }
     if (direction != null && s.fullTile == null) {
       final rects = multiviewRects(s.layout, const Size(1600, 900));
       final visible = rects.take(s.tiles.length).toList();
@@ -298,6 +371,69 @@ class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
       return KeyEventResult.handled;
     }
     return KeyEventResult.ignored;
+  }
+
+  /// D-pad on a TV. The root node keeps the tile cursor; the top bar, the
+  /// tile toolbars and the empty slots hold real focus and route back here
+  /// through the arrows they leave unhandled.
+  KeyEventResult _onTvArrow(
+    FocusNode node,
+    MultiviewSession s,
+    TraversalDirection direction,
+  ) {
+    final down = direction == TraversalDirection.down;
+    final up = direction == TraversalDirection.up;
+    if (_barNode.hasFocus) {
+      if (down) _enterBody();
+      return down ? KeyEventResult.handled : KeyEventResult.ignored;
+    }
+    if (s.tiles.isEmpty) {
+      // Initial focus sits on the root: step into the empty state's button
+      // or up to the top bar.
+      if (!node.hasPrimaryFocus) return KeyEventResult.ignored;
+      if (up) {
+        _focusFirstOf(_barNode);
+      } else {
+        _enterBody();
+      }
+      return KeyEventResult.handled;
+    }
+    final tiles = s.tiles.length;
+    final focused = clampIndex(s.focused, tiles);
+    if (s.tiles.any((t) => _toolbarNodes[t.id]?.hasFocus ?? false)) {
+      if (up) _focus.requestFocus();
+      return up ? KeyEventResult.handled : KeyEventResult.ignored;
+    }
+    var current = focused;
+    if (!node.hasPrimaryFocus) {
+      final slot = _slotNodes.entries
+          .where((e) => e.value.hasFocus)
+          .map((e) => e.key)
+          .firstOrNull;
+      if (slot == null) return KeyEventResult.ignored;
+      current = slot;
+    }
+    final full = s.fullTile;
+    if (full != null && full < tiles) {
+      if (up) _focusFirstOf(_barNode);
+      if (down) _focusFirstOf(_toolbarNode(s.tiles[full].id));
+      return KeyEventResult.handled;
+    }
+    final rects = multiviewRects(s.layout, const Size(1600, 900));
+    final target = neighborTile(rects, current, direction);
+    if (target != current) {
+      if (target < tiles) {
+        _notifier.focus(target);
+        _focus.requestFocus();
+      } else {
+        _slotNode(target).requestFocus();
+      }
+    } else if (up) {
+      _focusFirstOf(_barNode);
+    } else if (down && current < tiles) {
+      _focusFirstOf(_toolbarNode(s.tiles[current].id));
+    }
+    return KeyEventResult.handled;
   }
 
   // ---------------------------------------------------------------------------
@@ -327,14 +463,23 @@ class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _TopBar(
-              session: session,
-              onLayout: _notifier.setLayout,
-              onAdd: () => unawaited(_addChannel()),
-              onClose: _leave,
+            Focus(
+              focusNode: _barNode,
+              canRequestFocus: false,
+              skipTraversal: true,
+              child: _TopBar(
+                session: session,
+                onLayout: _notifier.setLayout,
+                onAdd: () => unawaited(_addChannel()),
+                onClose: _leave,
+              ),
             ),
             Expanded(
-              child: session.isEmpty
+              child: Focus(
+                focusNode: _bodyNode,
+                canRequestFocus: false,
+                skipTraversal: true,
+                child: session.isEmpty
                   ? KEmptyState(
                       icon: PhosphorIconsLight.squaresFour,
                       title: l10n.multiviewEmptyTitle(session.maxTiles),
@@ -350,6 +495,7 @@ class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
                             _buildTiles(session, constraints.biggest),
                       ),
                     ),
+              ),
             ),
           ],
         ),
@@ -378,7 +524,10 @@ class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
             rect: rects[i],
             child: i < s.tiles.length
                 ? _tile(s, i, s.tiles[i])
-                : _EmptySlot(onTap: () => unawaited(_addChannel())),
+                : _EmptySlot(
+                    focusNode: _tv ? _slotNode(i) : null,
+                    onTap: () => unawaited(_addChannel()),
+                  ),
           ),
       ],
     );
@@ -401,11 +550,21 @@ class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
     bool fullTile = false,
   }) {
     final e = _engines[tile.id];
+    final focused = index == clampIndex(s.focused, s.tiles.length);
+    final tv = _tv;
     return _TileView(
       key: ValueKey('multiview-tile-${tile.id}'),
       index: index,
       engine: e,
-      focused: index == clampIndex(s.focused, s.tiles.length),
+      focused: focused,
+      // TV: the ring marks where the cursor is, not just the audio tile.
+      ring:
+          focused &&
+          (!tv ||
+              _focus.hasPrimaryFocus ||
+              (_toolbarNodes[tile.id]?.hasFocus ?? false)),
+      tv: tv,
+      toolbarNode: tv ? _toolbarNode(tile.id) : null,
       hovered: _hoveredTile == tile.id,
       isMain: index == 0,
       fullTile: fullTile,
@@ -420,9 +579,15 @@ class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
         _notifier.focus(index);
         _focus.requestFocus();
       },
-      onToggleFull: () => _notifier.setFullTile(fullTile ? null : index),
+      onToggleFull: () {
+        _notifier.setFullTile(fullTile ? null : index);
+        _enterBody();
+      },
       onChangeChannel: () => unawaited(_changeChannel(index)),
-      onSwap: () => _notifier.swapWithMain(index),
+      onSwap: () {
+        _notifier.swapWithMain(index);
+        _enterBody();
+      },
       onClose: () => _closeTile(index),
     );
   }
@@ -586,15 +751,17 @@ class _LayoutIconPainter extends CustomPainter {
 }
 
 class _EmptySlot extends StatelessWidget {
-  const _EmptySlot({required this.onTap});
+  const _EmptySlot({required this.onTap, this.focusNode});
 
   final VoidCallback onTap;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     return KInteractive(
       onTap: onTap,
+      focusNode: focusNode,
       semanticLabel: l10n.multiviewAddChannel,
       builder: (context, state, _) => AnimatedContainer(
         duration: KMotion.of(context, KDurations.hover),
@@ -631,6 +798,9 @@ class _TileView extends StatelessWidget {
     required this.index,
     required this.engine,
     required this.focused,
+    required this.ring,
+    required this.tv,
+    required this.toolbarNode,
     required this.hovered,
     required this.isMain,
     required this.fullTile,
@@ -645,6 +815,15 @@ class _TileView extends StatelessWidget {
   final int index;
   final _TileEngine? engine;
   final bool focused;
+
+  /// The focus border is drawn (on a TV only while the cursor is on the
+  /// tile; [focused] alone marks the tile with sound).
+  final bool ring;
+
+  /// TV: the toolbar shows on the focused tile (bottom right) and its
+  /// buttons take focus; [toolbarNode] parents them.
+  final bool tv;
+  final FocusNode? toolbarNode;
   final bool hovered;
   final bool isMain;
   final bool fullTile;
@@ -680,8 +859,8 @@ class _TileView extends StatelessWidget {
             color: Colors.black,
             borderRadius: KRadii.cardBorder,
             border: Border.all(
-              color: focused ? KColors.focusRing : KColors.stroke,
-              width: focused ? 3 : 1,
+              color: ring ? KColors.focusRing : KColors.stroke,
+              width: ring ? 3 : 1,
             ),
           ),
           child: ClipRRect(
@@ -703,7 +882,8 @@ class _TileView extends StatelessWidget {
                 Positioned(
                   left: 12,
                   bottom: 12,
-                  right: 12,
+                  // Leave room for the TV toolbar.
+                  right: tv && focused ? 196 : 12,
                   child: AnimatedOpacity(
                     opacity: showChrome ? 1 : 0.85,
                     duration: KMotion.of(context, KDurations.hover),
@@ -766,54 +946,64 @@ class _TileView extends StatelessWidget {
                       ),
                     ),
                   ),
-                // Hover toolbar.
+                // Toolbar: on hover; on a TV, on the focused tile (bottom
+                // right, Down from the tile reaches it).
                 Positioned(
                   right: 10,
-                  top: 10,
+                  top: tv ? null : 10,
+                  bottom: tv ? 10 : null,
                   child: IgnorePointer(
-                    ignoring: !hovered,
-                    child: AnimatedOpacity(
-                      opacity: hovered ? 1 : 0,
-                      duration: KMotion.of(context, KDurations.hover),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          KIconButton(
-                            icon: PhosphorIconsLight.listBullets,
-                            tooltip: l10n.multiviewChangeChannel,
-                            background: KColors.overlay,
-                            focusable: false,
-                            onPressed: onChangeChannel,
+                    ignoring: !(tv ? focused : hovered),
+                    child: ExcludeFocus(
+                      excluding: !tv || !focused,
+                      child: Focus(
+                        focusNode: toolbarNode,
+                        canRequestFocus: false,
+                        skipTraversal: true,
+                        child: AnimatedOpacity(
+                          opacity: (tv ? focused : hovered) ? 1 : 0,
+                          duration: KMotion.of(context, KDurations.hover),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              KIconButton(
+                                icon: PhosphorIconsLight.listBullets,
+                                tooltip: l10n.multiviewChangeChannel,
+                                background: KColors.overlay,
+                                focusable: tv,
+                                onPressed: onChangeChannel,
+                              ),
+                              if (!isMain && !fullTile) ...[
+                                const SizedBox(width: 8),
+                                KIconButton(
+                                  icon: PhosphorIconsLight.arrowsLeftRight,
+                                  tooltip: l10n.multiviewSwapWithMain,
+                                  background: KColors.overlay,
+                                  focusable: tv,
+                                  onPressed: onSwap,
+                                ),
+                              ],
+                              const SizedBox(width: 8),
+                              KIconButton(
+                                icon: fullTile
+                                    ? PhosphorIconsLight.cornersIn
+                                    : PhosphorIconsLight.cornersOut,
+                                tooltip: l10n.multiviewFullTile,
+                                background: KColors.overlay,
+                                focusable: tv,
+                                onPressed: onToggleFull,
+                              ),
+                              const SizedBox(width: 8),
+                              KIconButton(
+                                icon: PhosphorIconsBold.x,
+                                tooltip: l10n.multiviewCloseTile,
+                                background: KColors.overlay,
+                                focusable: tv,
+                                onPressed: onClose,
+                              ),
+                            ],
                           ),
-                          if (!isMain && !fullTile) ...[
-                            const SizedBox(width: 8),
-                            KIconButton(
-                              icon: PhosphorIconsLight.arrowsLeftRight,
-                              tooltip: l10n.multiviewSwapWithMain,
-                              background: KColors.overlay,
-                              focusable: false,
-                              onPressed: onSwap,
-                            ),
-                          ],
-                          const SizedBox(width: 8),
-                          KIconButton(
-                            icon: fullTile
-                                ? PhosphorIconsLight.cornersIn
-                                : PhosphorIconsLight.cornersOut,
-                            tooltip: l10n.multiviewFullTile,
-                            background: KColors.overlay,
-                            focusable: false,
-                            onPressed: onToggleFull,
-                          ),
-                          const SizedBox(width: 8),
-                          KIconButton(
-                            icon: PhosphorIconsBold.x,
-                            tooltip: l10n.multiviewCloseTile,
-                            background: KColors.overlay,
-                            focusable: false,
-                            onPressed: onClose,
-                          ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
