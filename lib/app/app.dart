@@ -6,12 +6,13 @@ import '../core/core.dart';
 import '../features/reminders/reminders_api.dart';
 import '../l10n/gen/app_localizations.dart';
 import 'capture/capture_runner.dart';
+import 'platform/form_factor.dart';
 import 'router.dart';
 import 'time_format.dart';
 import 'window_setup.dart';
 
 /// Root widget: theme, localization, router, toast host and app-wide
-/// shortcuts (F11 fullscreen).
+/// shortcuts (F11 fullscreen; on TV, Back that no screen handled).
 class CarinaApp extends ConsumerWidget {
   const CarinaApp({super.key});
 
@@ -46,18 +47,31 @@ class CarinaApp extends ConsumerWidget {
   }
 }
 
-class _AppShortcuts extends StatelessWidget {
+class _AppShortcuts extends ConsumerWidget {
   const _AppShortcuts({required this.child});
 
   final Widget child;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tv = ref.watch(formFactorProvider).isTv;
     return CallbackShortcuts(
       bindings: {
         const SingleActivator(LogicalKeyboardKey.f11): () {
           WindowControls.toggleFullscreen();
         },
+        // The remote's Back arrives as Escape (MainActivity.kt). Screens and
+        // overlays handle it first; here it reaches only when none did, so it
+        // goes one route back, or leaves the app from the first screen.
+        if (tv)
+          const SingleActivator(LogicalKeyboardKey.escape): () {
+            final router = ref.read(routerProvider);
+            if (router.canPop()) {
+              router.pop();
+            } else {
+              SystemNavigator.pop();
+            }
+          },
       },
       child: child,
     );

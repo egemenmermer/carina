@@ -3,6 +3,7 @@ package app.carina.player
 import android.app.UiModeManager
 import android.content.Context
 import android.content.res.Configuration
+import android.view.KeyEvent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import io.flutter.embedding.android.FlutterActivity
@@ -20,6 +21,26 @@ class MainActivity : FlutterActivity() {
                     else -> result.notImplemented()
                 }
             }
+    }
+
+    // The remote's Back and OK reach Flutter as Escape and Enter, the keys
+    // every screen already handles (overlays close on Escape, lists open on
+    // Enter). Escape that no screen handles pops a route or leaves the app,
+    // see _AppShortcuts in lib/app/app.dart.
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        val mapped = when (event.keyCode) {
+            KeyEvent.KEYCODE_BACK -> KeyEvent.KEYCODE_ESCAPE
+            KeyEvent.KEYCODE_DPAD_CENTER -> KeyEvent.KEYCODE_ENTER
+            else -> return super.dispatchKeyEvent(event)
+        }
+        return super.dispatchKeyEvent(
+            KeyEvent(
+                event.downTime, event.eventTime, event.action, mapped,
+                event.repeatCount, event.metaState, event.deviceId,
+                if (mapped == KeyEvent.KEYCODE_ESCAPE) SCAN_ESCAPE else SCAN_ENTER,
+                event.flags, event.source,
+            ),
+        )
     }
 
     // Debuggable builds take launch flags (lib/app/launch_options.dart) from
@@ -47,5 +68,9 @@ class MainActivity : FlutterActivity() {
     private companion object {
         const val CHANNEL = "app.carina.player/platform"
         const val ARGS_EXTRA = "carina_args"
+
+        // Linux scan codes, so Flutter maps the physical key consistently.
+        const val SCAN_ESCAPE = 1
+        const val SCAN_ENTER = 28
     }
 }
