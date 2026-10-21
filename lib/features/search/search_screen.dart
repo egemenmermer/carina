@@ -182,16 +182,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       return KeyEventResult.ignored;
     }
     if (ref.read(formFactorProvider).isTv) {
-      // The remote's Back leaves the field (its text stays), then the page.
+      // The remote's Back leaves the field (its text stays), then the page:
+      // the shell goes to the home tab.
       if (_fieldFocus.hasFocus &&
           _fieldFocus.focusInDirection(TraversalDirection.down)) {
         return KeyEventResult.handled;
       }
-      if (_person != null) {
-        _exitPerson();
-      } else {
-        _leave();
-      }
+      if (_person == null) return KeyEventResult.ignored;
+      _exitPerson();
     } else if (!_fieldFocus.hasFocus) {
       _focusField();
     } else if (_controller.text.isNotEmpty) {

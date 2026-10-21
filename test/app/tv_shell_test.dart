@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:carina/data/settings/settings_store.dart';
+
 import '../features/library/library_harness.dart';
 import '../support/screenshot.dart';
 
@@ -142,6 +144,11 @@ void main() {
       'section → out', (tester) async {
     final fx = await importFixture(tester);
     final pid = fx.playlistId;
+    // Back goes to the home tab, not to the tab used last.
+    await tester.runAsync(
+      () =>
+          fx.settings.set(PlaylistSettings.lastTab, 'movies', playlistId: pid),
+    );
     final c = await _pumpTv(
       tester,
       fx,
@@ -171,6 +178,11 @@ void main() {
   ) async {
     final fx = await importFixture(tester);
     final pid = fx.playlistId;
+    // Back goes to the home tab, not to the tab used last.
+    await tester.runAsync(
+      () =>
+          fx.settings.set(PlaylistSettings.lastTab, 'movies', playlistId: pid),
+    );
     final c = await _pumpTv(
       tester,
       fx,
@@ -241,6 +253,21 @@ void main() {
     expect(c.read(categorySidebarOpenProvider), isFalse);
     expect(_primary, before);
     expect(_path(c), Routes.tab(pid, MainTab.movies));
+    await disposeFixture(tester, fx);
+  });
+
+  testWidgets('TV settings at 960×540: a deep section\'s tile is on screen', (
+    tester,
+  ) async {
+    final fx = await importFixture(tester);
+    await _pumpTv(tester, fx, Routes.playlistSettings(fx.playlistId, 'about'));
+    final tile = _primary!;
+    expect(
+      tile.context!.findAncestorWidgetOfExactType<SettingsSectionTile>(),
+      isNotNull,
+    );
+    expect(tile.rect.top, greaterThanOrEqualTo(72));
+    expect(tile.rect.bottom, lessThanOrEqualTo(540));
     await disposeFixture(tester, fx);
   });
 }

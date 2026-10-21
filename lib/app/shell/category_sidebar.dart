@@ -244,6 +244,12 @@ class _CategoryRow extends StatelessWidget {
         onTap: onTap,
         autofocus: autofocus,
         selected: selected,
+        // TV: autofocus does not scroll; bring a deep selected row into view.
+        onFocusChange: autofocus && KTvMode.read(context)
+            ? (focused) {
+                if (focused) Scrollable.ensureVisible(context, alignment: 0.5);
+              }
+            : null,
         builder: (context, state, _) {
           // On TV the white pill marks focus alone; the selected category
           // keeps a quiet fill.

@@ -87,6 +87,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   void initState() {
     super.initState();
     _section = _resolve(widget.section);
+    // TV: autofocus does not scroll; bring a deep section's tile into view.
+    if (_tv) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final tile = _tileNodes[_section]?.context;
+        if (mounted && tile != null) {
+          Scrollable.ensureVisible(tile, alignment: 0.5);
+        }
+      });
+    }
   }
 
   @override
@@ -180,11 +189,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
     final focused = FocusManager.instance.primaryFocus;
     if (_tv) {
-      // The remote's Back: subpage → section → section list → out.
+      // The remote's Back: subpage → section → section list → out (in a
+      // playlist the shell takes it from there, to the home tab).
       if (_subpage != null) {
         _closeSubpage();
       } else if (_contentFocus.hasFocus) {
         _tileNode(_section).requestFocus();
+      } else if (_pid != null) {
+        return KeyEventResult.ignored;
       } else {
         _leave();
       }
@@ -356,6 +368,8 @@ class _SectionList extends StatelessWidget {
     final back = onBack;
     return FocusTraversalGroup(
       child: ListView(
+        // TV: build every tile, so a deep selected one can take focus.
+        cacheExtent: autofocusSelected ? 4000 : null,
         padding: const EdgeInsets.fromLTRB(32, 22, 16, 32),
         children: [
           if (back != null) ...[
