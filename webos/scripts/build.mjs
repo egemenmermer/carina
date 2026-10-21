@@ -23,6 +23,7 @@ await build({
   minify: !dev,
   sourcemap: dev ? 'inline' : false,
   legalComments: 'none',
+  external: ['fonts/*'],
   define: {
     __DEV__: String(dev),
     __VERSION__: JSON.stringify(pkg.version),

@@ -56,7 +56,7 @@ export class XtreamSource implements Source {
   private cats: Partial<Record<Section, Category[]>> = {};
   private lists = new Lru<Item[]>(6);
   private epgCache = new Lru<{ at: number; list: Programme[] }>(400);
-  private pending: Record<string, Promise<Item[]>> = {};
+  private pending: Record<string, Promise<Item[]> | undefined> = {};
 
   constructor(readonly playlist: Playlist & { kind: 'xtream' }) {
     this.client = new XtreamClient(playlist);
@@ -84,7 +84,8 @@ export class XtreamSource implements Source {
     const key = section + '|' + categoryId;
     const hit = this.lists.get(key);
     if (hit) return Promise.resolve(hit);
-    if (this.pending[key]) return this.pending[key];
+    const inflight = this.pending[key];
+    if (inflight) return inflight;
     const params: Record<string, string> = { action: sectionAction[section][1] };
     if (categoryId !== ALL) params.category_id = categoryId;
     const p = this.client.call(params, 45000).then((json) => {
