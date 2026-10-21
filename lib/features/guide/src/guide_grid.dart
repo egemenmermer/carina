@@ -4,6 +4,7 @@
 /// middle-button drag scrolling, and cell routing through callbacks.
 library;
 
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
@@ -54,7 +55,7 @@ class GuideGrid extends StatefulWidget {
     this.autofocus = true,
     this.focusNode,
     this.metrics = GuideMetrics.regular,
-    this.leaveUpFromFirstRow = false,
+    this.tv = false,
   });
 
   final List<ChannelView> channels;
@@ -94,9 +95,10 @@ class GuideGrid extends StatefulWidget {
   final FocusNode? focusNode;
   final GuideMetrics metrics;
 
-  /// Up on the first row is left unhandled so directional focus can move to
-  /// the controls above the grid (TV remote).
-  final bool leaveUpFromFirstRow;
+  /// TV remote: Up on the first row is left unhandled so directional focus
+  /// can move to the controls above the grid, and OK held (rather than
+  /// pressed) opens the channel actions, like the context menu elsewhere.
+  final bool tv;
 
   @override
   State<GuideGrid> createState() => _GuideGridState();
@@ -121,6 +123,7 @@ class _GuideGridState extends State<GuideGrid> implements GuideGridCommands {
   late int _anchorMs;
   Object? _lastEnsure;
   Offset? _hoverPosition;
+  Timer? _okHold;
 
   int? _dragPointer;
   Offset _dragStart = Offset.zero;
@@ -188,6 +191,7 @@ class _GuideGridState extends State<GuideGrid> implements GuideGridCommands {
 
   @override
   void dispose() {
+    _okHold?.cancel();
     widget.controller.detach(this);
     widget.cache.removeListener(_onCacheChanged);
     _v?.dispose();
@@ -467,13 +471,43 @@ class _GuideGridState extends State<GuideGrid> implements GuideGridCommands {
 
   // -------------------------------------------------------------- keyboard
 
+  /// OK on a TV: a press activates on release, a hold opens the channel
+  /// actions instead (timer, or the remote's first key repeat).
+  KeyEventResult _onTvOk(KeyEvent event) {
+    switch (event) {
+      case KeyDownEvent():
+        _okHold?.cancel();
+        _okHold = Timer(KInteractive.tvMenuHold, _openActionsFromHold);
+      case KeyRepeatEvent():
+        if (_okHold != null) _openActionsFromHold();
+      case KeyUpEvent():
+        if (_okHold != null) {
+          _okHold!.cancel();
+          _okHold = null;
+          _activate();
+        }
+    }
+    return KeyEventResult.handled;
+  }
+
+  void _openActionsFromHold() {
+    _okHold?.cancel();
+    _okHold = null;
+    if (mounted) _channelActionsForFocus();
+  }
+
   KeyEventResult _onKey(FocusNode node, KeyEvent event) {
+    final ok =
+        event.logicalKey == LogicalKeyboardKey.enter ||
+        event.logicalKey == LogicalKeyboardKey.numpadEnter ||
+        event.logicalKey == LogicalKeyboardKey.select;
+    if (widget.tv && ok) return _onTvOk(event);
     if (event is KeyUpEvent) return KeyEventResult.ignored;
     final repeat = event is KeyRepeatEvent;
     final key = event.logicalKey;
     final rowsPerPage = math.max(1, (_viewportHeight / _m.rowPitch).floor());
     if (key == LogicalKeyboardKey.arrowUp) {
-      if (widget.leaveUpFromFirstRow && (_focus?.row ?? 0) == 0) {
+      if (widget.tv && (_focus?.row ?? 0) == 0) {
         return KeyEventResult.ignored;
       }
       _moveRow(-1, repeat: repeat);

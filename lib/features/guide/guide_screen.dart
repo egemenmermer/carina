@@ -315,7 +315,7 @@ class _GuideScreenState extends ConsumerState<GuideScreen> {
                 noEpgLabel: l10n.guideNoEpg,
                 reminderKeys: _keysOf(reminders),
                 dayLabel: (day) => guideDayLabel(l10n, fmt, day, now),
-                leaveUpFromFirstRow: ref.watch(formFactorProvider).isTv,
+                tv: ref.watch(formFactorProvider).isTv,
                 onDayTap: (rect) => _pickDay(rect, range),
                 onActivate: (f) => unawaited(_activate(f, channels, category)),
                 onChannelActions: (channel, position) => unawaited(
