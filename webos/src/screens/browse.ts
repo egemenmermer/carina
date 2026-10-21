@@ -43,6 +43,7 @@ export class BrowseScreen extends ZoneScreen implements Screen {
   private countEl = h('span', { class: 'content-count' });
   private catTitle = h('h2', { class: 'cats-title' });
   private body = h('div', { class: 'content-body' });
+  private hint = h('footer', { class: 'hint' });
   private categoryId = '';
   private base: Item[] = [];
   private shown: Item[] = [];
@@ -113,7 +114,7 @@ export class BrowseScreen extends ZoneScreen implements Screen {
       h('nav', { class: 'rail' }, h('div', { class: 'rail-title', text: source.playlist.name }), this.rail.el),
       h('section', { class: 'cats-col' }, this.catTitle, this.cats.el),
       h('section', { class: 'content' }, h('div', { class: 'content-head' }, h('div', { class: 'content-titles' }, this.titleEl, this.countEl), this.search.el), this.body),
-      h('footer', { class: 'hint', text: t('hintBrowse') }),
+      this.hint,
     );
     for (const z of [this.rail, this.cats, this.channels, this.posters, this.search, this.status.retry]) this.bindPointer(z);
     this.openSection('live');
@@ -139,6 +140,7 @@ export class BrowseScreen extends ZoneScreen implements Screen {
     this.section = s;
     ['live', 'movies', 'series'].forEach((x, i) => toggle(this.rail.el.children[i], 'on', x === s));
     toggle(this.el, 'is-live', s === 'live');
+    this.hint.textContent = s === 'live' ? t('hintBrowse') : t('hintBrowseVod');
     this.catTitle.textContent = t(s);
     this.search.input.value = '';
     this.cats.setItems([]);

@@ -87,6 +87,7 @@ export class VList<T> implements Zone {
       this.inner.replaceChild(n, old);
       this.nodes[i] = n;
     }
+    this.paintFocus();
   }
 
   setActive(a: boolean): void {
