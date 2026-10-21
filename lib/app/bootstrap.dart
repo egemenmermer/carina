@@ -17,6 +17,7 @@ import 'app.dart';
 import 'capture/capture_runner.dart';
 import 'launch_options.dart';
 import 'mock_seed.dart';
+import 'platform/form_factor.dart';
 import 'probe/m0_probe_app.dart';
 import 'router.dart';
 import 'smoke/smoke_runner.dart';
@@ -33,6 +34,7 @@ class AppContext {
     required this.db,
     required this.settings,
     required this.secrets,
+    this.formFactor = FormFactor.desktop,
   });
 
   final LaunchOptions options;
@@ -40,6 +42,7 @@ class AppContext {
   final AppDatabase db;
   final SettingsStore settings;
   final SecretStore secrets;
+  final FormFactor formFactor;
 
   List<Override> get overrides => [
     launchOptionsProvider.overrideWithValue(options),
@@ -47,6 +50,7 @@ class AppContext {
     appDatabaseProvider.overrideWithValue(db),
     settingsStoreProvider.overrideWithValue(settings),
     secretStoreProvider.overrideWithValue(secrets),
+    formFactorProvider.overrideWithValue(formFactor),
   ];
 }
 
@@ -86,6 +90,7 @@ Future<void> bootstrap(List<String> args) async {
     db: db,
     settings: settings,
     secrets: secrets,
+    formFactor: await resolveFormFactor(forceTv: options.tv),
   );
 
   await WindowSetup(settings).init(

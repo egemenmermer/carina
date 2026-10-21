@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:carina/app/platform/form_factor.dart';
 import 'package:carina/data/repositories/live_repository.dart';
 import 'package:carina/data/repositories/repository_models.dart';
 import 'package:carina/features/multiview/multiview_api.dart';
@@ -115,6 +116,57 @@ void main() {
       notifier().setLayout(MultiviewLayout.sideBySide);
       expect(session().layout, MultiviewLayout.onePlusThree);
     });
+  });
+
+  group('session on a TV', () {
+    late ProviderContainer container;
+    MultiviewSessionNotifier notifier() =>
+        container.read(multiviewSessionProvider(1).notifier);
+    MultiviewSession session() => container.read(multiviewSessionProvider(1));
+
+    setUp(
+      () => container = ProviderContainer(
+        overrides: [formFactorProvider.overrideWithValue(FormFactor.tv)],
+      ),
+    );
+    tearDown(() => container.dispose());
+
+    test('holds two tiles in 1 + 1 only', () {
+      expect(session().maxTiles, 2);
+      expect(session().layouts, [MultiviewLayout.sideBySide]);
+      expect(notifier().add('a'), isTrue);
+      expect(notifier().add('b'), isTrue);
+      expect(session().isFull, isTrue);
+      expect(notifier().add('c'), isFalse);
+      expect(session().tiles, hasLength(2));
+      expect(session().layout, MultiviewLayout.sideBySide);
+    });
+
+    test('replace and setLayout stay inside the cap', () {
+      notifier().replace(['a', 'b', 'c', 'd'], layout: MultiviewLayout.grid2x2);
+      expect(session().tiles.map((t) => t.channelId), ['a', 'b']);
+      expect(session().layout, MultiviewLayout.sideBySide);
+      notifier().setLayout(MultiviewLayout.grid2x2);
+      expect(session().layout, MultiviewLayout.sideBySide);
+      notifier().clear();
+      expect(session().maxTiles, 2);
+    });
+  });
+
+  test('desktop keeps all layouts and four tiles', () {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    final s = container.read(multiviewSessionProvider(1));
+    expect(s.maxTiles, 4);
+    expect(s.layouts, MultiviewLayout.values);
+    expect(
+      MultiviewLayout.fitting(3, MultiviewLayout.sideBySide),
+      MultiviewLayout.grid2x2,
+    );
+    expect(
+      MultiviewLayout.fitting(2, MultiviewLayout.onePlusThree),
+      MultiviewLayout.onePlusThree,
+    );
   });
 
   group('screen', () {
@@ -286,6 +338,57 @@ void main() {
       expect(find.text('Open another stream?'), findsNothing);
       expect(find.text('Multi-channel shows up to 4 channels'), findsOneWidget);
       expect(factory.created, hasLength(4));
+      await tester.pump(const Duration(seconds: 3));
+      await closePlayer(tester);
+    });
+
+    testWidgets('on a TV: two tiles, no layout picker, adding is capped', (
+      tester,
+    ) async {
+      final factory = manualFactory();
+      await pumpScreen(
+        tester,
+        MultiviewScreen(
+          playlistId: fx.playlistId,
+          initialLayout: MultiviewLayout.grid2x2,
+          initialChannelIds: ulusal.take(4).toList(),
+        ),
+        overrides: [
+          ...playerOverrides(fx, factory: factory),
+          formFactorProvider.overrideWithValue(FormFactor.tv),
+        ],
+      );
+      await settleDrift(tester, rounds: 12);
+      expect(factory.created, hasLength(2));
+      final tiles = find.byWidgetPredicate(
+        (w) =>
+            w.key is ValueKey<String> &&
+            (w.key! as ValueKey<String>).value.startsWith('multiview-tile-'),
+      );
+      expect(tiles, findsNWidgets(2));
+      for (final layout in MultiviewLayout.values) {
+        expect(
+          find.byKey(ValueKey('multiview-layout-${layout.name}')),
+          findsNothing,
+        );
+      }
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(MultiviewScreen)),
+      );
+      final context = tester.element(find.byType(MultiviewScreen));
+      unawaited(
+        addToMultiview(
+          context,
+          playlistId: fx.playlistId,
+          channelId: ulusal[5],
+        ),
+      );
+      await settleDrift(tester, rounds: 6);
+      expect(find.text('Multi-channel shows up to 2 channels'), findsOneWidget);
+      expect(
+        container.read(multiviewSessionProvider(fx.playlistId)).tiles,
+        hasLength(2),
+      );
       await tester.pump(const Duration(seconds: 3));
       await closePlayer(tester);
     });

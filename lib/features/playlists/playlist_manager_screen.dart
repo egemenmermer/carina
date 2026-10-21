@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:carina/app/platform/form_factor.dart';
 import 'package:carina/app/router.dart';
 import 'package:carina/core/core.dart';
 import 'package:carina/data/db/database.dart' show PlaylistRow;
@@ -139,12 +140,13 @@ class _PlaylistManagerScreenState extends ConsumerState<PlaylistManagerScreen> {
                       label: l10n.playlistsAddPlaylist,
                       onTap: _addPlaylist,
                     ),
-                    ManagerRailItem(
-                      key: const ValueKey('rail-downloads'),
-                      icon: PhosphorIconsLight.downloadSimple,
-                      label: l10n.playlistsDownloads,
-                      onTap: () => router.push(Routes.downloads),
-                    ),
+                    if (!ref.watch(formFactorProvider).isTv)
+                      ManagerRailItem(
+                        key: const ValueKey('rail-downloads'),
+                        icon: PhosphorIconsLight.downloadSimple,
+                        label: l10n.playlistsDownloads,
+                        onTap: () => router.push(Routes.downloads),
+                      ),
                     ManagerRailItem(
                       key: const ValueKey('rail-settings'),
                       icon: PhosphorIconsLight.gearSix,

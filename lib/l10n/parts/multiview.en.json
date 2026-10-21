@@ -11,7 +11,14 @@
   "multiviewCloseTile": "Close",
   "multiviewSwapWithMain": "Swap with main",
   "multiviewFullTile": "Full screen",
-  "multiviewEmptyTitle": "Watch up to 4 channels at once",
+  "multiviewEmptyTitle": "Watch up to {count} channels at once",
+  "@multiviewEmptyTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "multiviewEmptyMessage": "Add channels here, from TV Live or from the live player.",
   "multiviewWarnTitle": "Open another stream?",
   "multiviewWarnMessage": "Most IPTV accounts allow only 1–2 connections at the same time. Your account allows {count}.",
@@ -24,7 +31,14 @@
   },
   "multiviewWarnMessageUnknown": "Most IPTV accounts allow only 1–2 connections at the same time; extra streams may not play.",
   "multiviewOpenAnyway": "Open anyway",
-  "multiviewMaxReached": "Multi-channel shows up to 4 channels",
+  "multiviewMaxReached": "Multi-channel shows up to {count} channels",
+  "@multiviewMaxReached": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "multiviewAdded": "Added to multi-channel",
   "multiviewClosed": "Channel closed",
   "multiviewPickerTitle": "Choose a channel",

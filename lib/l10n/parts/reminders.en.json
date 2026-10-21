@@ -1,5 +1,6 @@
 {
   "remindersSet": "Reminder set — keep Carina running to get it",
+  "remindersSetScheduled": "Reminder set",
   "remindersRemoved": "Reminder removed",
   "remindersAlreadyStarted": "This programme has already started",
   "remindersNotFound": "This programme is no longer in the guide",
@@ -23,5 +24,7 @@
     }
   },
   "remindersWatchNow": "Watch now",
-  "remindersDismiss": "Dismiss"
+  "remindersDismiss": "Dismiss",
+  "remindersChannelName": "Programme reminders",
+  "remindersChannelDescription": "Reminders for the programmes you chose in the guide"
 }

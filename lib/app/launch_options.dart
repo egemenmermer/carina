@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// - `--mock` / `--mock-url <url>` adds the local mock Xtream playlist on
 ///   first start (default `http://127.0.0.1:8787`).
 /// - `--data-dir <dir>` uses a separate profile folder.
+/// - `--tv` forces the Android TV form factor on desktop (screenshots, dev).
 /// - `--probe --media <path> [--probe-out <json>]` is the M0 decode probe.
 class LaunchOptions {
   const LaunchOptions({
@@ -19,6 +20,7 @@ class LaunchOptions {
     this.mockUrl = defaultMockUrl,
     this.dataDir,
     this.probe = false,
+    this.tv = false,
     this.probeMedia,
     this.probeOut,
   });
@@ -35,6 +37,7 @@ class LaunchOptions {
   final String mockUrl;
   final String? dataDir;
   final bool probe;
+  final bool tv;
   final String? probeMedia;
   final String? probeOut;
 
@@ -43,7 +46,7 @@ class LaunchOptions {
   /// Smoke and capture runs need the mock playlist.
   bool get wantsMockPlaylist => mock || smokeTest || capture;
 
-  static const _flags = {'smoke-test', 'mock', 'probe'};
+  static const _flags = {'smoke-test', 'mock', 'probe', 'tv'};
   static const _options = {
     'smoke-out',
     'capture',
@@ -76,6 +79,7 @@ class LaunchOptions {
       ..addOption('mock-url')
       ..addOption('data-dir')
       ..addFlag('probe', negatable: false)
+      ..addFlag('tv', negatable: false)
       ..addOption('media')
       ..addOption('probe-out');
     final ArgResults r;
@@ -93,6 +97,7 @@ class LaunchOptions {
       mockUrl: mockUrl ?? defaultMockUrl,
       dataDir: r['data-dir'] as String?,
       probe: r['probe'] as bool,
+      tv: r['tv'] as bool,
       probeMedia: r['media'] as String?,
       probeOut: r['probe-out'] as String?,
     );

@@ -26,6 +26,7 @@ void main() {
       final ua = defaultUserAgent();
       if (Platform.isWindows) expect(ua, 'Carina/1.0 (Windows)');
       if (Platform.isMacOS) expect(ua, 'Carina/1.0 (macOS)');
+      if (Platform.isAndroid) expect(ua, 'Carina/1.0 (Android)');
       expect(ua, startsWith('Carina/1.0 ('));
     });
 

@@ -985,7 +985,14 @@
   "multiviewCloseTile": "Close",
   "multiviewClosed": "Channel closed",
   "multiviewEmptyMessage": "Add channels here, from TV Live or from the live player.",
-  "multiviewEmptyTitle": "Watch up to 4 channels at once",
+  "multiviewEmptyTitle": "Watch up to {count} channels at once",
+  "@multiviewEmptyTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "multiviewFullTile": "Full screen",
   "multiviewFullTileHint": "Esc to return to all channels",
   "multiviewLayoutGrid": "2 × 2",
@@ -994,7 +1001,14 @@
   "multiviewLayoutOnePlusThreeHint": "One big, three small",
   "multiviewLayoutSideBySide": "1 + 1",
   "multiviewLayoutSideBySideHint": "Side by side",
-  "multiviewMaxReached": "Multi-channel shows up to 4 channels",
+  "multiviewMaxReached": "Multi-channel shows up to {count} channels",
+  "@multiviewMaxReached": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "multiviewNoResults": "No channels match “{query}”",
   "@multiviewNoResults": {
     "placeholders": {
@@ -1611,6 +1625,8 @@
   "playlistsXtreamDetected": "This is an Xtream link. Xtream gives richer data (archive, account details).",
   "playlistsXtreamFilled": "Server, username and password filled in from the link",
   "remindersAlreadyStarted": "This programme has already started",
+  "remindersChannelDescription": "Reminders for the programmes you chose in the guide",
+  "remindersChannelName": "Programme reminders",
   "remindersDismiss": "Dismiss",
   "remindersNotFound": "This programme is no longer in the guide",
   "remindersOnAirNow": "{channel} · on air now",
@@ -1623,6 +1639,7 @@
   },
   "remindersRemoved": "Reminder removed",
   "remindersSet": "Reminder set — keep Carina running to get it",
+  "remindersSetScheduled": "Reminder set",
   "remindersStartsAt": "{channel} · starts at {time}",
   "@remindersStartsAt": {
     "placeholders": {

@@ -14,6 +14,7 @@ This file says where code goes and which interfaces connect the pieces.
 lib/
   main.dart                  bootstrap + CLI flags (lead)
   app/                       app widget, router, shell, providers (lead)
+    platform/                form factor (desktop/tv), screen-awake (wakelock)
   core/                      design system: tokens, theme, widgets (design agent)
     brand/carina_mark.dart    the Carina mark (shared, do not change geometry)
   data/

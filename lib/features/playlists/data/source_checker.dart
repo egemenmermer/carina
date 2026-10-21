@@ -9,6 +9,7 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:carina/data/net/dio_factory.dart' show createDio;
 import 'package:carina/data/net/url_check.dart'
@@ -157,10 +158,16 @@ final playlistFilePickerProvider = Provider<PlaylistFilePicker>(
 );
 
 Future<String?> _pickWithPlatform(String dialogTitle) async {
-  final file = await FilePicker.pickFile(
-    dialogTitle: dialogTitle,
-    type: FileType.custom,
-    allowedExtensions: const ['m3u', 'm3u8'],
-  );
-  return file?.path;
+  try {
+    final file = await FilePicker.pickFile(
+      dialogTitle: dialogTitle,
+      type: FileType.custom,
+      allowedExtensions: const ['m3u', 'm3u8'],
+    );
+    return file?.path;
+  } on Object catch (e) {
+    // Android TV often has no document picker app.
+    debugPrint('File picker unavailable: $e');
+    return null;
+  }
 }

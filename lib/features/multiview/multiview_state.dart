@@ -6,10 +6,18 @@ library;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/platform/form_factor.dart';
 import 'multiview_layout.dart';
 
-/// Maximum number of tiles.
+/// Maximum number of tiles on desktop.
 const int kMultiviewMaxTiles = 4;
+
+/// Maximum number of tiles on a TV (2 decoders; tune on a device).
+const int kMultiviewMaxTilesTv = 2;
+
+/// Tile cap of [formFactor].
+int multiviewMaxTilesFor(FormFactor formFactor) =>
+    formFactor.isTv ? kMultiviewMaxTilesTv : kMultiviewMaxTiles;
 
 /// One open channel.
 @immutable
@@ -42,6 +50,7 @@ class MultiviewSession {
     this.focused = 0,
     this.fullTile,
     this.pickerRequested = false,
+    this.maxTiles = kMultiviewMaxTiles,
   });
 
   /// Open channels; index 0 is the main tile.
@@ -57,8 +66,14 @@ class MultiviewSession {
   /// The screen should open the channel picker once (player "Add channel").
   final bool pickerRequested;
 
+  /// Most tiles this device opens ([multiviewMaxTilesFor]).
+  final int maxTiles;
+
+  /// Layouts of the picker that fit [maxTiles].
+  List<MultiviewLayout> get layouts => MultiviewLayout.available(maxTiles);
+
   bool get isEmpty => tiles.isEmpty;
-  bool get isFull => tiles.length >= kMultiviewMaxTiles;
+  bool get isFull => tiles.length >= maxTiles;
   bool contains(String channelId) => tiles.any((t) => t.channelId == channelId);
 
   MultiviewTile? get focusedTile =>
@@ -76,6 +91,7 @@ class MultiviewSession {
     focused: focused ?? this.focused,
     fullTile: identical(fullTile, _unset) ? this.fullTile : fullTile as int?,
     pickerRequested: pickerRequested ?? this.pickerRequested,
+    maxTiles: maxTiles,
   );
 
   @override
@@ -85,7 +101,8 @@ class MultiviewSession {
       other.layout == layout &&
       other.focused == focused &&
       other.fullTile == fullTile &&
-      other.pickerRequested == pickerRequested;
+      other.pickerRequested == pickerRequested &&
+      other.maxTiles == maxTiles;
 
   @override
   int get hashCode => Object.hash(
@@ -94,6 +111,7 @@ class MultiviewSession {
     focused,
     fullTile,
     pickerRequested,
+    maxTiles,
   );
 
   @override
@@ -111,7 +129,9 @@ class MultiviewSessionNotifier extends Notifier<MultiviewSession> {
   int _nextId = 1;
 
   @override
-  MultiviewSession build() => const MultiviewSession();
+  MultiviewSession build() => MultiviewSession(
+    maxTiles: multiviewMaxTilesFor(ref.read(formFactorProvider)),
+  );
 
   /// Adds [channelId] as a new tile and focuses it. Returns false when the
   /// session is full. A channel that is already open is focused instead.
@@ -130,17 +150,18 @@ class MultiviewSessionNotifier extends Notifier<MultiviewSession> {
     state = s.copyWith(
       tiles: tiles,
       focused: tiles.length - 1,
-      layout: MultiviewLayout.fitting(tiles.length, s.layout),
+      layout: MultiviewLayout.fitting(tiles.length, s.layout, s.maxTiles),
     );
     return true;
   }
 
-  /// Replaces the session with [channelIds] (at most four) in [layout].
+  /// Replaces the session with [channelIds] (at most [MultiviewSession.maxTiles])
+  /// in [layout].
   void replace(List<String> channelIds, {MultiviewLayout? layout}) {
     final ids = <String>[];
     for (final id in channelIds) {
       if (!ids.contains(id)) ids.add(id);
-      if (ids.length == kMultiviewMaxTiles) break;
+      if (ids.length == state.maxTiles) break;
     }
     final tiles = [
       for (final id in ids) MultiviewTile(id: _nextId++, channelId: id),
@@ -148,7 +169,8 @@ class MultiviewSessionNotifier extends Notifier<MultiviewSession> {
     final wanted = layout ?? state.layout;
     state = MultiviewSession(
       tiles: tiles,
-      layout: MultiviewLayout.fitting(tiles.length, wanted),
+      layout: MultiviewLayout.fitting(tiles.length, wanted, state.maxTiles),
+      maxTiles: state.maxTiles,
     );
   }
 
@@ -207,7 +229,7 @@ class MultiviewSessionNotifier extends Notifier<MultiviewSession> {
 
   void setLayout(MultiviewLayout layout) {
     final s = state;
-    if (s.tiles.length > layout.slots) return;
+    if (s.tiles.length > layout.slots || layout.slots > s.maxTiles) return;
     state = s.copyWith(layout: layout, fullTile: null);
   }
 
@@ -225,7 +247,8 @@ class MultiviewSessionNotifier extends Notifier<MultiviewSession> {
   }
 
   /// Closes every tile.
-  void clear() => state = MultiviewSession(layout: state.layout);
+  void clear() =>
+      state = MultiviewSession(layout: state.layout, maxTiles: state.maxTiles);
 }
 
 /// The multi-channel session of a playlist (kept for the app session).

@@ -45,6 +45,11 @@ class RemindersRepository {
             ..orderBy([(r) => OrderingTerm(expression: r.start)]))
           .watch();
 
+  /// The reminder [id], or null once it is removed or expired.
+  Future<ReminderRow?> byId(int id) => (_db.select(
+    _db.reminders,
+  )..where((r) => r.id.equals(id))).getSingleOrNull();
+
   Future<bool> isSet(int playlistId, String channelId, DateTime start) async =>
       await _find(playlistId, channelId, start.millisecondsSinceEpoch) != null;
 

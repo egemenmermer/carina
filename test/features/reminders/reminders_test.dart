@@ -8,6 +8,7 @@ import 'package:carina/features/guide/guide_screen.dart';
 import 'package:carina/features/reminders/reminders_api.dart';
 
 import '../guide/guide_test_support.dart';
+import 'fake_reminder_os.dart';
 
 class _RecordingNotifier implements ReminderSystemNotifier {
   final List<({String title, String body})> shown = [];
@@ -16,6 +17,7 @@ class _RecordingNotifier implements ReminderSystemNotifier {
   Future<void> show({
     required String title,
     required String body,
+    int? id,
     VoidCallback? onClick,
   }) async => shown.add((title: title, body: body));
 }
@@ -137,6 +139,146 @@ void main() {
     ))!;
     expect(rows, isEmpty);
     await tester.pump(const Duration(seconds: 3));
+    await finishGuide(tester, fx);
+  });
+
+  testWidgets('android: a due reminder replaces its scheduled notification '
+      '(same id), and the reminder list is scheduled', (tester) async {
+    final fx = await importGuideFixture(tester);
+    final now = fixedNow();
+    final realNow = DateTime.now();
+    late int dueId;
+    late int laterId;
+    await tester.runAsync(() async {
+      await fx.settings.set(AppSettings.reminderLeadMinutes, 5);
+      Future<int> add(String title, int startsInMin) => fx.db
+          .into(fx.db.reminders)
+          .insert(
+            RemindersCompanion.insert(
+              playlistId: fx.playlistId,
+              channelId: '${MockFixtures.trt1Hd}',
+              channelName: 'TRT 1',
+              title: title,
+              start: realNow
+                  .add(Duration(minutes: startsInMin))
+                  .millisecondsSinceEpoch,
+              stop: realNow
+                  .add(Duration(minutes: startsInMin + 40))
+                  .millisecondsSinceEpoch,
+              createdAt: realNow,
+            ),
+          );
+      dueId = await add('Akşam Haberleri', 3);
+      laterId = await add('Gece Filmi', 120);
+    });
+    final os = FakeReminderOs();
+    final navigatorKey = GlobalKey<NavigatorState>();
+    await pumpScreen(
+      tester,
+      ReminderListener(
+        navigatorKey: navigatorKey,
+        child: PlaylistShell(
+          playlistId: fx.playlistId,
+          location: '/p/${fx.playlistId}/guide',
+          child: GuideScreen(playlistId: fx.playlistId),
+        ),
+      ),
+      navigatorKey: navigatorKey,
+      overrides: [
+        ...guideOverrides(fx, now: now),
+        reminderSystemNotifierProvider.overrideWithValue(os),
+        reminderOsSchedulerProvider.overrideWithValue(os),
+      ],
+    );
+    await settleDrift(tester, rounds: 30);
+
+    // Due now: the pending OS notification is cancelled, then shown with the
+    // same id so the OS replaces it instead of showing it twice.
+    expect(os.calls.indexOf('cancel $dueId'), isNonNegative);
+    expect(
+      os.calls.indexOf('show $dueId'),
+      greaterThan(os.calls.indexOf('cancel $dueId')),
+    );
+    expect(os.shown.single.title, 'Akşam Haberleri');
+    // The later one is scheduled 5 minutes before its start, in English.
+    final later = os.pending[laterId]!;
+    expect(later.title, 'Gece Filmi');
+    expect(later.body, startsWith('TRT 1 · starts at'));
+    expect(
+      later.at.millisecondsSinceEpoch,
+      closeTo(
+        realNow.add(const Duration(minutes: 115)).millisecondsSinceEpoch,
+        const Duration(seconds: 5).inMilliseconds,
+      ),
+    );
+    await finishGuide(tester, fx);
+  });
+
+  testWidgets('toggleReminder asks for the notification permission when it '
+      'sets a reminder', (tester) async {
+    final fx = await importGuideFixture(tester);
+    final now = fixedNow();
+    final os = FakeReminderOs();
+    await pumpGuide(
+      tester,
+      fx,
+      now: now,
+      extra: [reminderOsSchedulerProvider.overrideWithValue(os)],
+    );
+    final context = tester.element(find.byType(GuideScreen));
+    final upcoming = (await tester.runAsync(() async {
+      final rows =
+          await (fx.db.select(fx.db.programmes)
+                ..where(
+                  (p) => p.start.isBiggerThanValue(now.millisecondsSinceEpoch),
+                )
+                ..orderBy([(p) => OrderingTerm(expression: p.start)]))
+              .get();
+      final channel =
+          await (fx.db.select(fx.db.channels)
+                ..where((c) => c.providerId.equals('${MockFixtures.trt1Hd}')))
+              .getSingle();
+      return rows.firstWhere(
+        (p) => p.epgChannelId == (channel.matchedEpgId ?? channel.epgId),
+      );
+    }))!;
+    final startUtc = DateTime.fromMillisecondsSinceEpoch(
+      upcoming.start,
+      isUtc: true,
+    );
+    Future<void> toggle() async {
+      final done = toggleReminder(
+        context,
+        playlistId: fx.playlistId,
+        channelId: '${MockFixtures.trt1Hd}',
+        startUtc: startUtc,
+      );
+      await settleDrift(tester, rounds: 10);
+      await tester.runAsync(() => done);
+      await tester.pump();
+    }
+
+    // Granted: the plain text, no "keep Carina running".
+    await toggle();
+    expect(os.permissionRequests, 1);
+    expect(find.text('Reminder set'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 4));
+
+    // Removing does not ask again.
+    await toggle();
+    expect(os.permissionRequests, 1);
+    expect(find.text('Reminder removed'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 4));
+
+    // Denied: the reminder still works while Carina runs, and says so.
+    os.permission = false;
+    await toggle();
+    expect(os.permissionRequests, 2);
+    expect(
+      find.text('Reminder set — keep Carina running to get it'),
+      findsOneWidget,
+    );
+    await tester.pump(const Duration(seconds: 4));
     await finishGuide(tester, fx);
   });
 }

@@ -8,8 +8,11 @@ import 'package:path/path.dart' as p;
 
 /// Passwords, PINs and API keys.
 ///
-/// Uses flutter_secure_storage (DPAPI-backed on Windows, Keychain on macOS).
-/// If the platform store is unavailable (e.g. an unsigned macOS dev build
+/// Uses flutter_secure_storage (DPAPI-backed on Windows, Keychain on macOS,
+/// Android Keystore on Android: an RSA key in the Keystore wraps the AES key
+/// that encrypts the values; the default `AndroidOptions()` are enough, and
+/// the manifest sets `allowBackup=false` because a restored backup cannot
+/// unwrap the key). If the platform store is unavailable (e.g. an unsigned macOS dev build
 /// without keychain entitlements) it falls back to an obfuscated JSON file in
 /// the app data folder and logs that once. Keys:
 /// - `playlist.<id>.password` — Xtream password

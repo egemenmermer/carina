@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../app/platform/screen_awake.dart';
 import '../../app/router.dart' show MainTab, Routes;
 import '../../core/core.dart';
 import '../../data/repositories/live_repository.dart';
@@ -68,6 +69,8 @@ class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
 
   int get _pid => widget.playlistId;
 
+  late final ScreenAwake _screenAwake;
+
   MultiviewSessionNotifier get _notifier =>
       ref.read(multiviewSessionProvider(_pid).notifier);
 
@@ -79,6 +82,7 @@ class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
   @override
   void initState() {
     super.initState();
+    _screenAwake = ref.read(screenAwakeProvider)..hold(this);
     // Providers cannot change while the tree builds: apply the initial
     // channels / layout right after the first frame.
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -100,6 +104,7 @@ class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
   @override
   void dispose() {
     _disposed = true;
+    _screenAwake.release(this);
     for (final e in _engines.values) {
       unawaited(e.sub?.cancel());
       unawaited(e.engine.dispose());
@@ -201,7 +206,7 @@ class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
     final l10n = L10n.of(context);
     final toasts = ref.read(toastControllerProvider);
     if (session.isFull) {
-      toasts.show(l10n.multiviewMaxReached);
+      toasts.show(l10n.multiviewMaxReached(session.maxTiles));
       return;
     }
     final id = await _pick(
@@ -332,7 +337,7 @@ class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
               child: session.isEmpty
                   ? KEmptyState(
                       icon: PhosphorIconsLight.squaresFour,
-                      title: l10n.multiviewEmptyTitle,
+                      title: l10n.multiviewEmptyTitle(session.maxTiles),
                       message: l10n.multiviewEmptyMessage,
                       actionLabel: l10n.multiviewAddChannel,
                       actionIcon: PhosphorIconsBold.plus,
@@ -449,16 +454,19 @@ class _TopBar extends StatelessWidget {
             Text(l10n.multiviewFullTileHint, style: KText.caption),
           ],
           const Spacer(),
-          for (final layout in MultiviewLayout.values) ...[
-            _LayoutButton(
-              layout: layout,
-              selected: session.layout == layout,
-              enabled: session.tiles.length <= layout.slots,
-              onTap: () => onLayout(layout),
-            ),
-            const SizedBox(width: 8),
+          // A single layout (TV: "1 + 1") needs no picker.
+          if (session.layouts.length > 1) ...[
+            for (final layout in session.layouts) ...[
+              _LayoutButton(
+                layout: layout,
+                selected: session.layout == layout,
+                enabled: session.tiles.length <= layout.slots,
+                onTap: () => onLayout(layout),
+              ),
+              const SizedBox(width: 8),
+            ],
+            const SizedBox(width: 12),
           ],
-          const SizedBox(width: 12),
           KButton.secondary(
             label: l10n.multiviewAddChannel,
             icon: PhosphorIconsBold.plus,
