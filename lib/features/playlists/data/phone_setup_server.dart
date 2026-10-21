@@ -140,7 +140,11 @@ class PhoneSetupServer implements PhoneSetupHandle {
     } on Object catch (error) {
       // Never log the request: it can carry credentials.
       debugPrint('Add from phone request failed: ${error.runtimeType}');
-      await _reply(request, HttpStatus.internalServerError, '');
+      try {
+        await _reply(request, HttpStatus.internalServerError, '');
+      } on Object catch (_) {
+        // The client is already gone.
+      }
     }
   }
 
@@ -213,14 +217,20 @@ class PhoneSetupServer implements PhoneSetupHandle {
     if (_accepted || _closed) return _reply(request, HttpStatus.gone, '');
     _accepted = true;
     _timer.cancel();
+    // Answer first: the callback can tear the UI (and this server) down on
+    // the next frame, which would cut the reply the phone is waiting for.
+    try {
+      await _reply(
+        request,
+        HttpStatus.ok,
+        jsonEncode({'ok': true}),
+        contentType: ContentType.json,
+      );
+    } on Object catch (error) {
+      // The phone went away; the TV still takes the values.
+      debugPrint('Add from phone reply failed: ${error.runtimeType}');
+    }
     _onSubmitted(values);
-    await _reply(
-      request,
-      HttpStatus.ok,
-      jsonEncode({'ok': true}),
-      contentType: ContentType.json,
-    );
-    // The response is flushed: the phone has its confirmation.
     unawaited(close());
   }
 

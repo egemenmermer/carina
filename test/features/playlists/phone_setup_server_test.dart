@@ -33,6 +33,8 @@ Future<_Reply> _request(
     }
     final response = await request.close();
     final text = await utf8.decodeStream(response);
+    // The server delivers the values right after flushing its reply.
+    await Future<void>.delayed(const Duration(milliseconds: 20));
     return _Reply(response.statusCode, text);
   } finally {
     client.close(force: true);
