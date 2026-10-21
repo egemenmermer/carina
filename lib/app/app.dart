@@ -80,6 +80,14 @@ class _AppShortcuts extends ConsumerWidget {
             LogicalKeyboardKey.escape,
             includeRepeats: false,
           ): () {
+            // Overlays (sheets, menus, dialogs) close as Escape closes them
+            // on desktop: only when they are dismissible.
+            final focused = FocusManager.instance.primaryFocus?.context;
+            final route = focused == null ? null : ModalRoute.of(focused);
+            if (route != null && route is! PageRoute) {
+              if (route.barrierDismissible) Navigator.of(focused!).maybePop();
+              return;
+            }
             final router = ref.read(routerProvider);
             if (router.canPop()) {
               router.pop();
