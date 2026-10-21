@@ -23,6 +23,7 @@ import 'package:carina/features/playlists/data/playlists_navigation.dart';
 import 'package:carina/features/playlists/data/source_checker.dart';
 import 'package:carina/features/playlists/data/source_messages.dart';
 import 'package:carina/features/playlists/data/wizard_form.dart';
+import 'package:carina/features/playlists/widgets/phone_setup_panel.dart';
 import 'package:carina/features/playlists/widgets/playlists_chrome.dart';
 import 'package:carina/features/playlists/widgets/wizard_widgets.dart';
 import 'package:carina/l10n/gen/app_localizations.dart';
@@ -71,6 +72,9 @@ class _PlaylistWizardScreenState extends ConsumerState<PlaylistWizardScreen> {
   bool _loading = false;
   bool _missing = false;
   bool _saving = false;
+
+  /// "Use your phone" is open (step 02, TV).
+  bool _phone = false;
 
   String? _filePath;
   bool _epgDisabled = false;
@@ -247,6 +251,10 @@ class _PlaylistWizardScreenState extends ConsumerState<PlaylistWizardScreen> {
   }
 
   void _onEscape() {
+    if (_phone) {
+      setState(() => _phone = false);
+      return;
+    }
     if (_type != null && !_editing) {
       _invalidateChecks();
       setState(() {
@@ -269,6 +277,49 @@ class _PlaylistWizardScreenState extends ConsumerState<PlaylistWizardScreen> {
       _xtreamChecked = null;
     });
     _focusField(WizardField.name);
+  }
+
+  /// The playlist typed on the phone: fills the form as if it had been typed
+  /// here, runs the usual live checks and leaves the focus on Save, so the
+  /// regular save path (and its validation) does the rest.
+  void _fillFromPhone(WizardValues values) {
+    _invalidateChecks();
+    setState(() {
+      _phone = false;
+      _type = values.type;
+      _current = WizardField.save;
+      _name.text = values.name;
+      _server.text = values.server;
+      _username.text = values.username;
+      _password.text = values.password;
+      _playlistUrl.text = values.playlistUrl;
+      _userAgent.clear();
+      _epg.text = values.epgText.trim();
+      _filePath = null;
+      _epgDisabled = false;
+      _headerEpgUrl = null;
+      _export = values.type == PlaylistType.m3u
+          ? detectXtreamExport(values.playlistUrl)
+          : null;
+      _status.clear();
+      _problems.clear();
+      _touched.clear();
+      _xtreamChecked = null;
+    });
+    _focusField(WizardField.save);
+    ref
+        .read(toastControllerProvider)
+        .show(
+          L10n.of(context).playlistsPhoneReceived,
+          kind: KToastKind.info,
+          icon: PhosphorIconsLight.deviceMobile,
+        );
+    if (values.type == PlaylistType.xtream) {
+      unawaited(_checkXtream());
+    } else {
+      unawaited(_checkPlaylistUrl());
+    }
+    unawaited(_checkEpg());
   }
 
   // -------------------------------------------------------------------------
@@ -756,7 +807,12 @@ class _PlaylistWizardScreenState extends ConsumerState<PlaylistWizardScreen> {
         child: KEmptyState(message: l10n.playlistsNotFound),
       );
     } else if (type == null) {
-      right = _SourceChoice(onChoose: _chooseType);
+      right = _SourceChoice(
+        onChoose: _chooseType,
+        onPhone: ref.read(formFactorProvider).isTv
+            ? () => setState(() => _phone = true)
+            : null,
+      );
     } else {
       right = _buildForm(l10n, type);
     }
@@ -791,31 +847,49 @@ class _PlaylistWizardScreenState extends ConsumerState<PlaylistWizardScreen> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 72),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          flex: 5,
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 6, right: 48),
-                            child: WizardStepHeader(label: header, hint: hint),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 7,
-                          child: Align(
-                            alignment: Alignment.topCenter,
-                            child: ConstrainedBox(
-                              constraints: const BoxConstraints(maxWidth: 660),
-                              child: SingleChildScrollView(
-                                padding: const EdgeInsets.only(bottom: 24),
-                                child: right,
-                              ),
+                    child: _phone
+                        ? Align(
+                            alignment: Alignment.centerLeft,
+                            child: PhoneSetupPanel(
+                              onReceived: _fillFromPhone,
+                              onCancel: () => setState(() => _phone = false),
                             ),
+                          )
+                        : Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                flex: 5,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 6,
+                                    right: 48,
+                                  ),
+                                  child: WizardStepHeader(
+                                    label: header,
+                                    hint: hint,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 7,
+                                child: Align(
+                                  alignment: Alignment.topCenter,
+                                  child: ConstrainedBox(
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 660,
+                                    ),
+                                    child: SingleChildScrollView(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 24,
+                                      ),
+                                      child: right,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
                   ),
                 ),
                 Padding(
@@ -1049,16 +1123,20 @@ class _PlaylistWizardScreenState extends ConsumerState<PlaylistWizardScreen> {
 
 /// Step 02: the source pills.
 class _SourceChoice extends StatelessWidget {
-  const _SourceChoice({required this.onChoose});
+  const _SourceChoice({required this.onChoose, this.onPhone});
 
   final ValueChanged<PlaylistType> onChoose;
+
+  /// Opens "Use your phone"; null hides the pill (desktop).
+  final VoidCallback? onPhone;
 
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     return FocusTraversalGroup(
       child: Padding(
-        padding: const EdgeInsets.only(top: 140),
+        // Four pills on a TV: start higher so all of them fit at 960x540.
+        padding: EdgeInsets.only(top: onPhone == null ? 140 : 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -1080,6 +1158,14 @@ class _SourceChoice extends StatelessWidget {
               label: l10n.playlistsTypeM3uFile,
               onTap: () => onChoose(PlaylistType.m3uFile),
             ),
+            if (onPhone != null) ...[
+              const SizedBox(height: 18),
+              WizardSourcePill(
+                key: const ValueKey('wizard-source-phone'),
+                label: l10n.playlistsPhoneOption,
+                onTap: onPhone!,
+              ),
+            ],
             const SizedBox(height: 26),
             Text(
               l10n.playlistsSourceHint,
