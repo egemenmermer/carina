@@ -33,4 +33,18 @@ void main() {
     expect(o.capture, isFalse);
     expect(o.wantsMockPlaylist, isFalse);
   });
+
+  test(
+    '--tv forces the TV form factor and is kept among foreign arguments',
+    () {
+      final o = LaunchOptions.parse([
+        '-NSDocumentRevisionsDebugMode',
+        'YES',
+        '--tv',
+      ]);
+      expect(o.tv, isTrue);
+      expect(LaunchOptions.parse(const []).tv, isFalse);
+      expect(LaunchOptions.parse(['--mock', '--tv']).mock, isTrue);
+    },
+  );
 }
