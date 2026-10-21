@@ -16,6 +16,7 @@ import '../features/playlists/playlist_manager_screen.dart';
 import '../features/playlists/playlist_wizard_screen.dart';
 import '../features/search/search_screen.dart';
 import '../features/settings/settings_screen.dart';
+import 'platform/form_factor.dart';
 import 'shell/playlist_shell.dart';
 
 /// Main tabs of a playlist, in nav order.
@@ -115,6 +116,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/downloads',
+        // Downloads are desktop-only for now.
+        redirect: (c, s) =>
+            ref.read(formFactorProvider).isTv ? Routes.manager : null,
         pageBuilder: (c, s) => _fade(s, const DownloadsScreen()),
       ),
       ShellRoute(
