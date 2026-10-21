@@ -69,14 +69,32 @@ playback or FTS5 stops the work for a decision.
 
 ### Phase 1 — Platform layer
 
-- `lib/app/platform/`: `isTv` / form-factor provider (leanback feature via a
-  small MethodChannel or `device_info_plus`), wakelock during playback,
-  one back handler (`PopScope`) so the remote's Back does what Escape does.
-- Reminders on TV: scheduled OS notifications via
-  `flutter_local_notifications` (`POST_NOTIFICATIONS`); desktop keeps
-  `local_notifier`.
-- `AppPaths`, `SecretStore` (Android Keystore), `defaultUserAgent()`
-  (`Android`) checked on Android.
+Code is on branch `tv-platform`; everything that runs on Android is
+**[device]** until a run on the emulator or a TV.
+
+- `lib/app/platform/form_factor.dart`: `FormFactor { desktop, tv }`,
+  `formFactorProvider` (overridden at bootstrap, `desktop` by default).
+  Android asks `MainActivity` over `app.carina.player/platform` (`isTv`: UI
+  mode television or the leanback feature); any Android counts as TV when
+  the channel fails. `--tv` forces TV on desktop (UI gates only: OS
+  integrations check `Platform.isAndroid`).
+- Wakelock: `screenAwakeProvider` (`wakelock_plus`, Android only), held
+  by the player while it plays and by multi-channel (ref-counted).
+- Reminders: `flutter_local_notifications` on Android, `local_notifier` on
+  desktop. `ReminderOsSync` schedules `zonedSchedule` notifications at
+  `start - lead` (inexact alarms, UTC `TZDateTime`s: no exact-alarm
+  permission, no timezone database); the due reminder replaces its
+  notification (same id); `POST_NOTIFICATIONS` is requested when the first
+  reminder is set. The Gradle file enables core library desugaring for it.
+- Downloads: rail entry and `/downloads` hidden on TV. Multi-channel: two
+  tiles (1 + 1) on TV.
+- `AppPaths` (app support directory = app-private files), `SecretStore`
+  (Android Keystore; `allowBackup=false` so a restored backup cannot leave
+  undecryptable secrets) and `defaultUserAgent()` (`Carina/1.0 (Android)`)
+  are in place. mpv's own agent (`kCarinaUserAgent`) is still the fixed
+  `Carina/1.0 (Windows)`.
+- Still open: one back handler (`PopScope`) for the remote's Back key
+  (Phase 2).
 
 ### Phase 2 — TV layout and D-pad (design-heavy)
 
