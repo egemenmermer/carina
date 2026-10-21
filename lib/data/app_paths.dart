@@ -7,7 +7,9 @@ import 'package:path_provider/path_provider.dart';
 import 'db/database.dart';
 
 /// Where Carina keeps its data: `%APPDATA%\Carina` on Windows, the app support
-/// directory on macOS, or an explicit `--data-dir` (tests, capture mode).
+/// directory on macOS and Android (on Android that is the app-private files
+/// folder, removed with the app and not readable by other apps), or an
+/// explicit `--data-dir` (tests, capture mode).
 class AppPaths {
   AppPaths(this.root);
 
@@ -26,7 +28,9 @@ class AppPaths {
     } else if (Platform.isWindows && Platform.environment['APPDATA'] != null) {
       root = p.join(Platform.environment['APPDATA']!, 'Carina');
       // Carina was called Kanal before 1.1: keep that install's data.
-      final legacy = Directory(p.join(Platform.environment['APPDATA']!, 'Kanal'));
+      final legacy = Directory(
+        p.join(Platform.environment['APPDATA']!, 'Kanal'),
+      );
       if (!Directory(root).existsSync() && legacy.existsSync()) {
         await legacy.rename(root);
       }
