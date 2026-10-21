@@ -53,6 +53,7 @@ export class BrowseScreen extends ZoneScreen implements Screen {
   private searchTimer = 0;
   private memory: Partial<Record<Section, Memory>> = {};
   private pid: string;
+  private resumePending = true;
 
   constructor(private source: Source) {
     super();
@@ -209,19 +210,22 @@ export class BrowseScreen extends ZoneScreen implements Screen {
   }
 
   private searchScopeName(): string {
-    if (this.source.hasAll(this.section)) return this.section === 'live' ? t('allChannels') : t(this.section);
-    const cat = this.cats.items[this.cats.index];
-    return cat ? cat.name : t(this.section);
+    return this.section === 'live' ? t('allChannels') : t(this.section);
   }
 
   private setBase(list: Item[], focusIndex: number): void {
     this.status.hide();
     this.base = list;
+    let resume = false;
     if (focusIndex < 0 && this.section === 'live') {
       const last = store.lastChannel(this.pid);
       if (last && last.categoryId === this.categoryId) focusIndex = list.findIndex((c) => c.id === last.channelId);
+      resume = focusIndex >= 0 && this.resumePending;
     }
     this.applyFilter(false, Math.max(0, focusIndex));
+    // First open: put focus on the last watched channel so one OK resumes it.
+    if (resume && this.zone === this.cats) this.activate(this.channels);
+    if (this.section === 'live') this.resumePending = false;
   }
 
   private applyFilter(fromSearch: boolean, index = 0): void {
@@ -230,9 +234,13 @@ export class BrowseScreen extends ZoneScreen implements Screen {
       this.show(this.base, index);
       return;
     }
-    // Search covers the whole section when it is cheap ("All"), else the current category.
-    const pool = this.source.hasAll(this.section) ? this.source.items(this.section, ALL) : Promise.resolve(this.base);
     const my = ++this.token;
+    if (!this.source.hasAll(this.section)) {
+      this.searchByCategory(q, my);
+      return;
+    }
+    // "All" is cheap for this section: filter it in one go.
+    const pool = this.source.items(this.section, ALL);
     if (fromSearch) this.status.loading();
     pool.then(
       (all) => {
@@ -247,6 +255,48 @@ export class BrowseScreen extends ZoneScreen implements Screen {
         this.status.error(t('loadFailed', { detail: errorDetail(e) }), () => this.applyFilter(true));
       },
     );
+  }
+
+  /**
+   * Section-wide search without loading the whole catalogue at once (50k
+   * movies would not fit): walk the categories one by one, keep only the
+   * matches and show them as they arrive. A newer search or category change
+   * bumps the token and stops the walk.
+   */
+  private searchByCategory(q: string, my: number): void {
+    const cats = this.cats.items.filter((c) => c.id !== FAV && c.id !== ALL);
+    const out: Item[] = [];
+    const seen: Record<string, boolean> = {};
+    const raw = this.search.value;
+    let i = 0;
+    this.status.hide();
+    this.show([], 0, t('loading'));
+    const step = (): void => {
+      if (my !== this.token) return;
+      if (i >= cats.length || out.length >= 500) {
+        this.countEl.textContent = t('items', { n: out.length });
+        if (!out.length) this.show([], 0, t('noResults', { q: raw }));
+        return;
+      }
+      const cat = cats[i++];
+      this.source.items(this.section, cat.id).then(
+        (list) => {
+          if (my !== this.token) return;
+          const before = out.length;
+          for (const it of list) {
+            if (!seen[it.id] && foldText(it.name).indexOf(q) >= 0) {
+              seen[it.id] = true;
+              out.push(it);
+            }
+          }
+          if (out.length !== before) this.show(out.slice(), this.zone === this.itemsList() ? this.itemsList().index : 0);
+          this.countEl.textContent = t('items', { n: out.length }) + '  ·  ' + i + '/' + cats.length;
+          step();
+        },
+        () => step(),
+      );
+    };
+    step();
   }
 
   private show(list: Item[], index: number, emptyText?: string): void {

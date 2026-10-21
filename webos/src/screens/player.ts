@@ -41,7 +41,7 @@ export class PlayerScreen implements Screen {
   private spinner = h('div', { class: 'spinner big' });
   private errorBox: HTMLElement;
   private errorButtons: Buttons;
-  private candidates: string[] = [];
+  private candidates: { url: string; type: string }[] = [];
   private cand = 0;
   private started = false;
   private failed = false;
@@ -152,8 +152,13 @@ export class PlayerScreen implements Screen {
 
   // ---- loading & failure -------------------------------------------------------
 
-  private load(candidates: string[]): void {
-    this.candidates = candidates.filter(Boolean);
+  private load(urls: string[]): void {
+    const c = urls.filter(Boolean).map((url) => ({ url, type: mimeFor(url) }));
+    // Hedge: if the TV reports '' for the declared type it skips the source
+    // instantly; retry the last URL once without a type.
+    const last = c[c.length - 1];
+    if (last && last.type) c.push({ url: last.url, type: '' });
+    this.candidates = c;
     this.cand = 0;
     this.failed = false;
     toggle(this.errorBox, 'show', false);
@@ -161,20 +166,19 @@ export class PlayerScreen implements Screen {
   }
 
   private tryCurrent(): void {
-    const url = this.candidates[this.cand];
+    const cand = this.candidates[this.cand];
     this.release();
     clearTimeout(this.startTimer);
     clearTimeout(this.stallTimer);
     this.started = false;
-    if (!url) {
+    if (!cand) {
       this.fail();
       return;
     }
     toggle(this.spinner, 'show', true);
     const s = document.createElement('source');
-    s.src = url;
-    const type = mimeFor(url);
-    if (type) s.type = type;
+    s.src = cand.url;
+    if (cand.type) s.type = cand.type;
     const attempt = ++this.attempt;
     s.addEventListener('error', () => attempt === this.attempt && this.onError());
     this.video.appendChild(s);
@@ -207,7 +211,10 @@ export class PlayerScreen implements Screen {
   }
 
   private retry(): void {
-    this.load(this.candidates);
+    this.cand = 0;
+    this.failed = false;
+    toggle(this.errorBox, 'show', false);
+    this.tryCurrent();
   }
 
   private onPlaying(): void {

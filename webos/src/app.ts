@@ -22,6 +22,18 @@ export function initApp(el: HTMLElement): void {
   root = el;
   document.addEventListener('keydown', onKeyDown, true);
   document.addEventListener('keyup', onKeyUp, true);
+  document.addEventListener(
+    'click',
+    (e) => {
+      if (Date.now() - lastOkAt < DOUBLE_MS) {
+        e.stopPropagation();
+        e.preventDefault();
+        return;
+      }
+      lastClickAt = Date.now();
+    },
+    true,
+  );
   // Magic Remote: the pointer hides on key presses; nothing else to do.
 }
 
@@ -62,8 +74,14 @@ export function reset(s: Screen): void {
 // ---- keys -----------------------------------------------------------------
 
 let okDownAt = 0;
+let okSeenAt = 0;
 let okTimer = 0;
 let okLongFired = false;
+// One Magic Remote press can produce both a click and an Enter key; whichever
+// comes second must not act again on the screen the first one opened.
+let lastOkAt = 0;
+let lastClickAt = 0;
+const DOUBLE_MS = 400;
 
 function inTextField(): boolean {
   const a = document.activeElement;
@@ -71,6 +89,10 @@ function inTextField(): boolean {
 }
 
 function dispatch(k: Key): void {
+  if (k === 'ok' || k === 'okLong') {
+    if (Date.now() - lastClickAt < DOUBLE_MS) return;
+    lastOkAt = Date.now();
+  }
   if (modal) {
     if (k === 'back') modal.resolve(-1);
     else modal.buttons.onKey(k);
@@ -102,8 +124,14 @@ function onKeyDown(e: KeyboardEvent): void {
   e.preventDefault();
   const s = top();
   if (k === 'ok' && !modal && !(s && s.instantOk)) {
-    if (e.repeat || okDownAt) return;
-    okDownAt = Date.now();
+    const now = Date.now();
+    const gap = now - okSeenAt;
+    okSeenAt = now;
+    if (e.repeat) return;
+    // A held key repeats keydown; a gap > 1.5 s means the keyup got lost.
+    if (okDownAt && gap < 1500) return;
+    clearTimeout(okTimer);
+    okDownAt = now;
     okLongFired = false;
     okTimer = window.setTimeout(() => {
       okLongFired = true;

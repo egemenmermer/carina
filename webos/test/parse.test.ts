@@ -117,3 +117,12 @@ test('xmltv window', () => {
   assert.equal(g['a.tr'].length, 1);
   assert.equal(g['a.tr'][0].title, 'Haber & Spor');
 });
+
+test('m3u ids are stable when lines are inserted', () => {
+  const a = '#EXTM3U\n#EXTINF:-1 group-title="G",One\nhttp://s/1.ts\n#EXTINF:-1 group-title="G",Two\nhttp://s/2.ts\n';
+  const b = '#EXTM3U\n#EXTINF:-1 group-title="G",New\nhttp://s/0.ts\n' + a.slice(8);
+  const ida = buildM3uCatalog(parseM3u(a)).live.items.map((c) => c.id);
+  const idb = buildM3uCatalog(parseM3u(b)).live.items.map((c) => c.id);
+  assert.equal(idb.length, 3);
+  assert.deepEqual(idb.slice(1), ida);
+});

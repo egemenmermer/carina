@@ -174,17 +174,18 @@ export function buildM3uCatalog(parsed: M3uParseResult, ungroupedName = 'Other')
   const seenMovie: Record<string, boolean> = {};
   const seenSeries: Record<string, boolean> = {};
   const seriesIndex: Record<string, Series> = {};
-  let n = 0;
+  // Ids derive from the stream URL, not the line number: the playlist is
+  // downloaded again on every open, and favourites / last channel are saved
+  // by id, so they must survive inserted or reordered lines.
   for (const e of parsed.entries) {
-    n++;
     if (e.kind === 'live') {
       const categoryId = addCategory(cat.live.categories, seenLive, e.group, ungroupedName);
-      cat.live.items.push({ id: 'l' + n, name: e.name, num: cat.live.items.length + 1, logo: e.logo, epgId: e.tvgId, categoryId, url: e.url });
+      cat.live.items.push({ id: 'l:' + e.url, name: e.name, num: cat.live.items.length + 1, logo: e.logo, epgId: e.tvgId, categoryId, url: e.url });
     } else if (e.kind === 'movie') {
       const categoryId = addCategory(cat.movies.categories, seenMovie, e.group, ungroupedName);
       const dot = e.url.split('?')[0].lastIndexOf('.');
       cat.movies.items.push({
-        id: 'm' + n, name: e.name, poster: e.logo, rating: null,
+        id: 'm:' + e.url, name: e.name, poster: e.logo, rating: null,
         ext: dot > 0 ? e.url.split('?')[0].slice(dot + 1) : null,
         year: (/(19|20)\d\d/.exec(e.name) || [null])[0], categoryId, url: e.url,
       });
@@ -195,14 +196,14 @@ export function buildM3uCatalog(parsed: M3uParseResult, ungroupedName = 'Other')
       const key = categoryId + '|' + sName.toLowerCase();
       let s = seriesIndex[key];
       if (!s) {
-        s = { id: 's' + n, name: sName, poster: e.logo, rating: null, year: null, categoryId };
+        s = { id: 's:' + key, name: sName, poster: e.logo, rating: null, year: null, categoryId };
         seriesIndex[key] = s;
         cat.series.items.push(s);
         cat.episodes[s.id] = [];
       }
       const eps = cat.episodes[s.id];
       eps.push({
-        id: 'e' + n,
+        id: 'e:' + e.url,
         season: mk ? mk.season : 1,
         episode: mk ? mk.episode : eps.length + 1,
         title: mk && mk.episodeTitle ? mk.episodeTitle : e.name,

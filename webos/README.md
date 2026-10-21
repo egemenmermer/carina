@@ -9,7 +9,10 @@ the Flutter app Carina (Android TV / Windows / macOS), which cannot run on webOS
 - Live TV: categories, channel rows with logos, and now/next from `get_short_epg`.
   M3U playlists use XMLTV `url-tvg` when it is plain XML of 12 MB or less.
 - Movies and series: poster grids, details, seasons and episodes.
-- Favourites, last-channel resume, and search in the current section.
+- Favourites, last-channel resume, and search by name in the current section.
+  Live searches all channels. For Xtream Movies and Series, the search walks the
+  categories one at a time and keeps only the matches (at most 500), so the
+  full catalogue is never in memory at once.
 - Settings: language (follows the TV by default, or English / Türkçe) and playlist removal.
 - Playback uses the TV's native `<video>` pipeline. Xtream live tries `.m3u8`
   first and falls back to `.ts`. VOD uses the container extension from the API.
