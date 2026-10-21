@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../app/platform/form_factor.dart';
 import '../../app/router.dart';
 import '../../core/core.dart';
 import '../../data/db/database.dart';
@@ -26,6 +27,9 @@ import 'widgets/standalone_page.dart';
 /// a standalone page. [section] is a [SettingsSection] id (`player`,
 /// `parental`, `general`…); without it the last section of this session
 /// (or the first one) opens.
+///
+/// On TV the selected section takes focus on entry, and Back walks up:
+/// subpage → section → the section list → out.
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key, this.playlistId, this.section});
 
@@ -62,6 +66,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   late SettingsSection _section;
   SettingsSubpage? _subpage;
 
+  /// Focus nodes of the section tiles (TV: Back from the content returns
+  /// to the selected one).
+  final Map<SettingsSection, FocusNode> _tileNodes = {};
+
+  late final bool _tv = ref.read(formFactorProvider).isTv;
+
   int? get _pid => widget.playlistId;
 
   String get _scope => _pid == null ? 'app' : 'playlist:$_pid';
@@ -93,7 +103,27 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   void dispose() {
     _scroll.dispose();
     _contentFocus.dispose();
+    for (final node in _tileNodes.values) {
+      node.dispose();
+    }
     super.dispose();
+  }
+
+  FocusNode _tileNode(SettingsSection section) => _tileNodes.putIfAbsent(
+    section,
+    () => FocusNode(debugLabel: 'settings-section-${section.id}'),
+  );
+
+  /// Holds focus on [_contentFocus] while the content swaps; on TV, where
+  /// that holder shows nothing, the content's first row takes it next.
+  void _refocusContent() {
+    _contentFocus.requestFocus();
+    if (!_tv) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _contentFocus.hasPrimaryFocus) {
+        kFocusFirstIn(_contentFocus);
+      }
+    });
   }
 
   SettingsSection _resolve(String? id) {
@@ -119,13 +149,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   void _openSubpage(SettingsSubpage page) {
     setState(() => _subpage = page);
-    _contentFocus.requestFocus();
+    _refocusContent();
     _jumpTop();
   }
 
   void _closeSubpage() {
     setState(() => _subpage = null);
-    _contentFocus.requestFocus();
+    _refocusContent();
     _jumpTop();
   }
 
@@ -149,7 +179,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       return KeyEventResult.ignored;
     }
     final focused = FocusManager.instance.primaryFocus;
-    if (focused?.context?.widget is EditableText) {
+    if (_tv) {
+      // The remote's Back: subpage → section → section list → out.
+      if (_subpage != null) {
+        _closeSubpage();
+      } else if (_contentFocus.hasFocus) {
+        _tileNode(_section).requestFocus();
+      } else {
+        _leave();
+      }
+    } else if (focused?.context?.widget is EditableText) {
       focused!.unfocus();
     } else if (_subpage != null) {
       _closeSubpage();
@@ -225,6 +264,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             selected: _section,
             onSelect: _select,
             onBack: pid == null ? _leave : null,
+            tileNode: _tileNode,
+            autofocusSelected: _tv,
           ),
         ),
         Expanded(
@@ -283,6 +324,8 @@ class _SectionList extends StatelessWidget {
     required this.selected,
     required this.onSelect,
     required this.onBack,
+    required this.tileNode,
+    this.autofocusSelected = false,
   });
 
   final PlaylistRow? playlist;
@@ -290,6 +333,10 @@ class _SectionList extends StatelessWidget {
   final SettingsSection selected;
   final ValueChanged<SettingsSection> onSelect;
   final VoidCallback? onBack;
+  final FocusNode Function(SettingsSection section) tileNode;
+
+  /// The selected tile takes focus when the page opens (TV).
+  final bool autofocusSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -301,6 +348,8 @@ class _SectionList extends StatelessWidget {
         label: s.label(l10n),
         icon: s.icon,
         selected: s == selected,
+        focusNode: tileNode(s),
+        autofocus: autofocusSelected && s == selected,
         onTap: () => onSelect(s),
       ),
     );

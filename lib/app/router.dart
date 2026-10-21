@@ -58,6 +58,20 @@ abstract final class Routes {
   static const downloads = '/downloads';
 }
 
+/// Where the remote's Back goes from [path] when no screen handled it and
+/// there is no route to pop: up one level for app settings sections, to
+/// the Playlist Manager from anywhere else, and null (leave the app) from
+/// the Manager. The playlist shell walks its own pages first
+/// (`shellBackLocation`).
+String? appBackLocation(String path) {
+  final segments = Uri.parse(path).pathSegments;
+  if (segments.isEmpty) return null;
+  if (segments.first == 'settings' && segments.length > 1) {
+    return Routes.appSettings();
+  }
+  return Routes.manager;
+}
+
 final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 

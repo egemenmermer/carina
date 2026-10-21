@@ -47,6 +47,7 @@ class KTopNav extends StatelessWidget {
     required this.tabs,
     required this.activeTabId,
     required this.onTabSelected,
+    this.tabFocusNodes,
     this.dateTimeText,
     this.avatar,
     this.onAvatarTap,
@@ -68,6 +69,10 @@ class KTopNav extends StatelessWidget {
   /// Id of the active tab (null: none).
   final String? activeTabId;
   final ValueChanged<String> onTabSelected;
+
+  /// Optional focus nodes of the tabs by id, so the caller can move focus
+  /// to a tab (the TV shell focuses the active tab).
+  final Map<String, FocusNode>? tabFocusNodes;
 
   /// Date/time text next to the logo, formatted by the caller.
   final String? dateTimeText;
@@ -165,6 +170,7 @@ class KTopNav extends StatelessWidget {
                             tab: tab,
                             active: tab.id == activeTabId,
                             horizontalPadding: tabPadding,
+                            focusNode: tabFocusNodes?[tab.id],
                             onTap: () => onTabSelected(tab.id),
                           ),
                       ],
@@ -270,17 +276,20 @@ class _NavTabButton extends StatelessWidget {
     required this.active,
     required this.horizontalPadding,
     required this.onTap,
+    this.focusNode,
   });
 
   final KNavTab tab;
   final bool active;
   final double horizontalPadding;
   final VoidCallback onTap;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
     Widget button = KInteractive(
       onTap: onTap,
+      focusNode: focusNode,
       selected: active,
       semanticLabel: tab.label,
       builder: (context, state, _) {

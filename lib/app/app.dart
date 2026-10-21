@@ -71,8 +71,9 @@ class _AppShortcuts extends ConsumerWidget {
           WindowControls.toggleFullscreen();
         },
         // The remote's Back arrives as Escape (MainActivity.kt). Screens and
-        // overlays handle it first; here it reaches only when none did, so it
-        // goes one route back, or leaves the app from the first screen.
+        // overlays handle it first, the playlist shell walks up to its home
+        // tab; here it reaches only when none did, so it pops a route or
+        // goes up (appBackLocation), and leaves the app from the Manager.
         // Not on key repeat: a held Back would climb to the exit.
         if (tv)
           const SingleActivator(
@@ -82,8 +83,14 @@ class _AppShortcuts extends ConsumerWidget {
             final router = ref.read(routerProvider);
             if (router.canPop()) {
               router.pop();
-            } else {
+              return;
+            }
+            final path = router.routerDelegate.currentConfiguration.uri.path;
+            final target = appBackLocation(path);
+            if (target == null) {
               SystemNavigator.pop();
+            } else {
+              router.go(target);
             }
           },
       },

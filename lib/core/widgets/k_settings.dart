@@ -5,6 +5,7 @@ import 'package:carina/core/icons/phosphor_icons.dart';
 import 'package:carina/core/tokens.dart';
 import 'package:carina/core/widgets/k_buttons.dart';
 import 'package:carina/core/widgets/k_interactive.dart';
+import 'package:carina/core/widgets/k_tv.dart';
 
 /// Uppercase section header above a group of settings rows ("GENERAL").
 class SettingsSectionHeader extends StatelessWidget {
@@ -324,7 +325,10 @@ class SettingsSectionTile extends StatelessWidget {
       autofocus: autofocus,
       semanticLabel: label,
       builder: (context, state, _) {
-        final pill = selected || state.focused;
+        // On TV the white pill marks focus alone; the selected section
+        // keeps a quiet fill, so the focus stays findable across the page.
+        final tv = KTvMode.of(context);
+        final pill = state.focused || (selected && !tv);
         final fg = pill ? Colors.black : KColors.textPrimary;
         return AnimatedContainer(
           duration: KMotion.of(context, KDurations.hover),
@@ -334,6 +338,8 @@ class SettingsSectionTile extends StatelessWidget {
           decoration: BoxDecoration(
             color: pill
                 ? KColors.focusRing
+                : selected
+                ? const Color(0x24FFFFFF)
                 : state.hovered
                 ? KColors.rowHover
                 : const Color(0x00FFFFFF),

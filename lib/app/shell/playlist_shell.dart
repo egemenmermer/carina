@@ -10,6 +10,7 @@ import '../../data/db/database.dart';
 import '../../data/settings/settings_store.dart';
 import '../../l10n/gen/app_localizations.dart';
 import '../clock.dart';
+import '../platform/form_factor.dart';
 import '../router.dart';
 import '../time_format.dart';
 import 'category_sidebar.dart';
@@ -18,6 +19,10 @@ import 'shell_state.dart';
 /// The main shell of an open playlist: top navigation, the red
 /// menu FAB and the category sidebar on Movies/Shows/TV Live/TV Guide, and
 /// the keyboard shortcuts Ctrl+1…4, Ctrl+F or /, Ctrl+,.
+///
+/// On TV the remote's Back walks up inside the shell ([shellBackLocation])
+/// and focus never rests on an invisible node: when a page leaves nothing
+/// focused, the active top-nav tab takes focus.
 class PlaylistShell extends ConsumerStatefulWidget {
   const PlaylistShell({
     super.key,
@@ -37,12 +42,32 @@ class PlaylistShell extends ConsumerStatefulWidget {
 class _PlaylistShellState extends ConsumerState<PlaylistShell> {
   final FocusNode _shortcutFocus = FocusNode(debugLabel: 'shell-shortcuts');
 
+  /// Focus nodes of the top-nav tabs by id (TV focus fallback).
+  final Map<String, FocusNode> _tabNodes = {};
+
+  /// Parent of the top nav's focus nodes (key routing only).
+  final FocusNode _navFocus = FocusNode(
+    debugLabel: 'shell-nav',
+    canRequestFocus: false,
+    skipTraversal: true,
+  );
+
+  /// The visible main tabs of the last build.
+  List<MainTab> _tabs = const [];
+
+  late final bool _tv = ref.read(formFactorProvider).isTv;
+  bool _focusCheckScheduled = false;
+
   int get _pid => widget.playlistId;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => _remember());
+    if (_tv) {
+      FocusManager.instance.addListener(_onFocusChanged);
+      _scheduleFocusCheck();
+    }
   }
 
   @override
@@ -51,13 +76,90 @@ class _PlaylistShellState extends ConsumerState<PlaylistShell> {
     if (oldWidget.location != widget.location ||
         oldWidget.playlistId != widget.playlistId) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _remember());
+      if (_tv) _scheduleFocusCheck();
     }
   }
 
   @override
   void dispose() {
+    if (_tv) FocusManager.instance.removeListener(_onFocusChanged);
     _shortcutFocus.dispose();
+    _navFocus.dispose();
+    for (final node in _tabNodes.values) {
+      node.dispose();
+    }
     super.dispose();
+  }
+
+  FocusNode _tabNode(String id) =>
+      _tabNodes.putIfAbsent(id, () => FocusNode(debugLabel: 'nav-$id'));
+
+  /// Focus that shows nothing on screen: none, the shell itself, or a page
+  /// scope of the shell with nothing focused in it. Pages that park focus
+  /// on their own key-handling nodes (live, grids) are left alone.
+  bool _isLost(FocusNode? node) {
+    if (node == null || node == _shortcutFocus) return true;
+    if (node is! FocusScopeNode) return false;
+    return node == _shortcutFocus.enclosingScope ||
+        node.ancestors.contains(_shortcutFocus);
+  }
+
+  void _onFocusChanged() {
+    if (_isLost(FocusManager.instance.primaryFocus)) _scheduleFocusCheck();
+  }
+
+  void _scheduleFocusCheck() {
+    if (_focusCheckScheduled) return;
+    _focusCheckScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _focusCheckScheduled = false;
+      _ensureVisibleFocus();
+    });
+  }
+
+  /// TV: after a page change or when the focused element went away, a page
+  /// that focused nothing hands focus to the active top-nav tab.
+  void _ensureVisibleFocus() {
+    if (!mounted || !(ModalRoute.isCurrentOf(context) ?? true)) return;
+    if (!_isLost(FocusManager.instance.primaryFocus)) return;
+    _focusActiveTab();
+  }
+
+  void _focusActiveTab() {
+    final active = _activeId();
+    final node = active == null ? null : _tabNodes[active];
+    if (node != null && node.context != null) {
+      node.requestFocus();
+    } else {
+      kFocusFirstIn(_navFocus);
+    }
+  }
+
+  /// TV ↑ that the page did not handle: move up inside the page, and from
+  /// its top edge into the top nav (pages are separate focus scopes, which
+  /// directional traversal does not leave on its own).
+  bool _moveUp() {
+    final primary = FocusManager.instance.primaryFocus;
+    if (primary == null ||
+        _navFocus.hasFocus ||
+        ref.read(categorySidebarOpenProvider)) {
+      return false;
+    }
+    if (!primary.focusInDirection(TraversalDirection.up)) _focusActiveTab();
+    return true;
+  }
+
+  /// TV Back that the page did not handle: up one level in the shell.
+  void _goBack() {
+    final home = shellHomeTab(
+      ref
+          .read(settingsStoreProvider)
+          .get(PlaylistSettings.initialTab, playlistId: _pid),
+      _tabs,
+    );
+    ref.read(categorySidebarOpenProvider.notifier).close();
+    GoRouter.of(context)
+        .go(shellBackLocation(widget.location, pid: _pid, home: home));
   }
 
   /// Remembers the last playlist and tab (Auto-open last playlist, initial
@@ -176,6 +278,7 @@ class _PlaylistShellState extends ConsumerState<PlaylistShell> {
     final fmt = ref.watch(timeFormatProvider);
     final showClock = ref.watchSetting(AppSettings.showClock);
     final tabs = _visibleTabs(playlist);
+    _tabs = tabs;
     final mainTab = tabForLocation(widget.location);
     final sidebarKind = switch (mainTab) {
       MainTab.movies => SectionKind.movie,
@@ -211,11 +314,23 @@ class _PlaylistShellState extends ConsumerState<PlaylistShell> {
       },
       child: Focus(
         focusNode: _shortcutFocus,
-        autofocus: true,
+        // On TV the shell only routes keys: focus belongs on visible items.
+        autofocus: !_tv,
+        canRequestFocus: !_tv,
+        skipTraversal: _tv,
         // "/" opens search, unless the user is typing in a text field.
         onKeyEvent: (node, event) {
-          if (event is! KeyDownEvent ||
-              event.logicalKey != LogicalKeyboardKey.slash) {
+          if (event is! KeyDownEvent) return KeyEventResult.ignored;
+          if (_tv && event.logicalKey == LogicalKeyboardKey.escape) {
+            _goBack();
+            return KeyEventResult.handled;
+          }
+          if (_tv &&
+              event.logicalKey == LogicalKeyboardKey.arrowUp &&
+              _moveUp()) {
+            return KeyEventResult.handled;
+          }
+          if (event.logicalKey != LogicalKeyboardKey.slash) {
             return KeyEventResult.ignored;
           }
           final focused = FocusManager.instance.primaryFocus?.context?.widget;
@@ -227,30 +342,38 @@ class _PlaylistShellState extends ConsumerState<PlaylistShell> {
           color: KColors.bg,
           child: Column(
             children: [
-              KTopNav(
-                leadingInset: Platform.isMacOS ? 72 : 0,
-                tabs: [
-                  for (final t in tabs)
-                    KNavTab(id: t.segment, label: _label(l10n, t)),
-                  KNavTab.icon(
-                    id: 'search',
-                    icon: PhosphorIconsLight.magnifyingGlass,
-                    label: l10n.shellSearch,
+              Focus(
+                focusNode: _navFocus,
+                child: KTopNav(
+                  leadingInset: Platform.isMacOS ? 72 : 0,
+                  tabs: [
+                    for (final t in tabs)
+                      KNavTab(id: t.segment, label: _label(l10n, t)),
+                    KNavTab.icon(
+                      id: 'search',
+                      icon: PhosphorIconsLight.magnifyingGlass,
+                      label: l10n.shellSearch,
+                    ),
+                    KNavTab(id: 'settings', label: l10n.shellSettings),
+                  ],
+                  activeTabId: _activeId(),
+                  tabFocusNodes: {
+                    for (final t in tabs) t.segment: _tabNode(t.segment),
+                    'search': _tabNode('search'),
+                    'settings': _tabNode('settings'),
+                  },
+                  onTabSelected: _select,
+                  dateTimeText: showClock ? fmt.navDateTime(now) : null,
+                  onLogoTap: () => GoRouter.of(context).go(Routes.manager),
+                  avatar: KAvatar(
+                    playlist?.avatarId,
+                    44,
+                    fallbackName: playlist?.name,
                   ),
-                  KNavTab(id: 'settings', label: l10n.shellSettings),
-                ],
-                activeTabId: _activeId(),
-                onTabSelected: _select,
-                dateTimeText: showClock ? fmt.navDateTime(now) : null,
-                onLogoTap: () => GoRouter.of(context).go(Routes.manager),
-                avatar: KAvatar(
-                  playlist?.avatarId,
-                  44,
-                  fallbackName: playlist?.name,
+                  avatarTooltip: l10n.shellSwitchPlaylist,
+                  onAvatarTap: (rect) => _openAvatarMenu(rect, playlists),
+                  trailing: [ShellReloadChip(playlistId: _pid)],
                 ),
-                avatarTooltip: l10n.shellSwitchPlaylist,
-                onAvatarTap: (rect) => _openAvatarMenu(rect, playlists),
-                trailing: [ShellReloadChip(playlistId: _pid)],
               ),
               Expanded(
                 child: Stack(
