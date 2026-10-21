@@ -148,6 +148,7 @@ class _PlayerMiniGuideState extends ConsumerState<PlayerMiniGuide> {
     }
     if (key == LogicalKeyboardKey.enter ||
         key == LogicalKeyboardKey.numpadEnter ||
+        key == LogicalKeyboardKey.select ||
         key == LogicalKeyboardKey.arrowRight) {
       widget.onTune(channels[_selected].providerId);
       return KeyEventResult.handled;

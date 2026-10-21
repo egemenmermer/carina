@@ -41,6 +41,9 @@ void main() {
     test('VOD transport keys', () {
       expect(cmd(vod(LogicalKeyboardKey.space)), PlayerCommand.togglePlay);
       expect(cmd(vod(LogicalKeyboardKey.keyK)), PlayerCommand.togglePlay);
+      // The remote's OK (DPAD_CENTER).
+      expect(cmd(vod(LogicalKeyboardKey.select)), PlayerCommand.togglePlay);
+      expect(cmd(vod(LogicalKeyboardKey.enter)), PlayerCommand.togglePlay);
       expect(cmd(vod(LogicalKeyboardKey.arrowLeft)), PlayerCommand.seekBack);
       expect(
         cmd(vod(LogicalKeyboardKey.arrowRight)),

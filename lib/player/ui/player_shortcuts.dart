@@ -128,7 +128,7 @@ int? digitOfKey(LogicalKeyboardKey key) {
 /// The command for [key] (a key-down or repeat), or null when the player
 /// does not use it.
 ///
-/// VOD and catch-up: Space/K play-pause · ←/→ (J/L) seek · Shift+←/→ long
+/// VOD and catch-up: Space/K/OK play-pause · ←/→ (J/L) seek · Shift+←/→ long
 /// seek · ↑ volume up · ↓ info panel while the controls are visible, else
 /// volume down · M mute · F full screen · A audio · S subtitles · I info ·
 /// N next episode (VOD) · 0–9 jump to 0–90 % · [ ] audio delay.
@@ -229,7 +229,8 @@ PlayerShortcut? playerShortcutFor(
       key == LogicalKeyboardKey.mediaPlay ||
       key == LogicalKeyboardKey.mediaPause ||
       key == LogicalKeyboardKey.enter ||
-      key == LogicalKeyboardKey.numpadEnter) {
+      key == LogicalKeyboardKey.numpadEnter ||
+      key == LogicalKeyboardKey.select) {
     return c(PlayerCommand.togglePlay);
   }
   if (key == LogicalKeyboardKey.arrowLeft) {
