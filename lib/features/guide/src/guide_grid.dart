@@ -54,6 +54,7 @@ class GuideGrid extends StatefulWidget {
     this.autofocus = true,
     this.focusNode,
     this.metrics = GuideMetrics.regular,
+    this.leaveUpFromFirstRow = false,
   });
 
   final List<ChannelView> channels;
@@ -92,6 +93,10 @@ class GuideGrid extends StatefulWidget {
   final bool autofocus;
   final FocusNode? focusNode;
   final GuideMetrics metrics;
+
+  /// Up on the first row is left unhandled so directional focus can move to
+  /// the controls above the grid (TV remote).
+  final bool leaveUpFromFirstRow;
 
   @override
   State<GuideGrid> createState() => _GuideGridState();
@@ -468,6 +473,9 @@ class _GuideGridState extends State<GuideGrid> implements GuideGridCommands {
     final key = event.logicalKey;
     final rowsPerPage = math.max(1, (_viewportHeight / _m.rowPitch).floor());
     if (key == LogicalKeyboardKey.arrowUp) {
+      if (widget.leaveUpFromFirstRow && (_focus?.row ?? 0) == 0) {
+        return KeyEventResult.ignored;
+      }
       _moveRow(-1, repeat: repeat);
     } else if (key == LogicalKeyboardKey.arrowDown) {
       _moveRow(1, repeat: repeat);

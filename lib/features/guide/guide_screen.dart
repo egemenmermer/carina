@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/clock.dart';
+import '../../app/platform/form_factor.dart';
 import '../../app/shell/category_selection.dart';
 import '../../app/time_format.dart';
 import '../../core/core.dart';
@@ -314,6 +315,7 @@ class _GuideScreenState extends ConsumerState<GuideScreen> {
                 noEpgLabel: l10n.guideNoEpg,
                 reminderKeys: _keysOf(reminders),
                 dayLabel: (day) => guideDayLabel(l10n, fmt, day, now),
+                leaveUpFromFirstRow: ref.watch(formFactorProvider).isTv,
                 onDayTap: (rect) => _pickDay(rect, range),
                 onActivate: (f) => unawaited(_activate(f, channels, category)),
                 onChannelActions: (channel, position) => unawaited(
