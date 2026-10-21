@@ -19,6 +19,7 @@ void main() {
   Future<(MockImportFixture, RecordingExternals, FakeEngineFactory)> open(
     WidgetTester tester, {
     bool tv = true,
+    Size size = const Size(1440, 900),
     Map<SettingKey<Object?>, Object?> settings = const {},
   }) async {
     final now = liveTestNow();
@@ -33,6 +34,7 @@ void main() {
     await pumpScreen(
       tester,
       liveInShell(fx.playlistId),
+      size: size,
       overrides: [
         ...liveOverrides(fx, engines: engines, externals: externals, now: now),
         if (tv) formFactorProvider.overrideWithValue(FormFactor.tv),
@@ -140,4 +142,15 @@ void main() {
     expect(find.byType(LivePreviewView), findsOneWidget);
     await close(tester, fx);
   });
+
+  for (final size in const [Size(960, 540), Size(1280, 720)]) {
+    testWidgets('TV: the Live screen fits ${size.width.toInt()}×'
+        '${size.height.toInt()} without overflow', (tester) async {
+      final (fx, _, _) = await open(tester, size: size);
+      // A RenderFlex overflow is reported as a framework exception.
+      expect(tester.takeException(), isNull);
+      expect(find.byType(LivePreviewView), findsOneWidget);
+      await close(tester, fx);
+    });
+  }
 }

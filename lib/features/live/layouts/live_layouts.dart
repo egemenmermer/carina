@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
+import '../../../core/core.dart';
 import '../widgets/channel_cards.dart';
 
 /// Space above the first card (room for the floating category pill).
@@ -12,6 +13,9 @@ const double kLiveListBottomPadding = 24;
 
 /// Height of one list row (card + gap).
 const double kLiveListItemExtent = kLiveListCardHeight + kLiveListGap;
+
+/// Least height the preview keeps in the horizontal layout on TV.
+const double kLivePreviewMinHeight = 140;
 
 /// Horizontal padding inside the list (room for the focus scale).
 const double kLiveListSidePadding = 6;
@@ -45,9 +49,16 @@ class LiveHorizontalLayout extends StatelessWidget {
 
   /// Height of the NOW ON AIR / UPCOMING row in a right column of
   /// [height]: 44 % as in the reference (the preview gets the rest), never
-  /// less than the panels need.
-  static double panelsHeight(double height) =>
-      math.max(290, (height - 12) * 0.44).toDouble();
+  /// less than the panels need. On a short TV screen ([tv], 960×540) the
+  /// panels give up a few description lines instead, so the preview keeps
+  /// at least [kLivePreviewMinHeight].
+  static double panelsHeight(double height, {bool tv = false}) {
+    final proportional = (height - 12) * 0.44;
+    final floor = tv
+        ? math.min(290.0, math.max(262.0, height - 12 - kLivePreviewMinHeight))
+        : 290.0;
+    return math.max(floor, proportional).toDouble();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +90,10 @@ class LiveHorizontalLayout extends StatelessWidget {
                   padding: const EdgeInsets.only(top: kLiveListTopPadding),
                   child: LayoutBuilder(
                     builder: (context, right) {
-                      final panels = panelsHeight(right.maxHeight);
+                      final panels = panelsHeight(
+                        right.maxHeight,
+                        tv: KTvMode.of(context),
+                      );
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [

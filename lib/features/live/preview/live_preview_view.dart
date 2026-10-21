@@ -238,50 +238,57 @@ class _Poster extends StatelessWidget {
       ),
       child: c == null
           ? const SizedBox.expand()
-          : Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (error)
-                      Icon(
-                        PhosphorIconsLight.warningCircle,
-                        size: compact ? 30 : 44,
-                        color: KColors.accent,
-                      )
-                    else
-                      KLogoTile(
-                        name: c.displayName,
-                        url: c.logo,
-                        size: compact ? 52 : 88,
-                      ),
-                    if (!compact) ...[
-                      const SizedBox(height: 14),
-                      Text(
-                        c.displayName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: KText.title,
-                      ),
-                    ],
-                    if (hint != null) ...[
-                      SizedBox(height: compact ? 8 : 6),
-                      Text(
-                        hint!,
-                        maxLines: 2,
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                        style: KText.caption.copyWith(
-                          color: error
-                              ? KColors.textPrimary
-                              : KColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                // A short preview (TV at 960×540) shrinks the poster so
+                // the column fits.
+                final dense = !compact && constraints.maxHeight < 210;
+                return Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(dense ? 10 : 16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (error)
+                          Icon(
+                            PhosphorIconsLight.warningCircle,
+                            size: compact ? 30 : (dense ? 30 : 44),
+                            color: KColors.accent,
+                          )
+                        else
+                          KLogoTile(
+                            name: c.displayName,
+                            url: c.logo,
+                            size: compact ? 52 : (dense ? 44 : 88),
+                          ),
+                        if (!compact) ...[
+                          SizedBox(height: dense ? 6 : 14),
+                          Text(
+                            c.displayName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: KText.title,
+                          ),
+                        ],
+                        if (hint != null) ...[
+                          SizedBox(height: compact ? 8 : (dense ? 4 : 6)),
+                          Text(
+                            hint!,
+                            maxLines: 2,
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
+                            style: KText.caption.copyWith(
+                              color: error
+                                  ? KColors.textPrimary
+                                  : KColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
     );
   }
