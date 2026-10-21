@@ -1,5 +1,6 @@
 import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:carina/core/user_agent.dart';
 import 'package:carina/player/engine/engine_mapping.dart';
 import 'package:carina/player/engine/playback_engine.dart';
 
@@ -24,7 +25,7 @@ void main() {
           expect(p['hwdec-codecs'], contains('mpeg2video'));
           expect(p['cache-on-disk'], 'no');
           expect(p['network-timeout'], '15');
-          expect(p['user-agent'], kCarinaUserAgent);
+          expect(p['user-agent'], defaultUserAgent());
           expect(p['cache'], 'yes');
           expect(p['video-sync'], 'audio');
           expect(p['untimed'], 'no');
@@ -299,7 +300,7 @@ void main() {
       );
       expect(
         userAgentFor(const EngineOptions(userAgent: ' '), vod),
-        kCarinaUserAgent,
+        defaultUserAgent(),
       );
       expect(kCarinaUserAgent, 'Carina/1.0 (Windows)');
       expect(kVlcUserAgent, 'VLC/3.0.20 LibVLC/3.0.20');

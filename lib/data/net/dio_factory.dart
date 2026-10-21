@@ -3,32 +3,13 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 
+import '../../core/user_agent.dart';
 import 'retry_interceptor.dart';
 
+export '../../core/user_agent.dart';
 export 'download.dart' show downloadToFile;
 export 'net_errors.dart';
 export 'retry_interceptor.dart';
-
-/// App version used in the default User-Agent.
-const String carinaUserAgentVersion = '1.0';
-
-/// `Carina/1.0 (Windows)` on Windows, `Carina/1.0 (macOS)` on macOS,
-/// `Carina/1.0 (Android)` on Android (TV).
-String defaultUserAgent() {
-  final String os;
-  if (Platform.isWindows) {
-    os = 'Windows';
-  } else if (Platform.isMacOS) {
-    os = 'macOS';
-  } else if (Platform.isAndroid) {
-    os = 'Android';
-  } else if (Platform.isLinux) {
-    os = 'Linux';
-  } else {
-    os = Platform.operatingSystem;
-  }
-  return 'Carina/$carinaUserAgentVersion ($os)';
-}
 
 /// Creates the app's [Dio] for playlist sources, EPG and artwork.
 ///

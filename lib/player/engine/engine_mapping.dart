@@ -4,6 +4,8 @@ library;
 
 import 'package:flutter/painting.dart';
 
+import '../../core/user_agent.dart';
+
 import 'playback_engine.dart';
 import 'track_language.dart';
 
@@ -189,7 +191,11 @@ String userAgentFor(EngineOptions options, PlaybackSource source) {
     }
   }
   final fromOptions = options.userAgent.trim();
-  return fromOptions.isEmpty ? kCarinaUserAgent : fromOptions;
+  // The Carina default names the OS the app is running on.
+  if (fromOptions.isEmpty || fromOptions == kCarinaUserAgent) {
+    return defaultUserAgent();
+  }
+  return fromOptions;
 }
 
 /// Referer plus per-entry headers (User-Agent excluded: it goes to mpv's

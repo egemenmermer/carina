@@ -47,7 +47,8 @@ enum SubtitleFallback {
   off,
 }
 
-/// Default User-Agent sent to IPTV servers.
+/// Default User-Agent setting; [userAgentFor] sends it as
+/// `defaultUserAgent()`, which names the OS the app runs on.
 const String kCarinaUserAgent = 'Carina/1.0 (Windows)';
 
 /// User-Agent used when the playlist setting is "VLC".
