@@ -67,6 +67,29 @@ Each phase reports **code**, **automated tests**, **visual check**
 Done when the checklist is filled in with pass/fail per item. A failure in
 playback or FTS5 stops the work for a decision.
 
+**Results (2026-10-21/22, emulator `carina_gtv`, Google TV API 34 arm64,
+debug APK, Impeller GLES).** The smoke test runs on the emulator through
+the debug-only `carina_args` intent extra:
+`adb shell am start -n app.carina.player/.MainActivity --es carina_args
+"'--smoke-test --mock-url http://10.0.2.2:8787 --smoke-out
+/data/user/0/app.carina.player/files/smoke.json'"`.
+
+| Item | Result |
+|---|---|
+| Debug and release APK build | pass (release built before Phase 1; CI builds it now) |
+| Boots to the Playlist Manager | pass |
+| Xtream + XMLTV import (300 live, 2000 movies, 200 series, 66 583 programmes) | pass, 14–24 s |
+| H.264/AAC TS decode | pass (`c2.goldfish.h264.decoder`, MediaCodec) |
+| AC-3 5.1 decode | pass (6 ch) when it is the first stream |
+| HEVC/E-AC-3 2160p, MPEG-2, HLS, VOD Range | not measured, see below |
+| Video on screen | **emulator cannot tell**: mpv's `vo=gpu` fails `eglCreateContext` ("Could not create EGL context for GLES 2.x +") on both `-gpu host` and `-gpu swiftshader_indirect`, with and without Impeller. The first file decodes against the null VO; every later open fails because the VO cannot initialise. media_kit itself treats emulators as unsupported for hardware output. Needs a real device. |
+| FTS5 search | import builds `programme_search`; UI search not exercised yet |
+| Large import (`--scale large`) | not run |
+
+`hwdec-current` and `video-codec` read back empty in the smoke result even
+while MediaCodec decodes; the readout is wrong, not the decoder.
+Real-device testing by testers is the next signal for playback.
+
 ### Phase 1 — Platform layer
 
 Code is on branch `tv-platform`; everything that runs on Android is
@@ -91,8 +114,8 @@ Code is on branch `tv-platform`; everything that runs on Android is
 - `AppPaths` (app support directory = app-private files), `SecretStore`
   (Android Keystore; `allowBackup=false` so a restored backup cannot leave
   undecryptable secrets) and `defaultUserAgent()` (`Carina/1.0 (Android)`)
-  are in place. mpv's own agent (`kCarinaUserAgent`) is still the fixed
-  `Carina/1.0 (Windows)`.
+  are in place. mpv sends the same per-OS agent (`lib/core/user_agent.dart`)
+  unless the playlist overrides it.
 - Still open: one back handler (`PopScope`) for the remote's Back key
   (Phase 2).
 
