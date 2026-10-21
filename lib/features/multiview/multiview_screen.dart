@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../app/platform/screen_awake.dart';
 import '../../app/router.dart' show MainTab, Routes;
 import '../../core/core.dart';
 import '../../data/repositories/live_repository.dart';
@@ -68,6 +69,8 @@ class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
 
   int get _pid => widget.playlistId;
 
+  late final ScreenAwake _screenAwake;
+
   MultiviewSessionNotifier get _notifier =>
       ref.read(multiviewSessionProvider(_pid).notifier);
 
@@ -79,6 +82,7 @@ class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
   @override
   void initState() {
     super.initState();
+    _screenAwake = ref.read(screenAwakeProvider)..hold(this);
     // Providers cannot change while the tree builds: apply the initial
     // channels / layout right after the first frame.
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -100,6 +104,7 @@ class MultiviewScreenState extends ConsumerState<MultiviewScreen> {
   @override
   void dispose() {
     _disposed = true;
+    _screenAwake.release(this);
     for (final e in _engines.values) {
       unawaited(e.sub?.cancel());
       unawaited(e.engine.dispose());

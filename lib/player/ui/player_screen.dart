@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/clock.dart';
+import '../../app/platform/screen_awake.dart';
 import '../../app/router.dart' show rootNavigatorKey;
 import '../../app/time_format.dart';
 import '../../core/core.dart';
@@ -102,6 +103,8 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
   Timer? _flashTimer;
   DateTime _lastWheelZap = DateTime.fromMillisecondsSinceEpoch(0);
 
+  late final ScreenAwake _screenAwake;
+
   PlayerKind get _kind => controller.kind;
   bool get _live => _kind == PlayerKind.live;
 
@@ -135,6 +138,7 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
     );
     _video = controller.engine.buildVideo();
     controller.addListener(_onController);
+    _screenAwake = ref.read(screenAwakeProvider)..hold(this);
     _scheduleHide();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -152,6 +156,7 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
     _volumeTimer?.cancel();
     _flashTimer?.cancel();
     controller.removeListener(_onController);
+    _screenAwake.release(this);
     controller.dispose();
     _focus.dispose();
     super.dispose();
@@ -168,6 +173,14 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
 
   void _onController() {
     if (!mounted) return;
+    // A paused stream or an error screen lets the TV dim again.
+    final engine = controller.state;
+    if (controller.failure == null &&
+        (engine.source == null || engine.playing || engine.buffering)) {
+      _screenAwake.hold(this);
+    } else {
+      _screenAwake.release(this);
+    }
     // Give the keyboard back to the player when a prompt closes (its
     // focused pill is gone).
     final modal = controller.resumeOffer != null || controller.failure != null;
