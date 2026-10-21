@@ -5,6 +5,7 @@ import 'package:carina/core/icons/phosphor_icons.dart';
 import 'package:carina/core/tokens.dart';
 import 'package:carina/core/widgets/k_buttons.dart';
 import 'package:carina/core/widgets/k_popup.dart';
+import 'package:carina/core/widgets/k_tv.dart';
 
 /// Where context-menu rows show their icon.
 enum KMenuIconPosition {
@@ -155,8 +156,22 @@ class _KContextMenuState<T> extends State<KContextMenu<T>> {
   late List<GlobalKey> _rowKeys = _keys();
   int _highlight = -1;
 
+  bool _initialized = false;
+
   List<GlobalKey> _keys() =>
       List.generate(widget.entries.length, (_) => GlobalKey());
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_initialized) return;
+    _initialized = true;
+    // A remote has no pointer to hover with: start on the first row, so
+    // the focus shows and OK chooses right away.
+    if (KTvMode.read(context)) {
+      _highlight = widget.entries.indexWhere((e) => e._selectable);
+    }
+  }
 
   @override
   void didUpdateWidget(KContextMenu<T> oldWidget) {
@@ -245,7 +260,9 @@ class _KContextMenuState<T> extends State<KContextMenu<T>> {
         key == LogicalKeyboardKey.numpadEnter ||
         key == LogicalKeyboardKey.space ||
         key == LogicalKeyboardKey.select) {
-      if (_highlight >= 0) _choose(_highlight);
+      // Only a fresh press chooses: a TV remote opens the menu by holding
+      // OK, and that same OK keeps repeating until it is released.
+      if (event is KeyDownEvent && _highlight >= 0) _choose(_highlight);
       return KeyEventResult.handled;
     }
     if (key == LogicalKeyboardKey.escape) {

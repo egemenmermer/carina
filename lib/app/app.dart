@@ -55,6 +55,16 @@ class _AppShortcuts extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tv = ref.watch(formFactorProvider).isTv;
+    if (tv) {
+      // Android starts in the "touch" highlight mode, which hides focus
+      // rings until the first key press. A remote always needs them.
+      FocusManager.instance.highlightStrategy =
+          FocusHighlightStrategy.alwaysTraditional;
+    }
+    return KTvMode(enabled: tv, child: _bindings(ref, tv));
+  }
+
+  Widget _bindings(WidgetRef ref, bool tv) {
     return CallbackShortcuts(
       bindings: {
         const SingleActivator(LogicalKeyboardKey.f11): () {
@@ -63,8 +73,12 @@ class _AppShortcuts extends ConsumerWidget {
         // The remote's Back arrives as Escape (MainActivity.kt). Screens and
         // overlays handle it first; here it reaches only when none did, so it
         // goes one route back, or leaves the app from the first screen.
+        // Not on key repeat: a held Back would climb to the exit.
         if (tv)
-          const SingleActivator(LogicalKeyboardKey.escape): () {
+          const SingleActivator(
+            LogicalKeyboardKey.escape,
+            includeRepeats: false,
+          ): () {
             final router = ref.read(routerProvider);
             if (router.canPop()) {
               router.pop();

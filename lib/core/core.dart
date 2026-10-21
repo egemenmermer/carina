@@ -35,5 +35,6 @@ export 'widgets/k_sheet.dart';
 export 'widgets/k_states.dart';
 export 'widgets/k_text_field.dart';
 export 'widgets/k_toast.dart';
+export 'widgets/k_tv.dart';
 export 'widgets/k_top_nav.dart';
 export 'window/window_controls.dart';

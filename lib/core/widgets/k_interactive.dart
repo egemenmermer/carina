@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:carina/core/tokens.dart';
+import 'package:carina/core/widgets/k_tv.dart';
 
 /// Called with the global pointer position where a context menu should open
 /// (right-click, long-press, or the widget's center for Menu / Shift+F10).
@@ -59,6 +62,11 @@ class KContextMenuIntent extends Intent {
 /// and long-press report the pointer position; the Menu key and Shift+F10
 /// report the element's center. Clicking an element also focuses it (tvOS
 /// behavior), so keyboard navigation continues from there.
+///
+/// Under [KTvMode] the remote's OK (Enter / Select) fires once per press,
+/// never on key repeat. When the element has a context menu, OK fires on
+/// release instead, and holding it for [tvMenuHold] (or until the remote
+/// starts repeating) opens the menu without the tap.
 ///
 /// Use it directly to build custom interactive pieces (EPG cells, rows):
 ///
@@ -140,6 +148,9 @@ class KInteractive extends StatefulWidget {
   /// Whether to report the element as a button to accessibility services.
   final bool isButton;
 
+  /// How long OK must be held on a TV remote to open the context menu.
+  static const Duration tvMenuHold = Duration(milliseconds: 500);
+
   @override
   State<KInteractive> createState() => _KInteractiveState();
 }
@@ -154,10 +165,26 @@ class _KInteractiveState extends State<KInteractive> {
     SingleActivator(LogicalKeyboardKey.f10, shift: true): KContextMenuIntent(),
   };
 
+  /// On TV the OK keys are handled by [_onTvKey] (press, hold, release).
+  static const _tvShortcuts = <ShortcutActivator, Intent>{
+    SingleActivator(LogicalKeyboardKey.space, includeRepeats: false):
+        ActivateIntent(),
+    SingleActivator(LogicalKeyboardKey.contextMenu): KContextMenuIntent(),
+    SingleActivator(LogicalKeyboardKey.f10, shift: true): KContextMenuIntent(),
+  };
+
+  static bool _isOk(LogicalKeyboardKey key) =>
+      key == LogicalKeyboardKey.enter ||
+      key == LogicalKeyboardKey.numpadEnter ||
+      key == LogicalKeyboardKey.select;
+
   FocusNode? _internalNode;
   bool _hovered = false;
   bool _focused = false;
   bool _pressed = false;
+
+  /// Running while OK is held on an element with a menu (TV).
+  Timer? _holdTimer;
 
   FocusNode get _focusNode =>
       widget.focusNode ??
@@ -182,8 +209,56 @@ class _KInteractiveState extends State<KInteractive> {
 
   @override
   void dispose() {
+    _holdTimer?.cancel();
     _internalNode?.dispose();
     super.dispose();
+  }
+
+  void _cancelHold() {
+    _holdTimer?.cancel();
+    _holdTimer = null;
+    _setPressed(false);
+  }
+
+  /// The remote's OK on TV: one tap per press; with a menu, tap on release
+  /// and open the menu once OK is held (timer or first key repeat).
+  KeyEventResult _onTvKey(FocusNode node, KeyEvent event) {
+    if (!_isOk(event.logicalKey)) return KeyEventResult.ignored;
+    if (!widget.enabled || !_focusNode.hasPrimaryFocus) {
+      return KeyEventResult.ignored;
+    }
+    if (!_hasPrimary && !_hasMenu) return KeyEventResult.ignored;
+    switch (event) {
+      case KeyDownEvent():
+        _cancelHold();
+        if (!_hasMenu) {
+          widget.onTap?.call();
+          return KeyEventResult.handled;
+        }
+        _setPressed(true);
+        _holdTimer = Timer(KInteractive.tvMenuHold, _openMenuFromHold);
+      case KeyRepeatEvent():
+        if (_holdTimer != null) _openMenuFromHold();
+      case KeyUpEvent():
+        if (_holdTimer != null) {
+          _cancelHold();
+          widget.onTap?.call();
+        }
+    }
+    // Repeats and releases of a press that began elsewhere are swallowed
+    // too, so they never reach the app-level Enter → ActivateIntent.
+    return KeyEventResult.handled;
+  }
+
+  void _openMenuFromHold() {
+    if (_holdTimer == null || !mounted) return;
+    _cancelHold();
+    _openMenuAtCenter();
+  }
+
+  void _onFocusChange(bool focused) {
+    if (!focused) _cancelHold();
+    widget.onFocusChange?.call(focused);
   }
 
   void _setPressed(bool value) {
@@ -300,16 +375,27 @@ class _KInteractiveState extends State<KInteractive> {
     );
 
     if (widget.focusable) {
+      final tv = KTvMode.of(context);
       result = FocusableActionDetector(
         focusNode: _focusNode,
         autofocus: widget.autofocus,
         enabled: enabled,
-        shortcuts: _shortcuts,
+        shortcuts: tv ? _tvShortcuts : _shortcuts,
         actions: _actions(),
         onShowFocusHighlight: _setFocusHighlight,
-        onFocusChange: widget.onFocusChange,
+        onFocusChange: tv ? _onFocusChange : widget.onFocusChange,
         child: result,
       );
+      if (tv) {
+        // An ancestor of the detector's node, so it sees OK after the
+        // detector's shortcuts (which no longer bind it) pass.
+        result = Focus(
+          canRequestFocus: false,
+          skipTraversal: true,
+          onKeyEvent: _onTvKey,
+          child: result,
+        );
+      }
     }
 
     return Semantics(
