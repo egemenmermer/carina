@@ -369,7 +369,9 @@ class _SectionList extends StatelessWidget {
     return FocusTraversalGroup(
       child: ListView(
         // TV: build every tile, so a deep selected one can take focus.
-        cacheExtent: autofocusSelected ? 4000 : null,
+        scrollCacheExtent: autofocusSelected
+            ? const ScrollCacheExtent.pixels(4000)
+            : null,
         padding: const EdgeInsets.fromLTRB(32, 22, 16, 32),
         children: [
           if (back != null) ...[
