@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../app/platform/form_factor.dart';
 import '../../../core/core.dart';
 import '../../../data/db/database.dart';
 import '../../../data/repositories/category_repository.dart';
@@ -104,6 +105,9 @@ class _VodGridViewState extends ConsumerState<VodGridView> {
   final ScrollController _scroll = ScrollController();
   final Map<String, String> _keys = {};
   Timer? _debounce;
+
+  /// TV: the first poster takes focus once, as soon as there is one.
+  bool _focusedFirstCell = false;
   String _query = '';
   List<VodItem>? _lastItems;
 
@@ -170,6 +174,20 @@ class _VodGridViewState extends ConsumerState<VodGridView> {
     if (terms.isEmpty) return true;
     final key = _keys[name] ??= normalizeForSearch(name);
     return terms.every(key.contains);
+  }
+
+  /// With a remote there is no pointer to pick a poster: put focus on the
+  /// first one when the grid fills, unless the user already moved it (to the
+  /// header, say).
+  void _focusFirstCellOnTv() {
+    if (_focusedFirstCell || !ref.read(formFactorProvider).isTv) return;
+    _focusedFirstCell = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final current = FocusManager.instance.primaryFocus;
+      if (current != null && current != _gridFocus) return;
+      _bodyFocus.traversalDescendants.firstOrNull?.requestFocus();
+    });
   }
 
   KeyEventResult _onKey(FocusNode node, KeyEvent event) {
@@ -292,6 +310,8 @@ class _VodGridViewState extends ConsumerState<VodGridView> {
         ),
       );
     }
+
+    if (count != null && count > 0) _focusFirstCellOnTv();
 
     return Focus(
       focusNode: _gridFocus,

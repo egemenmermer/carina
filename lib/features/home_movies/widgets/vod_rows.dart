@@ -29,24 +29,25 @@ class VodRowSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FocusTraversalGroup(
-      child: Padding(
-        padding: EdgeInsets.only(bottom: bottomGap),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            KSectionHeader(title: title, onSeeAll: onSeeAll),
-            KHorizontalRow(
-              itemCount: itemCount,
-              itemWidth: itemWidth,
-              itemHeight: itemHeight,
-              spacing: spacing,
-              focusPadding: 12,
-              itemBuilder: itemBuilder,
-            ),
-          ],
-        ),
+    // No FocusTraversalGroup per row: every group keeps its own Up/Down
+    // history, so an Up right after a Down in the same row would return to
+    // the card it is already on (the D-pad stalls on every second press).
+    return Padding(
+      padding: EdgeInsets.only(bottom: bottomGap),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          KSectionHeader(title: title, onSeeAll: onSeeAll),
+          KHorizontalRow(
+            itemCount: itemCount,
+            itemWidth: itemWidth,
+            itemHeight: itemHeight,
+            spacing: spacing,
+            focusPadding: 12,
+            itemBuilder: itemBuilder,
+          ),
+        ],
       ),
     );
   }
