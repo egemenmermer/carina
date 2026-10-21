@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../core/core.dart';
 
@@ -8,6 +10,11 @@ import '../../../core/core.dart';
 /// part over the buffered and the track, a white knob and a time tooltip
 /// on hover, click or drag to seek. The elapsed label follows the playhead
 ///; [endLabel] sits at the right edge.
+///
+/// With a [focusNode] (TV) the bar is focusable: ←/→ move the playhead by
+/// [step], faster while the key repeats, with the time tooltip and the knob
+/// shown; the seek lands once the keys rest ([kSeekCommitDelay]). Other
+/// keys (OK, ↑, ↓) bubble to the player.
 class PlayerSeekBar extends StatefulWidget {
   const PlayerSeekBar({
     super.key,
@@ -20,6 +27,8 @@ class PlayerSeekBar extends StatefulWidget {
     this.startLabel,
     this.hoverLabel,
     this.onInteraction,
+    this.focusNode,
+    this.step = const Duration(seconds: 10),
   });
 
   final Duration position;
@@ -44,13 +53,45 @@ class PlayerSeekBar extends StatefulWidget {
   /// Called on hover / drag so the parent keeps the controls visible.
   final VoidCallback? onInteraction;
 
+  /// Makes the bar focusable (TV); null keeps it pointer-only.
+  final FocusNode? focusNode;
+
+  /// What one ←/→ press moves (before the repeat acceleration).
+  final Duration step;
+
   @override
   State<PlayerSeekBar> createState() => _PlayerSeekBarState();
+}
+
+/// Resting time after the last ←/→ before the seek is sent, so a held key
+/// scrubs and only the final position reaches the engine.
+const Duration kSeekCommitDelay = Duration(milliseconds: 350);
+
+/// How long the target stays on the bar after the seek was sent, until the
+/// engine reports the new position.
+const Duration kSeekSettleDelay = Duration(milliseconds: 900);
+
+/// Step multiplier of the [repeats]-th key repeat: ×1, then ×3, ×6, ×12
+/// the longer the key is held.
+int seekRepeatMultiplier(int repeats) {
+  if (repeats < 4) return 1;
+  if (repeats < 12) return 3;
+  if (repeats < 25) return 6;
+  return 12;
 }
 
 class _PlayerSeekBarState extends State<PlayerSeekBar> {
   double? _hoverX;
   double? _dragFraction;
+
+  // Keyboard scrubbing (TV): the target is kept here because the engine
+  // reports positions late.
+  Duration? _pending;
+  Timer? _commitTimer;
+  Timer? _settleTimer;
+  int _repeats = 0;
+  int _direction = 0;
+  bool _focused = false;
 
   static const double _barTop = 10;
   static const double _labelTop = 26;
@@ -66,7 +107,62 @@ class _PlayerSeekBarState extends State<PlayerSeekBar> {
     final d = widget.duration.inMilliseconds;
     if (_dragFraction != null) return _dragFraction!;
     if (d <= 0) return 0;
-    return (widget.position.inMilliseconds / d).clamp(0.0, 1.0);
+    final shown = _pending ?? widget.position;
+    return (shown.inMilliseconds / d).clamp(0.0, 1.0);
+  }
+
+  @override
+  void dispose() {
+    _commitTimer?.cancel();
+    _settleTimer?.cancel();
+    super.dispose();
+  }
+
+  KeyEventResult _onKey(FocusNode node, KeyEvent event) {
+    final key = event.logicalKey;
+    final direction = key == LogicalKeyboardKey.arrowLeft
+        ? -1
+        : key == LogicalKeyboardKey.arrowRight
+        ? 1
+        : 0;
+    if (direction == 0 || widget.duration <= Duration.zero) {
+      return KeyEventResult.ignored;
+    }
+    if (event is KeyUpEvent) return KeyEventResult.handled;
+    _repeats = event is KeyRepeatEvent && direction == _direction
+        ? _repeats + 1
+        : 0;
+    _direction = direction;
+    final delta = widget.step * (direction * seekRepeatMultiplier(_repeats));
+    final base = _pending ?? widget.position;
+    var target = base + delta;
+    if (target < Duration.zero) target = Duration.zero;
+    if (target > widget.duration) target = widget.duration;
+    _settleTimer?.cancel();
+    _commitTimer?.cancel();
+    _commitTimer = Timer(kSeekCommitDelay, _commit);
+    setState(() => _pending = target);
+    widget.onInteraction?.call();
+    return KeyEventResult.handled;
+  }
+
+  /// Sends the keyboard target to the engine.
+  void _commit() {
+    _commitTimer?.cancel();
+    _commitTimer = null;
+    final target = _pending;
+    if (target == null || !mounted) return;
+    widget.onSeek(target);
+    _settleTimer?.cancel();
+    _settleTimer = Timer(kSeekSettleDelay, () {
+      if (mounted) setState(() => _pending = null);
+    });
+  }
+
+  void _focusChanged(bool focused) {
+    if (!mounted) return;
+    if (!focused && (_commitTimer?.isActive ?? false)) _commit();
+    setState(() => _focused = focused);
   }
 
   double get _bufferedFraction {
@@ -106,7 +202,7 @@ class _PlayerSeekBarState extends State<PlayerSeekBar> {
           final scaler = MediaQuery.textScalerOf(context);
           final fraction = _fraction;
           final playX = width * fraction;
-          final active = _hoverX != null || _dragFraction != null;
+          final active = _hoverX != null || _dragFraction != null || _focused;
           final playhead = widget.playheadLabel(_at(fraction));
           final playheadW = _textWidth(playhead, _labelStyle, scaler);
           final endW = _textWidth(widget.endLabel, _labelStyle, scaler);
@@ -129,9 +225,13 @@ class _PlayerSeekBarState extends State<PlayerSeekBar> {
             tooltip = (widget.hoverLabel ?? widget.playheadLabel)(at);
           } else if (_dragFraction != null) {
             tooltip = widget.playheadLabel(_at(_dragFraction!));
+          } else if (_focused && enabled) {
+            tooltip = (widget.hoverLabel ?? widget.playheadLabel)(
+              _at(fraction),
+            );
           }
           final tooltipX = hoverX ?? playX;
-          return MouseRegion(
+          Widget bar = MouseRegion(
             cursor: enabled ? SystemMouseCursors.click : MouseCursor.defer,
             onHover: (e) {
               setState(() => _hoverX = e.localPosition.dx.clamp(0.0, width));
@@ -230,6 +330,14 @@ class _PlayerSeekBarState extends State<PlayerSeekBar> {
                 ],
               ),
             ),
+          );
+          final node = widget.focusNode;
+          if (node == null) return bar;
+          return Focus(
+            focusNode: node,
+            onKeyEvent: _onKey,
+            onFocusChange: _focusChanged,
+            child: bar,
           );
         },
       ),

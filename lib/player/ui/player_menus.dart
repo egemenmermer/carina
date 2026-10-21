@@ -201,7 +201,9 @@ List<KPopoverSection> speedSections(L10n l10n, PlayerController c) => [
   ),
 ];
 
-/// OPTIONS: info, statistics, full screen and (series) next episode.
+/// OPTIONS: info, statistics, full screen and (series) next episode. On TV
+/// ([tv]) there is no window to enlarge, and Mute joins the list (the
+/// remote has no M key).
 List<KPopoverSection> moreSections(
   L10n l10n,
   PlayerController c, {
@@ -211,6 +213,9 @@ List<KPopoverSection> moreSections(
   required VoidCallback onStats,
   required VoidCallback onFullscreen,
   VoidCallback? onNextEpisode,
+  bool tv = false,
+  bool muted = false,
+  VoidCallback? onMute,
 }) => [
   KPopoverSection(
     header: l10n.playerOptions,
@@ -234,14 +239,21 @@ List<KPopoverSection> moreSections(
         detail: 'Ctrl+Shift+D',
         onTap: onStats,
       ),
-      KPopoverItem.action(
-        label: fullscreen ? l10n.playerExitFullscreen : l10n.playerFullscreen,
-        icon: fullscreen
-            ? PhosphorIconsLight.cornersIn
-            : PhosphorIconsLight.cornersOut,
-        detail: 'F',
-        onTap: onFullscreen,
-      ),
+      if (tv && onMute != null)
+        KPopoverItem.check(
+          label: l10n.playerMuted,
+          checked: muted,
+          onTap: onMute,
+        ),
+      if (!tv)
+        KPopoverItem.action(
+          label: fullscreen ? l10n.playerExitFullscreen : l10n.playerFullscreen,
+          icon: fullscreen
+              ? PhosphorIconsLight.cornersIn
+              : PhosphorIconsLight.cornersOut,
+          detail: 'F',
+          onTap: onFullscreen,
+        ),
     ],
   ),
 ];

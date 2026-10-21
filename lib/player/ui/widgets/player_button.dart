@@ -16,6 +16,7 @@ class PlayerIconButton extends StatelessWidget {
     this.size = 40,
     this.iconSize = 20,
     this.background = KColors.glass,
+    this.focusNode,
   });
 
   final IconData icon;
@@ -26,11 +27,16 @@ class PlayerIconButton extends StatelessWidget {
   final double iconSize;
   final Color background;
 
+  /// External focus node, so the player can return focus to the button
+  /// (TV remote).
+  final FocusNode? focusNode;
+
   @override
   Widget build(BuildContext context) {
     Widget button = KInteractive(
       onTap: onPressed,
       enabled: onPressed != null,
+      focusNode: focusNode,
       focusOnTap: false,
       selected: active,
       semanticLabel: tooltip,

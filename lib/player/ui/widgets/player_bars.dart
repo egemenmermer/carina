@@ -8,6 +8,7 @@ import '../../engine/playback_engine.dart';
 import '../player_controller.dart';
 import '../player_menus.dart';
 import '../player_options.dart';
+import '../player_shortcuts.dart';
 import 'player_button.dart';
 import 'seek_bar.dart';
 
@@ -27,6 +28,26 @@ import 'seek_bar.dart';
   PlayerMenu.more => (PhosphorIconsLight.dotsThree, l10n.playerMore),
 };
 
+/// Focus nodes of the bar controls on TV (null on desktop, where the bar
+/// keeps its pointer / Tab behavior). The player owns them so it can move
+/// focus into the bar and back.
+@immutable
+class PlayerBarFocus {
+  const PlayerBarFocus({
+    required this.menus,
+    required this.seek,
+    required this.hint,
+  });
+
+  final Map<PlayerMenu, FocusNode> menus;
+
+  /// The seek bar (VOD / catch-up).
+  final FocusNode seek;
+
+  /// The hint under the bar (info panel / action sheet).
+  final FocusNode hint;
+}
+
 /// The round buttons at the right of the bar: Switch player · Audio ·
 /// Subtitles · Picture · Speed · More.
 class PlayerMenuButtons extends StatelessWidget {
@@ -36,12 +57,17 @@ class PlayerMenuButtons extends StatelessWidget {
     required this.keys,
     required this.activeMenu,
     required this.onOpen,
+    this.focusNodes,
   });
 
   final List<PlayerMenu> menus;
   final Map<PlayerMenu, GlobalKey> keys;
   final PlayerMenu? activeMenu;
   final ValueChanged<PlayerMenu> onOpen;
+
+  /// One node per button on TV, so focus can return to the button that
+  /// opened a menu.
+  final Map<PlayerMenu, FocusNode>? focusNodes;
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +82,7 @@ class PlayerMenuButtons extends StatelessWidget {
               final (icon, tooltip) = playerMenuButton(l10n, menus[i]);
               return PlayerIconButton(
                 key: keys[menus[i]],
+                focusNode: focusNodes?[menus[i]],
                 icon: icon,
                 tooltip: tooltip,
                 active: activeMenu == menus[i],
@@ -111,7 +138,11 @@ class VodBottomBar extends StatelessWidget {
     required this.onSeek,
     required this.onInteraction,
     required this.onInfo,
+    this.tvFocus,
   });
+
+  /// Set on TV: the seek bar and the hint take focus, the buttons get nodes.
+  final PlayerBarFocus? tvFocus;
 
   final PlayerController controller;
   final CarinaTimeFormat timeFormat;
@@ -186,12 +217,15 @@ class VodBottomBar extends StatelessWidget {
               keys: menuKeys,
               activeMenu: activeMenu,
               onOpen: onOpenMenu,
+              focusNodes: tvFocus?.menus,
             ),
           ],
         ),
         const SizedBox(height: 14),
         PlayerSeekBar(
           key: const ValueKey('player-seek-bar'),
+          focusNode: tvFocus?.seek,
+          step: seekStepFor(PlayerCommand.seekForward, c.kind),
           position: position,
           duration: duration,
           buffered: c.state.buffered,
@@ -211,6 +245,7 @@ class VodBottomBar extends StatelessWidget {
             icon: PhosphorIconsLight.info,
             label: l10n.playerInfoHint,
             onTap: onInfo,
+            focusNode: tvFocus?.hint,
           ),
         ),
       ],
@@ -321,10 +356,14 @@ class LiveBottomBar extends StatelessWidget {
     required this.activeMenu,
     required this.onOpenMenu,
     required this.onOptions,
+    this.tvFocus,
   });
 
   /// The hint under the bar (opens the action sheet).
   final VoidCallback onOptions;
+
+  /// Set on TV: the buttons and the hint get nodes.
+  final PlayerBarFocus? tvFocus;
 
   final NowNext nowNext;
   final DateTime now;
@@ -432,6 +471,7 @@ class LiveBottomBar extends StatelessWidget {
               keys: menuKeys,
               activeMenu: activeMenu,
               onOpen: onOpenMenu,
+              focusNodes: tvFocus?.menus,
             ),
           ],
         ),
@@ -441,6 +481,7 @@ class LiveBottomBar extends StatelessWidget {
             icon: PhosphorIconsLight.dotsThreeCircle,
             label: l10n.playerLiveHint,
             onTap: onOptions,
+            focusNode: tvFocus?.hint,
           ),
         ),
       ],
@@ -448,30 +489,36 @@ class LiveBottomBar extends StatelessWidget {
   }
 }
 
-/// Clickable hint under the bars ("ⓘ ↓ for info").
+/// Clickable hint under the bars ("ⓘ ↓ for info"). With a [focusNode] (TV)
+/// it joins the focus order and shows a focus ring.
 class PlayerHint extends StatelessWidget {
   const PlayerHint({
     super.key,
     required this.icon,
     required this.label,
     required this.onTap,
+    this.focusNode,
   });
 
   final IconData icon;
   final String label;
   final VoidCallback onTap;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
+    final focusable = focusNode != null;
     return KInteractive(
       onTap: onTap,
-      focusable: false,
+      focusable: focusable,
+      focusNode: focusNode,
+      focusOnTap: false,
       semanticLabel: label,
       builder: (context, state, _) {
-        final color = state.hovered
+        final color = state.hovered || state.focused
             ? KColors.textPrimary
             : KColors.textSecondary;
-        return Padding(
+        final hint = Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -481,6 +528,12 @@ class PlayerHint extends StatelessWidget {
               Text(label, style: KText.caption.copyWith(color: color)),
             ],
           ),
+        );
+        if (!focusable) return hint;
+        return KFocusRing(
+          visible: state.focused,
+          borderRadius: KRadii.pill,
+          child: hint,
         );
       },
     );
