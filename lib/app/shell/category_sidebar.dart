@@ -9,6 +9,7 @@ import '../../data/repositories/category_repository.dart';
 import '../../data/repositories/repository_models.dart';
 import '../../data/settings/settings_store.dart';
 import '../../l10n/gen/app_localizations.dart';
+import '../platform/form_factor.dart';
 import 'category_selection.dart';
 import 'shell_state.dart';
 
@@ -130,85 +131,99 @@ class _SidebarPanel extends ConsumerWidget {
     );
 
     void close() => ref.read(categorySidebarOpenProvider.notifier).close();
+    final tv = ref.watch(formFactorProvider).isTv;
+
+    final panel = DecoratedBox(
+      decoration: const BoxDecoration(
+        color: KColors.surface1,
+        border: Border(right: BorderSide(color: KColors.stroke)),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x99000000),
+            blurRadius: 40,
+            offset: Offset(8, 0),
+          ),
+        ],
+      ),
+      child: categories.when(
+        loading: () => const KLoadingState(),
+        error: (e, _) => KErrorState(message: '$e'),
+        data: (items) => ListView(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
+          children: [
+            SettingsSectionHeader(l10n.shellSorting.upper(context)),
+            SettingsRow(
+              title: l10n.shellCategoriesOrder,
+              value: _orderLabel(l10n, categoriesOrder),
+              onTap: () => _chooseOrder(
+                context,
+                ref,
+                key: PlaylistSettings.categoriesOrder,
+                title: l10n.shellCategoriesOrder,
+                values: const ['playlist', 'name', 'custom'],
+              ),
+            ),
+            if (kind == SectionKind.live)
+              SettingsRow(
+                title: l10n.shellChannelsOrder,
+                value: _orderLabel(l10n, channelsOrder),
+                onTap: () => _chooseOrder(
+                  context,
+                  ref,
+                  key: PlaylistSettings.channelsOrder,
+                  title: l10n.shellChannelsOrder,
+                  values: const ['playlist', 'name', 'number', 'date'],
+                ),
+              ),
+            SettingsSectionHeader(l10n.shellCategoriesHeader.upper(context)),
+            if (items.isEmpty)
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  l10n.shellNoCategories,
+                  style: KText.body.copyWith(color: KColors.textSecondary),
+                ),
+              ),
+            for (final item in [
+              if (kind != SectionKind.live) homeCategoryView(kind),
+              ...items,
+            ])
+              _CategoryRow(
+                title: _title(l10n, item),
+                count: item.ref is AllCategory ? null : item.count,
+                depth: item.depth,
+                locked: item.locked,
+                selected: active?.ref == item.ref,
+                autofocus: active?.ref == item.ref,
+                onTap: () {
+                  ref
+                      .read(selectedCategoryProvider(_scope).notifier)
+                      .select(item.ref);
+                  close();
+                },
+              ),
+          ],
+        ),
+      ),
+    );
 
     return CallbackShortcuts(
       bindings: {const SingleActivator(LogicalKeyboardKey.escape): close},
       child: FocusScope(
         autofocus: true,
-        child: DecoratedBox(
-          decoration: const BoxDecoration(
-            color: KColors.surface1,
-            border: Border(right: BorderSide(color: KColors.stroke)),
-            boxShadow: [
-              BoxShadow(
-                color: Color(0x99000000),
-                blurRadius: 40,
-                offset: Offset(8, 0),
-              ),
-            ],
-          ),
-          child: categories.when(
-            loading: () => const KLoadingState(),
-            error: (e, _) => KErrorState(message: '$e'),
-            data: (items) => ListView(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
-              children: [
-                SettingsSectionHeader(l10n.shellSorting.upper(context)),
-                SettingsRow(
-                  title: l10n.shellCategoriesOrder,
-                  value: _orderLabel(l10n, categoriesOrder),
-                  onTap: () => _chooseOrder(
-                    context,
-                    ref,
-                    key: PlaylistSettings.categoriesOrder,
-                    title: l10n.shellCategoriesOrder,
-                    values: const ['playlist', 'name', 'custom'],
-                  ),
-                ),
-                if (kind == SectionKind.live)
-                  SettingsRow(
-                    title: l10n.shellChannelsOrder,
-                    value: _orderLabel(l10n, channelsOrder),
-                    onTap: () => _chooseOrder(
-                      context,
-                      ref,
-                      key: PlaylistSettings.channelsOrder,
-                      title: l10n.shellChannelsOrder,
-                      values: const ['playlist', 'name', 'number', 'date'],
-                    ),
-                  ),
-                SettingsSectionHeader(
-                  l10n.shellCategoriesHeader.upper(context),
-                ),
-                if (items.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Text(
-                      l10n.shellNoCategories,
-                      style: KText.body.copyWith(color: KColors.textSecondary),
-                    ),
-                  ),
-                for (final item in [
-                  if (kind != SectionKind.live) homeCategoryView(kind),
-                  ...items,
-                ])
-                  _CategoryRow(
-                    title: _title(l10n, item),
-                    count: item.ref is AllCategory ? null : item.count,
-                    depth: item.depth,
-                    locked: item.locked,
-                    selected: active?.ref == item.ref,
-                    autofocus: active?.ref == item.ref,
-                    onTap: () {
-                      ref
-                          .read(selectedCategoryProvider(_scope).notifier)
-                          .select(item.ref);
-                      close();
-                    },
-                  ),
-              ],
-            ),
-          ),
+        child: Builder(
+          builder: (context) {
+            // TV: when the selected row is not built (far down the lazy
+            // list), the panel's first row takes focus instead of the
+            // invisible scope.
+            if (tv) {
+              final scope = FocusScope.of(context);
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (scope.hasPrimaryFocus) kFocusFirstIn(scope);
+              });
+            }
+            return panel;
+          },
         ),
       ),
     );
@@ -243,14 +258,23 @@ class _CategoryRow extends StatelessWidget {
         autofocus: autofocus,
         selected: selected,
         builder: (context, state, _) {
-          final pill = selected || state.highlighted;
+          // On TV the white pill marks focus alone; the selected category
+          // keeps a quiet fill.
+          final tv = KTvMode.of(context);
+          final pill = state.highlighted || (selected && !tv);
           final fg = pill ? Colors.black : KColors.textPrimary;
           return AnimatedContainer(
             duration: KDurations.hover,
             height: 46,
             padding: const EdgeInsets.symmetric(horizontal: 18),
             decoration: BoxDecoration(
-              color: selected
+              color: tv
+                  ? (state.highlighted
+                        ? Colors.white
+                        : selected
+                        ? const Color(0x24FFFFFF)
+                        : Colors.transparent)
+                  : selected
                   ? Colors.white
                   : state.highlighted
                   ? const Color(0xFFE6E6E6)

@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import 'package:carina/core/tokens.dart';
 import 'package:carina/core/widgets/k_interactive.dart';
+import 'package:carina/core/widgets/k_tv.dart';
 
 /// Width of the white focus border.
 enum KFocusRingWidth {
@@ -84,7 +85,8 @@ class KFocusable extends StatelessWidget {
   /// Scale while hovered or focused.
   final double scale;
 
-  /// Border width while hovered/focused/selected.
+  /// Border width while hovered/focused/selected ([KFocusRingWidth.tv] at
+  /// least under [KTvMode]).
   final KFocusRingWidth ringWidth;
 
   /// Whether to add the soft shadow while highlighted.
@@ -115,6 +117,7 @@ class KFocusable extends StatelessWidget {
             ? (state.pressed ? 1 + (scale - 1) / 2 : scale)
             : (state.pressed ? 0.98 : 1.0);
         final radius = BorderRadius.circular(borderRadius);
+        final ring = KTvMode.of(context) ? KFocusRingWidth.tv : ringWidth;
         Widget card = AnimatedContainer(
           duration: duration,
           curve: KMotion.hover,
@@ -126,7 +129,7 @@ class KFocusable extends StatelessWidget {
             borderRadius: radius,
             border: Border.all(
               color: bordered ? KColors.focusRing : const Color(0x00F5F5F5),
-              width: ringWidth.pixels,
+              width: ring.pixels,
             ),
           ),
           child: child,

@@ -58,6 +58,9 @@ class _PlaylistShellState extends ConsumerState<PlaylistShell> {
   late final bool _tv = ref.read(formFactorProvider).isTv;
   bool _focusCheckScheduled = false;
 
+  /// TV: what had focus when the category sidebar opened.
+  FocusNode? _beforeSidebar;
+
   int get _pid => widget.playlistId;
 
   @override
@@ -147,6 +150,23 @@ class _PlaylistShellState extends ConsumerState<PlaylistShell> {
     }
     if (!primary.focusInDirection(TraversalDirection.up)) _focusActiveTab();
     return true;
+  }
+
+  /// TV: focus returns from the closed sidebar to where it was (the FAB
+  /// or the page), not to the nav fallback.
+  void _onSidebarChanged(bool? wasOpen, bool open) {
+    if (open) {
+      _beforeSidebar = FocusManager.instance.primaryFocus;
+      return;
+    }
+    final previous = _beforeSidebar;
+    _beforeSidebar = null;
+    if (previous == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && previous.context != null && previous.canRequestFocus) {
+        previous.requestFocus();
+      }
+    });
   }
 
   /// TV Back that the page did not handle: up one level in the shell.
@@ -279,6 +299,7 @@ class _PlaylistShellState extends ConsumerState<PlaylistShell> {
     final showClock = ref.watchSetting(AppSettings.showClock);
     final tabs = _visibleTabs(playlist);
     _tabs = tabs;
+    if (_tv) ref.listen(categorySidebarOpenProvider, _onSidebarChanged);
     final mainTab = tabForLocation(widget.location);
     final sidebarKind = switch (mainTab) {
       MainTab.movies => SectionKind.movie,

@@ -198,4 +198,49 @@ void main() {
     expect(_path(c), Routes.tab(pid, MainTab.live));
     await disposeFixture(tester, fx);
   });
+
+  testWidgets('TV Manager: a playlist has focus at once; ← reaches the rail', (
+    tester,
+  ) async {
+    final fx = await importFixture(tester);
+    await _pumpTv(tester, fx, Routes.manager);
+    final tile = _primary;
+    expect(kIsVisibleFocusTarget(tile), isTrue, reason: '$tile');
+    expect(find.byKey(ValueKey('playlist-${fx.playlistId}')), findsOneWidget);
+    final tileRect = tester.getRect(
+      find.byKey(ValueKey('playlist-${fx.playlistId}')),
+    );
+    expect(tileRect.contains(tile!.rect.center), isTrue);
+    await _key(tester, LogicalKeyboardKey.arrowLeft);
+    final rail = tester.getRect(find.byKey(const ValueKey('rail-add')));
+    expect(_primary!.rect.left, lessThan(rail.right));
+    await disposeFixture(tester, fx);
+  });
+
+  testWidgets('TV sidebar: a row has focus; Back returns focus to the page', (
+    tester,
+  ) async {
+    final fx = await importFixture(tester);
+    final pid = fx.playlistId;
+    final c = await _pumpTv(
+      tester,
+      fx,
+      Routes.tab(pid, MainTab.movies),
+      size: const Size(1280, 720),
+    );
+    final before = _primary;
+    expect(kIsVisibleFocusTarget(before), isTrue, reason: '$before');
+
+    c.read(categorySidebarOpenProvider.notifier).toggle();
+    await settleDrift(tester);
+    await settle(tester);
+    expect(kIsVisibleFocusTarget(_primary), isTrue, reason: '$_primary');
+    expect(_primary, isNot(before));
+
+    await _key(tester, LogicalKeyboardKey.escape);
+    expect(c.read(categorySidebarOpenProvider), isFalse);
+    expect(_primary, before);
+    expect(_path(c), Routes.tab(pid, MainTab.movies));
+    await disposeFixture(tester, fx);
+  });
 }

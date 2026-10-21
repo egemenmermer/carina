@@ -411,7 +411,8 @@ class _KInteractiveState extends State<KInteractive> {
 
 /// Paints a focus ring around [child] (outside its bounds) and fades it in
 /// and out. Used by buttons whose own fill is white or red, where the
-/// card-style inner border would be invisible.
+/// card-style inner border would be invisible. Under [KTvMode] the ring is
+/// at least 3 px, readable from the couch.
 class KFocusRing extends StatelessWidget {
   const KFocusRing({
     super.key,
@@ -447,6 +448,7 @@ class KFocusRing extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final width = KTvMode.of(context) && this.width < 3 ? 3.0 : this.width;
     return TweenAnimationBuilder<double>(
       tween: Tween<double>(end: visible ? 1 : 0),
       duration: KMotion.of(context, KDurations.hover),
