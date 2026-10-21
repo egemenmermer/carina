@@ -23,11 +23,17 @@ typedef SubtitleFilePicker = Future<String?> Function();
 /// Overridden in tests.
 final subtitleFilePickerProvider = Provider<SubtitleFilePicker>(
   (ref) => () async {
-    final file = await FilePicker.pickFile(
-      type: FileType.custom,
-      allowedExtensions: const ['srt', 'ass', 'ssa', 'vtt', 'sub', 'idx'],
-    );
-    return file?.path;
+    try {
+      final file = await FilePicker.pickFile(
+        type: FileType.custom,
+        allowedExtensions: const ['srt', 'ass', 'ssa', 'vtt', 'sub', 'idx'],
+      );
+      return file?.path;
+    } on Object catch (e) {
+      // Android TV often has no document picker app.
+      debugPrint('File picker unavailable: $e');
+      return null;
+    }
   },
 );
 
