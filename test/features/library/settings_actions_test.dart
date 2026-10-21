@@ -220,7 +220,7 @@ void main() {
     expect(copied, isNot(contains(MockFixtures.password)));
     final host = Uri.parse(fx.server.baseUrl).host;
     expect(copied, isNot(contains('://$host')));
-    expect(copied, contains('user: ka***'));
+    expect(copied, contains('user: ca***'));
 
     await tapKey(tester, 'action:report');
     await settleDrift(tester);

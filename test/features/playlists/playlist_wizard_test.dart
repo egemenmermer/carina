@@ -119,7 +119,7 @@ void main() {
     );
     xtreamExport = await withRealHttp(
       () => checker.checkPlaylistUrl(
-        '${server.baseUrl}/get.php?username=kanal&password=test123'
+        '${server.baseUrl}/get.php?username=carina&password=test123'
         '&type=m3u_plus&output=ts',
       ),
     );

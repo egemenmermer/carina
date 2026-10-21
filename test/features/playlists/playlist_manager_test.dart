@@ -134,8 +134,8 @@ void main() {
     expect(find.text('1 March 2027'), findsOneWidget);
     expect(find.text('300'), findsOneWidget, reason: 'live channels');
     // Credentials stay masked.
-    expect(find.text('kanal'), findsNothing);
-    expect(find.text('ka•••••'), findsOneWidget);
+    expect(find.text('carina'), findsNothing);
+    expect(find.text('ca•••••'), findsOneWidget);
     expect(find.textContaining(MockFixtures.password), findsNothing);
     await saveScreen(tester, 'playlists_details');
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
