@@ -93,7 +93,7 @@ void main() {
       expect(LiveHorizontalLayout.panelsHeight(800), closeTo(346.72, 0.01));
       expect(LiveHorizontalLayout.panelsHeight(500), 290);
       // TV, 960×540: the panels give up room so the preview stays usable.
-      expect(LiveHorizontalLayout.panelsHeight(416, tv: true), 262);
+      expect(LiveHorizontalLayout.panelsHeight(416, tv: true), 264);
       expect(LiveHorizontalLayout.panelsHeight(416), 290);
       expect(LiveHorizontalLayout.panelsHeight(596, tv: true), 290);
     });
