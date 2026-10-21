@@ -995,6 +995,7 @@
   },
   "multiviewFullTile": "Full screen",
   "multiviewFullTileHint": "Esc to return to all channels",
+  "multiviewFullTileHintTv": "Back to return to all channels",
   "multiviewLayoutGrid": "2 × 2",
   "multiviewLayoutGridHint": "Grid",
   "multiviewLayoutOnePlusThree": "1 + 3",

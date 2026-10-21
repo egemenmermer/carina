@@ -527,7 +527,7 @@ void main() {
         tester,
       ) async {
         await pumpTv(tester, channels: 2);
-        final hint = find.text('Esc to return to all channels');
+        final hint = find.text('Back to return to all channels');
         expect(hint, findsNothing);
         await tester.sendKeyDownEvent(LogicalKeyboardKey.enter);
         await tester.sendKeyRepeatEvent(LogicalKeyboardKey.enter);
@@ -568,7 +568,7 @@ void main() {
         await key(tester, LogicalKeyboardKey.arrowDown);
         await key(tester, LogicalKeyboardKey.arrowRight);
         await key(tester, LogicalKeyboardKey.enter);
-        expect(find.text('Esc to return to all channels'), findsOneWidget);
+        expect(find.text('Back to return to all channels'), findsOneWidget);
         expect(primary(), 'multiview');
         await key(tester, LogicalKeyboardKey.escape);
         await tester.pump(const Duration(seconds: 3));

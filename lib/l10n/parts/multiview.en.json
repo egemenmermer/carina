@@ -52,6 +52,7 @@
     }
   },
   "multiviewFullTileHint": "Esc to return to all channels",
+  "multiviewFullTileHintTv": "Back to return to all channels",
   "multiviewAudioOn": "Sound on",
   "multiviewClose": "Close multi-channel"
 }

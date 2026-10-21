@@ -563,6 +563,7 @@
   "multiviewEmptyTitle": "Aynı anda {count} kanala kadar izle",
   "multiviewFullTile": "Tam ekran",
   "multiviewFullTileHint": "Tüm kanallara dönmek için Esc",
+  "multiviewFullTileHintTv": "Tüm kanallara dönmek için Geri",
   "multiviewLayoutGrid": "2 × 2",
   "multiviewLayoutGridHint": "Izgara",
   "multiviewLayoutOnePlusThree": "1 + 3",

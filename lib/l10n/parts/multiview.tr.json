@@ -24,6 +24,7 @@
   "multiviewSearchHint": "Kanal ara",
   "multiviewNoResults": "“{query}” ile eşleşen kanal yok",
   "multiviewFullTileHint": "Tüm kanallara dönmek için Esc",
+  "multiviewFullTileHintTv": "Tüm kanallara dönmek için Geri",
   "multiviewAudioOn": "Ses açık",
   "multiviewClose": "Çoklu kanalı kapat"
 }

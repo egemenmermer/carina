@@ -616,7 +616,13 @@ class _TopBar extends StatelessWidget {
           Text(l10n.multiviewTitle, style: KText.sectionTitle),
           if (session.fullTile != null) ...[
             const SizedBox(width: 16),
-            Text(l10n.multiviewFullTileHint, style: KText.caption),
+            Text(
+              // The remote has no Esc key.
+              KTvMode.of(context)
+                  ? l10n.multiviewFullTileHintTv
+                  : l10n.multiviewFullTileHint,
+              style: KText.caption,
+            ),
           ],
           const Spacer(),
           // A single layout (TV: "1 + 1") needs no picker.
