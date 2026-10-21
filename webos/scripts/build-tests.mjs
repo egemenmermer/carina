@@ -16,6 +16,6 @@ await build({
   platform: 'node',
   format: 'esm',
   target: 'node22',
-  define: { __DEV__: 'true', __VERSION__: '"test"' },
+  define: { __DEV__: 'true', __VERSION__: '"test"', __M3U_WORKER_SRC__: '""' },
   logLevel: 'warning',
 });

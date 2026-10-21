@@ -14,21 +14,37 @@ const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 rmSync(dist, { recursive: true, force: true });
 mkdirSync(join(dist, 'fonts'), { recursive: true });
 
-await build({
-  entryPoints: { app: join(root, 'src/main.ts') },
-  outdir: dist,
+const common = {
   bundle: true,
   format: 'iife',
   target: ['chrome53'],
   minify: !dev,
   sourcemap: dev ? 'inline' : false,
   legalComments: 'none',
-  external: ['fonts/*'],
-  define: {
-    __DEV__: String(dev),
-    __VERSION__: JSON.stringify(pkg.version),
-  },
   logLevel: 'warning',
+};
+const defines = { __DEV__: String(dev), __VERSION__: JSON.stringify(pkg.version) };
+
+// The M3U parser worker is bundled on its own. It ships as dist/m3u-worker.js
+// and is also inlined into app.js so it can start from a Blob URL (workers
+// from file:// pages are not allowed everywhere); the loader falls back to the
+// main thread when neither works.
+const worker = await build({
+  ...common,
+  entryPoints: { 'm3u-worker': join(root, 'src/data/m3u-worker.ts') },
+  outdir: dist,
+  write: false,
+  define: defines,
+});
+const workerSrc = worker.outputFiles.find((f) => f.path.endsWith('.js')).text;
+writeFileSync(join(dist, 'm3u-worker.js'), workerSrc);
+
+await build({
+  ...common,
+  entryPoints: { app: join(root, 'src/main.ts') },
+  outdir: dist,
+  external: ['fonts/*'],
+  define: { ...defines, __M3U_WORKER_SRC__: JSON.stringify(workerSrc) },
 });
 
 // Static files. appinfo.json gets the package version so both stay in sync.
@@ -48,7 +64,7 @@ for (const f of ['Inter-Regular.ttf', 'Inter-Medium.ttf', 'Inter-SemiBold.ttf', 
 
 // Chrome 53 has no regex lookbehind or named groups; fail loudly if any slipped in.
 const js = readFileSync(join(dist, 'app.js'), 'utf8');
-if (/\(\?<[=!a-zA-Z]/.test(js)) {
+if (/\(\?<[=!a-zA-Z]/.test(js) || /\(\?<[=!a-zA-Z]/.test(workerSrc)) {
   console.error('error: bundle contains regex lookbehind/named groups (unsupported on Chrome 53)');
   process.exit(1);
 }

@@ -57,52 +57,88 @@ export function classifyM3u(url: string, duration: number): M3uKind {
   return 'live';
 }
 
-export function parseM3u(text: string): M3uParseResult {
-  const entries: M3uEntry[] = [];
-  let epgUrl: string | null = null;
-  let pending: { attrs: Record<string, string>; name: string; duration: number } | null = null;
-  let group: string | null = null;
-  let start = 0;
-  if (text.charCodeAt(0) === 0xfeff) start = 1;
-  const len = text.length;
-  while (start < len) {
-    let end = text.indexOf('\n', start);
-    if (end < 0) end = len;
-    const line = text.slice(start, end).trim();
-    start = end + 1;
-    if (!line) continue;
+/**
+ * Incremental parser: feed text in arbitrary chunks, entries are handed to
+ * [onEntry] as soon as their URL line is complete. Nothing is accumulated, so
+ * a playlist of any size never needs its raw text or entry list in memory.
+ */
+export class M3uParser {
+  epgUrl: string | null = null;
+  count = 0;
+  private carry = '';
+  private first = true;
+  private pending: { attrs: Record<string, string>; name: string; duration: number } | null = null;
+  private group: string | null = null;
+
+  constructor(private onEntry: (e: M3uEntry) => void) {}
+
+  /** Feeds a chunk; a trailing partial line is kept for the next call. */
+  push(chunk: string): void {
+    let text = this.carry ? this.carry + chunk : chunk;
+    this.carry = '';
+    if (this.first && text.length) {
+      this.first = false;
+      if (text.charCodeAt(0) === 0xfeff) text = text.slice(1);
+    }
+    let start = 0;
+    for (;;) {
+      const end = text.indexOf('\n', start);
+      if (end < 0) break;
+      this.line(text.slice(start, end));
+      start = end + 1;
+    }
+    this.carry = start < text.length ? text.slice(start) : '';
+  }
+
+  /** Flushes the last line (a file without a trailing newline). */
+  finish(): void {
+    if (this.carry) this.line(this.carry);
+    this.carry = '';
+  }
+
+  private line(raw: string): void {
+    const line = raw.trim();
+    if (!line) return;
     if (line.charAt(0) === '#') {
       const upper = line.slice(0, 10).toUpperCase();
       if (upper.indexOf('#EXTM3U') === 0) {
         const a = parseAttributes(line);
         const tvg = a['url-tvg'] || a['x-tvg-url'] || '';
-        if (tvg) epgUrl = tvg.split(',')[0].trim() || null;
+        if (tvg) this.epgUrl = tvg.split(',')[0].trim() || null;
       } else if (upper.indexOf('#EXTINF:') === 0) {
         const body = line.slice(8);
         const duration = parseInt(body, 10);
-        pending = { attrs: parseAttributes(body), name: displayName(body), duration: isFinite(duration) ? duration : -1 };
-        group = null;
+        this.pending = { attrs: parseAttributes(body), name: displayName(body), duration: isFinite(duration) ? duration : -1 };
+        this.group = null;
       } else if (upper.indexOf('#EXTGRP:') === 0) {
-        group = line.slice(8).trim() || null;
+        this.group = line.slice(8).trim() || null;
       }
-      continue;
+      return;
     }
-    if (!pending) continue; // a bare URL without #EXTINF
+    const pending = this.pending;
+    if (!pending) return; // a bare URL without #EXTINF
     const a = pending.attrs;
-    const name = pending.name || a['tvg-name'] || line;
-    entries.push({
-      name,
+    this.count++;
+    this.onEntry({
+      name: pending.name || a['tvg-name'] || line,
       url: line,
-      group: a['group-title'] || group,
+      group: a['group-title'] || this.group,
       logo: a['tvg-logo'] || a['logo'] || null,
       tvgId: a['tvg-id'] || null,
       duration: pending.duration,
       kind: classifyM3u(line, pending.duration),
     });
-    pending = null;
-    group = null;
+    this.pending = null;
+    this.group = null;
   }
-  return { epgUrl, entries };
+}
+
+export function parseM3u(text: string): M3uParseResult {
+  const entries: M3uEntry[] = [];
+  const p = new M3uParser((e) => entries.push(e));
+  p.push(text);
+  p.finish();
+  return { epgUrl: p.epgUrl, entries };
 }
 
 export interface SeriesMarker {
@@ -162,27 +198,32 @@ function addCategory(list: Category[], seen: Record<string, boolean>, group: str
   return id;
 }
 
-export function buildM3uCatalog(parsed: M3uParseResult, ungroupedName = 'Other'): M3uCatalog {
-  const cat: M3uCatalog = {
-    epgUrl: parsed.epgUrl,
+/** Builds the catalogue entry by entry (see [M3uParser]); call [finish] once. */
+export class M3uCatalogBuilder {
+  private cat: M3uCatalog = {
+    epgUrl: null,
     live: { categories: [], items: [] },
     movies: { categories: [], items: [] },
     series: { categories: [], items: [] },
     episodes: {},
   };
-  const seenLive: Record<string, boolean> = {};
-  const seenMovie: Record<string, boolean> = {};
-  const seenSeries: Record<string, boolean> = {};
-  const seriesIndex: Record<string, Series> = {};
+  private seenLive: Record<string, boolean> = {};
+  private seenMovie: Record<string, boolean> = {};
+  private seenSeries: Record<string, boolean> = {};
+  private seriesIndex: Record<string, Series> = {};
+
+  constructor(private ungroupedName = 'Other') {}
+
   // Ids derive from the stream URL, not the line number: the playlist is
   // downloaded again on every open, and favourites / last channel are saved
   // by id, so they must survive inserted or reordered lines.
-  for (const e of parsed.entries) {
+  add(e: M3uEntry): void {
+    const cat = this.cat;
     if (e.kind === 'live') {
-      const categoryId = addCategory(cat.live.categories, seenLive, e.group, ungroupedName);
+      const categoryId = addCategory(cat.live.categories, this.seenLive, e.group, this.ungroupedName);
       cat.live.items.push({ id: 'l:' + e.url, name: e.name, num: cat.live.items.length + 1, logo: e.logo, epgId: e.tvgId, categoryId, url: e.url });
     } else if (e.kind === 'movie') {
-      const categoryId = addCategory(cat.movies.categories, seenMovie, e.group, ungroupedName);
+      const categoryId = addCategory(cat.movies.categories, this.seenMovie, e.group, this.ungroupedName);
       const dot = e.url.split('?')[0].lastIndexOf('.');
       cat.movies.items.push({
         id: 'm:' + e.url, name: e.name, poster: e.logo, rating: null,
@@ -190,14 +231,14 @@ export function buildM3uCatalog(parsed: M3uParseResult, ungroupedName = 'Other')
         year: (/(19|20)\d\d/.exec(e.name) || [null])[0], categoryId, url: e.url,
       });
     } else {
-      const categoryId = addCategory(cat.series.categories, seenSeries, e.group, ungroupedName);
+      const categoryId = addCategory(cat.series.categories, this.seenSeries, e.group, this.ungroupedName);
       const mk = parseSeriesMarker(e.name);
       const sName = mk ? mk.seriesName : e.name;
       const key = categoryId + '|' + sName.toLowerCase();
-      let s = seriesIndex[key];
+      let s = this.seriesIndex[key];
       if (!s) {
         s = { id: 's:' + key, name: sName, poster: e.logo, rating: null, year: null, categoryId };
-        seriesIndex[key] = s;
+        this.seriesIndex[key] = s;
         cat.series.items.push(s);
         cat.episodes[s.id] = [];
       }
@@ -211,8 +252,20 @@ export function buildM3uCatalog(parsed: M3uParseResult, ungroupedName = 'Other')
       });
     }
   }
-  for (const id of Object.keys(cat.episodes)) {
-    cat.episodes[id].sort((a, b) => a.season - b.season || a.episode - b.episode);
+
+  finish(epgUrl: string | null): M3uCatalog {
+    const cat = this.cat;
+    cat.epgUrl = epgUrl;
+    for (const id of Object.keys(cat.episodes)) {
+      cat.episodes[id].sort((a, b) => a.season - b.season || a.episode - b.episode);
+    }
+    this.seriesIndex = {};
+    return cat;
   }
-  return cat;
+}
+
+export function buildM3uCatalog(parsed: M3uParseResult, ungroupedName = 'Other'): M3uCatalog {
+  const b = new M3uCatalogBuilder(ungroupedName);
+  for (const e of parsed.entries) b.add(e);
+  return b.finish(parsed.epgUrl);
 }

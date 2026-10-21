@@ -1,7 +1,7 @@
 // One interface over Xtream and M3U playlists. Catalogue lists are fetched
 // per category and kept in a small LRU so memory stays bounded.
-import { getText } from './http';
-import { buildM3uCatalog, M3uCatalog, parseM3u } from './m3u';
+import type { M3uCatalog } from './m3u';
+import { loadM3uCatalog, type M3uProgress } from './m3u-loader';
 import type { Category, Channel, Episode, Item, Movie, MovieDetails, Playlist, Programme, Section, Series, SeriesDetails } from './models';
 import { fetchXmltvText, parseXmltv } from './xmltv';
 import {
@@ -13,7 +13,7 @@ export const ALL = '__all';
 
 export interface Source {
   readonly playlist: Playlist;
-  open(): Promise<void>;
+  open(onProgress?: (p: M3uProgress) => void): Promise<void>;
   categories(section: Section): Promise<Category[]>;
   /** Whether an "All" pseudo-category is cheap enough to offer. */
   hasAll(section: Section): boolean;
@@ -144,9 +144,8 @@ export class M3uSource implements Source {
 
   constructor(readonly playlist: Playlist & { kind: 'm3u' }, private ungroupedName: string) {}
 
-  async open(): Promise<void> {
-    const text = await getText(this.playlist.url, 90000).promise;
-    this.cat = buildM3uCatalog(parseM3u(text), this.ungroupedName);
+  async open(onProgress?: (p: M3uProgress) => void): Promise<void> {
+    this.cat = await loadM3uCatalog(this.playlist.url, { ungroupedName: this.ungroupedName, onProgress });
   }
 
   private c(): M3uCatalog {

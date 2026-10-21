@@ -4,9 +4,10 @@ import { t } from '../i18n';
 import type { Playlist } from '../data/models';
 import { createSource, type Source } from '../data/source';
 import { HttpError } from '../data/http';
+import type { M3uProgress } from '../data/m3u-loader';
 import type { Key } from '../platform';
 import { store } from '../store';
-import { h } from '../ui/dom';
+import { h, setText } from '../ui/dom';
 import { Buttons } from '../ui/zone';
 import { brandMark, errorDetail, ZoneScreen } from './common';
 import { AddPlaylistScreen } from './add-playlist';
@@ -30,11 +31,16 @@ export function enterSource(source: Source): void {
   push(new BrowseScreen(source));
 }
 
+export function progressText(pr: M3uProgress): string {
+  const mb = pr.total ? (pr.bytes / 1048576).toFixed(1) + ' / ' + (pr.total / 1048576).toFixed(1) : (pr.bytes / 1048576).toFixed(1);
+  return t('loadingPlaylist', { mb, n: pr.entries });
+}
+
 /** Opens [p] (auth / download) and shows the browse screen. */
-export function openPlaylist(p: Playlist, busy: (on: boolean) => void): Promise<boolean> {
+export function openPlaylist(p: Playlist, busy: (on: boolean, text?: string) => void): Promise<boolean> {
   const source = createSource(p, t('other'));
   busy(true);
-  return source.open().then(
+  return source.open((pr) => busy(true, progressText(pr))).then(
     () => {
       busy(false);
       enterSource(source);
@@ -51,7 +57,8 @@ export function openPlaylist(p: Playlist, busy: (on: boolean) => void): Promise<
 export class PlaylistsScreen extends ZoneScreen implements Screen {
   el: HTMLElement;
   private list = new Buttons([], true, 'playlist-list');
-  private busyEl = h('div', { class: 'busy' }, h('div', { class: 'spinner' }), h('p', { text: t('loading') }));
+  private busyText = h('p', { text: t('loading') });
+  private busyEl = h('div', { class: 'busy' }, h('div', { class: 'spinner' }), this.busyText);
   private opening = false;
 
   constructor() {
@@ -96,7 +103,10 @@ export class PlaylistsScreen extends ZoneScreen implements Screen {
   private open(p: Playlist): void {
     if (this.opening) return;
     this.opening = true;
-    openPlaylist(p, (on) => this.busyEl.classList.toggle('show', on)).then(() => {
+    openPlaylist(p, (on, text) => {
+      this.busyEl.classList.toggle('show', on);
+      setText(this.busyText, on && text ? text : t('loading'));
+    }).then(() => {
       this.opening = false;
     });
   }

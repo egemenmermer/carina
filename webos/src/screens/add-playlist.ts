@@ -9,7 +9,7 @@ import { store } from '../store';
 import { h } from '../ui/dom';
 import { Buttons, Field, type Zone } from '../ui/zone';
 import { ZoneScreen } from './common';
-import { enterSource, hostOf, playlistErrorText } from './playlists';
+import { enterSource, hostOf, playlistErrorText, progressText } from './playlists';
 
 export class AddPlaylistScreen extends ZoneScreen implements Screen {
   el: HTMLElement;
@@ -85,7 +85,7 @@ export class AddPlaylistScreen extends ZoneScreen implements Screen {
     this.msg.textContent = t('checking');
     // Check first so typos surface here, not on the browse screen.
     const source = createSource(p, t('other'));
-    source.open().then(
+    source.open((pr) => (this.msg.textContent = progressText(pr))).then(
         () => {
           store.addPlaylist(p);
           this.busy = false;
