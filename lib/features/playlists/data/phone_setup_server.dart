@@ -32,6 +32,15 @@ const int phoneSetupMaxBodyBytes = 16 * 1024;
 /// The longest value of one field.
 const int phoneSetupMaxFieldLength = 2048;
 
+/// What the UI needs from a running server (a fake in widget tests).
+abstract interface class PhoneSetupHandle {
+  /// The address the phone opens (and the QR code carries).
+  Uri get url;
+
+  /// Stops the server. Safe to call twice.
+  Future<void> close();
+}
+
 /// Serves [page] on `/<token>` and takes the playlist POSTed to the same
 /// path as JSON:
 /// `{"type": "xtream" | "m3u", "name", "server", "username", "password",
@@ -42,7 +51,7 @@ const int phoneSetupMaxFieldLength = 2048;
 /// server stays open for another try; a valid form answers `200
 /// {"ok": true}`, calls `onSubmitted` once and shuts the server down. Every
 /// request after that gets 410.
-class PhoneSetupServer {
+class PhoneSetupServer implements PhoneSetupHandle {
   PhoneSetupServer._(
     this._server,
     this.token,
@@ -97,7 +106,7 @@ class PhoneSetupServer {
   bool _accepted = false;
   bool _closed = false;
 
-  /// What the QR code carries.
+  @override
   late final Uri url = Uri(
     scheme: 'http',
     host: _server.address.address,
@@ -111,6 +120,7 @@ class PhoneSetupServer {
   bool get accepted => _accepted;
 
   /// Stops listening and drops open connections. Safe to call twice.
+  @override
   Future<void> close() async {
     if (_closed) return;
     _closed = true;
