@@ -1,0 +1,94 @@
+name: android
+
+on:
+  push:
+  workflow_dispatch:
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  FLUTTER_VERSION: 3.47.7
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      # pubspec "version: 1.1.0+2" -> CARINA_VERSION=1.1.0. The run number is
+      # the versionCode, so every CI build installs over the previous one.
+      - name: Read version from pubspec.yaml
+        run: |
+          version=$(sed -nE 's/^version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' pubspec.yaml | head -1)
+          test -n "$version" || { echo "pubspec.yaml has no 'version: x.y.z' line"; exit 1; }
+          echo "CARINA_VERSION=$version" >> "$GITHUB_ENV"
+          echo "Carina $version, build ${{ github.run_number }}"
+
+      - name: Flutter pub get
+        run: |
+          flutter config --no-analytics
+          flutter --version
+          flutter pub get
+
+      # Unit tests run on the Windows workflow; analyze catches Android-only
+      # compile errors in Dart early.
+      - name: Analyze
+        run: flutter analyze
+
+      # Optional secrets: CARINA_KEYSTORE_BASE64 (base64 of the .jks),
+      # CARINA_KEYSTORE_PASSWORD, CARINA_KEY_ALIAS, CARINA_KEY_PASSWORD.
+      # Without them the APK is signed with this runner's debug key and
+      # cannot be installed over a build from another run.
+      - name: Release keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.CARINA_KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::warning::No CARINA_KEYSTORE_BASE64 secret: signing with the debug key."
+            exit 0
+          fi
+          echo "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/carina-release.jks"
+          echo "CARINA_KEYSTORE=$RUNNER_TEMP/carina-release.jks" >> "$GITHUB_ENV"
+
+      - name: Build release APK (armeabi-v7a + arm64-v8a)
+        env:
+          CARINA_KEYSTORE_PASSWORD: ${{ secrets.CARINA_KEYSTORE_PASSWORD }}
+          CARINA_KEY_ALIAS: ${{ secrets.CARINA_KEY_ALIAS }}
+          CARINA_KEY_PASSWORD: ${{ secrets.CARINA_KEY_PASSWORD }}
+        run: |
+          flutter build apk --release \
+            --target-platform android-arm,android-arm64 \
+            --build-number=${{ github.run_number }}
+          mkdir -p dist
+          cp build/app/outputs/flutter-apk/app-release.apk \
+            "dist/Carina-$CARINA_VERSION-${{ github.run_number }}-androidtv.apk"
+          (cd dist && sha256sum *.apk > SHA256SUMS.txt && cat SHA256SUMS.txt)
+          ls -l dist
+
+      - name: Upload carina-android
+        uses: actions/upload-artifact@v6
+        with:
+          name: carina-android
+          path: dist/
+          if-no-files-found: error
+          compression-level: 0

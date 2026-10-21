@@ -1,3 +1,5 @@
+import java.io.File
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -17,7 +19,6 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "app.carina.player"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
@@ -31,11 +32,26 @@ android {
         versionName = flutter.versionName
     }
 
+    // Release signing comes from the environment (CI secrets, see
+    // .github/workflows/android.yml); without it release builds use the
+    // debug key so `flutter run --release` keeps working locally.
+    val keystorePath = System.getenv("CARINA_KEYSTORE")?.takeIf { File(it).isFile }
+    signingConfigs {
+        if (keystorePath != null) {
+            create("release") {
+                storeFile = File(keystorePath)
+                storePassword = System.getenv("CARINA_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("CARINA_KEY_ALIAS")
+                keyPassword = System.getenv("CARINA_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName(
+                if (keystorePath != null) "release" else "debug",
+            )
         }
     }
 }
