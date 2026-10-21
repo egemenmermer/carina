@@ -120,6 +120,7 @@ class _SidebarPanel extends ConsumerWidget {
     final l10n = L10n.of(context);
     final categories = ref.watch(categoriesProvider(_scope));
     final active = ref.watch(activeCategoryProvider(_scope)).value;
+    final tv = KTvMode.of(context);
     final categoriesOrder = ref.watchSetting(
       PlaylistSettings.categoriesOrder,
       playlistId: playlistId,
@@ -146,8 +147,17 @@ class _SidebarPanel extends ConsumerWidget {
       child: categories.when(
         loading: () => const KLoadingState(),
         error: (e, _) => KErrorState(message: '$e'),
-        data: (items) => ListView(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
+        data: (items) => _SidebarList(
+          initialOffset: tv
+              ? _selectedRowOffset(
+                  context,
+                  kind,
+                  [
+                    if (kind != SectionKind.live) homeCategoryView(kind),
+                    ...items,
+                  ].indexWhere((item) => item.ref == active?.ref),
+                )
+              : null,
           children: [
             SettingsSectionHeader(l10n.shellSorting.upper(context)),
             SettingsRow(
@@ -213,6 +223,58 @@ class _SidebarPanel extends ConsumerWidget {
         // the panel's first row takes focus instead of the invisible scope.
         child: KTvFocusFirst(child: panel),
       ),
+    );
+  }
+}
+
+/// Height of one category row (46 px pill + 2 px gap).
+const double _kRowExtent = 48;
+
+/// Scroll offset that centers the [index]th category row, or null when
+/// there is no such row. The rows sit below the SORTING block, whose height
+/// is a layout constant here; the estimate only has to build the selected
+/// row (it is lazy), `Scrollable.ensureVisible` on its focus then centers
+/// it exactly.
+double? _selectedRowOffset(BuildContext context, SectionKind kind, int index) {
+  if (index < 0) return null;
+  final lead = kind == SectionKind.live ? 212.0 : 164.0;
+  final viewport = MediaQuery.sizeOf(context).height;
+  return (lead + index * _kRowExtent + _kRowExtent / 2 - viewport / 2).clamp(
+    0.0,
+    double.infinity,
+  );
+}
+
+/// The sidebar's scrolling column. [initialOffset] (TV) opens it scrolled
+/// to the selected category, so that row is built and takes focus even far
+/// down the list.
+class _SidebarList extends StatefulWidget {
+  const _SidebarList({required this.children, this.initialOffset});
+
+  final List<Widget> children;
+  final double? initialOffset;
+
+  @override
+  State<_SidebarList> createState() => _SidebarListState();
+}
+
+class _SidebarListState extends State<_SidebarList> {
+  late final ScrollController _controller = ScrollController(
+    initialScrollOffset: widget.initialOffset ?? 0,
+  );
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      controller: _controller,
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
+      children: widget.children,
     );
   }
 }
