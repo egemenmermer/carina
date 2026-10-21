@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/import/import.dart';
 import '../../data/repositories/live_repository.dart';
 import '../../data/repositories/stream_url_resolver.dart';
+import '../../player/engine/mpv_engine.dart';
 import '../../player/engine/playback_engine.dart';
 import '../launch_options.dart';
 import '../mock_seed.dart';
@@ -187,6 +188,10 @@ class _SmokeAppState extends ConsumerState<SmokeApp> {
         engine.state.width > 0 &&
         (audioCodec ?? '').isNotEmpty;
     out['pass'] = ok;
+    if (!ok && engine is MpvEngine) {
+      final log = engine.recentLog;
+      out['log'] = log.sublist(log.length > 20 ? log.length - 20 : 0);
+    }
     _say(
       '$label: ${ok ? 'PASS' : 'FAIL'} ${engine.state.width}x'
       '${engine.state.height} $videoCodec / $audioCodec ($channels ch) '

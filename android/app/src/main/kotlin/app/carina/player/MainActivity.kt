@@ -3,6 +3,7 @@ package app.carina.player
 import android.app.UiModeManager
 import android.content.Context
 import android.content.res.Configuration
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -21,6 +22,22 @@ class MainActivity : FlutterActivity() {
             }
     }
 
+    // Debuggable builds take launch flags (lib/app/launch_options.dart) from
+    // a string extra, e.g. `adb shell am start -n app.carina.player/.MainActivity
+    // --es carina_args "--smoke-test --mock-url http://10.0.2.2:8787"`.
+    // Release builds ignore extras, and a malformed extra never crashes start-up.
+    override fun getDartEntrypointArgs(): List<String>? {
+        if (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE == 0) return null
+        intent.getStringExtra(ARGS_EXTRA)?.let { raw ->
+            return raw.split(' ').filter { it.isNotBlank() }
+        }
+        return try {
+            super.getDartEntrypointArgs()
+        } catch (e: ClassCastException) {
+            null
+        }
+    }
+
     private fun isTelevision(): Boolean {
         val uiMode = getSystemService(Context.UI_MODE_SERVICE) as? UiModeManager
         return uiMode?.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION ||
@@ -29,5 +46,6 @@ class MainActivity : FlutterActivity() {
 
     private companion object {
         const val CHANNEL = "app.carina.player/platform"
+        const val ARGS_EXTRA = "carina_args"
     }
 }
