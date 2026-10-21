@@ -5,12 +5,7 @@ import 'package:flutter/widgets.dart';
 /// defined on a 64×64 grid (see ARCHITECTURE.md); the app icon generator uses
 /// the same painter.
 class CarinaMark extends StatelessWidget {
-  const CarinaMark({
-    super.key,
-    this.size = 40,
-    this.color,
-    this.background,
-  });
+  const CarinaMark({super.key, this.size = 40, this.color, this.background});
 
   final double size;
 

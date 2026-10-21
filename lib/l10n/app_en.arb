@@ -1625,6 +1625,8 @@
   "playlistsXtreamDetected": "This is an Xtream link. Xtream gives richer data (archive, account details).",
   "playlistsXtreamFilled": "Server, username and password filled in from the link",
   "remindersAlreadyStarted": "This programme has already started",
+  "remindersChannelDescription": "Reminders for the programmes you chose in the guide",
+  "remindersChannelName": "Programme reminders",
   "remindersDismiss": "Dismiss",
   "remindersNotFound": "This programme is no longer in the guide",
   "remindersOnAirNow": "{channel} · on air now",
@@ -1637,6 +1639,7 @@
   },
   "remindersRemoved": "Reminder removed",
   "remindersSet": "Reminder set — keep Carina running to get it",
+  "remindersSetScheduled": "Reminder set",
   "remindersStartsAt": "{channel} · starts at {time}",
   "@remindersStartsAt": {
     "placeholders": {
