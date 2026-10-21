@@ -13,9 +13,28 @@ the Flutter app Carina (Android TV / Windows / macOS), which cannot run on webOS
   Live searches all channels. For Xtream Movies and Series, the search walks the
   categories one at a time and keeps only the matches (at most 500), so the
   full catalogue is never in memory at once.
+- VOD resume: the position of each movie / episode is remembered (one capped
+  localStorage entry, at most 200 items, least recently watched dropped first).
+  Opening an item with a saved position offers "Resume from mm:ss" or "Start over";
+  near the end it is marked watched (✓) instead.
+- Series autoplay: during the last 10 s of an episode a countdown overlay starts
+  the next one (OK plays it now, Back cancels the countdown).
 - Settings: language (follows the TV by default, or English / Türkçe) and playlist removal.
 - Playback uses the TV's native `<video>` pipeline. Xtream live tries `.m3u8`
   first and falls back to `.ts`. VOD uses the container extension from the API.
+
+## Performance and memory
+
+- M3U playlists are downloaded and parsed in a Web Worker (`src/data/m3u-worker.ts`),
+  streamed chunk by chunk, so neither the raw text nor a parsed entry list is held
+  in memory. Progress (MB and entries) shows while loading. The worker is inlined
+  into `app.js` (Blob URL) and also shipped as `dist/m3u-worker.js`; if neither can
+  start, the same parser runs on the main thread in short time slices.
+- At most 4 poster / logo downloads run at once; rows that scroll out of the
+  virtualised lists release their images (source cleared).
+- Caches are bounded LRUs: catalogue lists (6), series details (8), EPG
+  (400 per source, 600 per browse screen). Xtream live categories are sliced from the
+  cached "All channels" list instead of downloading a second copy.
 
 ## Layout
 
@@ -23,7 +42,8 @@ the Flutter app Carina (Android TV / Windows / macOS), which cannot run on webOS
 webos/
   static/          appinfo.json, index.html, icons (copied into dist/)
   src/data/        Xtream, M3U and XMLTV parsing, plus the Source interface (pure, unit-tested)
-  src/ui/          DOM helpers, focus zones, and the virtualised list/grid
+  src/ui/          DOM helpers, focus zones, the virtualised list/grid, image load gate
+  src/resume.ts    VOD resume points (LRU, localStorage)
   src/screens/     playlists, add playlist, browse, details, player, settings
   scripts/         build.mjs, build-tests.mjs, serve.mjs (local proxy server)
   test/            node:test unit tests
