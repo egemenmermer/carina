@@ -6,6 +6,7 @@ import { t } from '../i18n';
 import type { Channel, Programme } from '../data/models';
 import type { Source } from '../data/source';
 import type { Key } from '../platform';
+import { countdownSeconds } from '../nextup';
 import { resume } from '../resume';
 import { store } from '../store';
 import { fmtDuration, fmtTime, h, img, initials, setText, toggle } from '../ui/dom';
@@ -21,7 +22,7 @@ export type PlayerArgs =
       epg: Record<string, Programme[]>;
       onExit?: (index: number) => void;
     }
-  | { kind: 'vod'; item: VodItem; startAt?: number };
+  | { kind: 'vod'; item: VodItem; startAt?: number; queue?: VodItem[]; queueIndex?: number };
 
 /** One playable movie or episode; [key] is its resume key. */
 export interface VodItem {
@@ -80,8 +81,14 @@ export class PlayerScreen implements Screen {
   private listeners: [string, EventListener][] = [];
   // VOD: resume + next-episode autoplay
   private cur: VodItem | null = null;
+  private qi = 0;
   private pendingStart = 0;
   private lastSave = 0;
+  private nextCancelled = false;
+  private nextShown = false;
+  private nextTitle = h('div', { class: 'next-title' });
+  private nextCount = h('div', { class: 'next-count' });
+  private nextBox = h('div', { class: 'next-up' }, h('div', { class: 'next-head', text: t('nextEpisode') }), this.nextTitle, this.nextCount, h('div', { class: 'hint', text: t('hintNextUp') }));
 
   constructor(private source: Source, private args: PlayerArgs) {
     this.errorButtons = new Buttons([
@@ -104,7 +111,7 @@ export class PlayerScreen implements Screen {
         h('div', { class: 'hint', text: live ? t('hintPlayerLive') : t('hintPlayerVod') }),
       ),
     );
-    this.el = h('div', { class: 'screen player' }, this.osd, this.spinner, this.errorBox);
+    this.el = h('div', { class: 'screen player' }, this.osd, this.nextBox, this.spinner, this.errorBox);
     this.el.addEventListener('mousemove', () => this.showOsd());
     this.el.addEventListener('click', (e) => {
       if (!this.errorBox.contains(e.target as Node)) this.onKey('ok');
@@ -130,6 +137,7 @@ export class PlayerScreen implements Screen {
       this.startLive();
     } else {
       this.cur = this.args.item;
+      this.qi = this.args.queueIndex || 0;
       this.pendingStart = this.args.startAt || 0;
       setText(this.oName, this.cur.title);
       this.load([this.cur.url]);
@@ -275,7 +283,8 @@ export class PlayerScreen implements Screen {
       return;
     }
     if (this.cur) resume.markWatched(this.cur.key, isFinite(this.video.duration) ? this.video.duration : 0);
-    pop();
+    if (this.nextItem() && !this.nextCancelled) this.playNext();
+    else pop();
   }
 
   // ---- live ---------------------------------------------------------------------
@@ -350,6 +359,7 @@ export class PlayerScreen implements Screen {
     if (!this.started || this.video.seeking) return;
     const now = Date.now();
     if (now - this.lastSave >= SAVE_EVERY_MS) this.saveProgress();
+    this.checkNext();
   }
 
   private saveProgress(): void {
@@ -357,6 +367,49 @@ export class PlayerScreen implements Screen {
     const v = this.video;
     this.lastSave = Date.now();
     resume.save(this.cur.key, v.currentTime, isFinite(v.duration) ? v.duration : 0);
+  }
+
+  private nextItem(): VodItem | null {
+    const a = this.args;
+    return a.kind === 'vod' && a.queue ? a.queue[this.qi + 1] || null : null;
+  }
+
+  /** Shows the cancellable countdown during the last seconds of an episode. */
+  private checkNext(): void {
+    const next = this.nextItem();
+    const v = this.video;
+    const pos = this.seekTarget != null ? this.seekTarget : v.currentTime;
+    const n = countdownSeconds(pos, v.duration, !!next, this.nextCancelled);
+    if (n == null || !next) {
+      if (this.nextShown) this.hideNext();
+      return;
+    }
+    if (!this.nextShown) {
+      this.nextShown = true;
+      setText(this.nextTitle, next.title);
+      toggle(this.nextBox, 'show', true);
+    }
+    setText(this.nextCount, t('nextIn', { n }));
+  }
+
+  private hideNext(): void {
+    this.nextShown = false;
+    toggle(this.nextBox, 'show', false);
+  }
+
+  private playNext(): void {
+    const next = this.nextItem();
+    if (!next || this.args.kind !== 'vod') return;
+    if (this.cur) resume.markWatched(this.cur.key, isFinite(this.video.duration) ? this.video.duration : 0);
+    this.qi++;
+    this.cur = next;
+    this.pendingStart = 0;
+    this.started = false; // the old media's last 'pause' must not be saved under the new key
+    this.nextCancelled = false;
+    this.hideNext();
+    setText(this.oName, next.title);
+    this.load([next.url]);
+    this.showOsd();
   }
 
   private paintVod(): void {
@@ -428,6 +481,15 @@ export class PlayerScreen implements Screen {
 
   onKey(k: Key): boolean {
     const live = this.args.kind === 'live';
+    if (this.nextShown) {
+      // Countdown overlay: OK plays the next episode now, Back only cancels the countdown.
+      if (k === 'ok' || k === 'play') return this.playNext(), true;
+      if (k === 'back') {
+        this.nextCancelled = true;
+        this.hideNext();
+        return true;
+      }
+    }
     if (k === 'back' || k === 'stop') {
       pop();
       return true;

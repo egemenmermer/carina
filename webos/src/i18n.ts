@@ -75,6 +75,9 @@ const en = {
   startOver: 'Start over',
   resumeTitle: 'Resume playback?',
   watched: 'Watched',
+  nextEpisode: 'Next episode',
+  nextIn: 'Playing in {n} s',
+  hintNextUp: 'OK Play now · Back Cancel',
   channels: '{n} channels',
   items: '{n} items',
 };
@@ -155,6 +158,9 @@ const tr: Strings = {
   startOver: 'Baştan başla',
   resumeTitle: 'Kaldığın yerden devam edilsin mi?',
   watched: 'İzlendi',
+  nextEpisode: 'Sonraki bölüm',
+  nextIn: '{n} sn içinde oynatılacak',
+  hintNextUp: 'OK Şimdi oynat · Geri İptal',
   channels: '{n} kanal',
   items: '{n} içerik',
 };

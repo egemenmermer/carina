@@ -199,7 +199,10 @@ export class DetailsScreen extends ZoneScreen implements Screen {
 
   private startEpisode(e: Episode, startAt: number): void {
     if (!startAt) resume.clear(this.keyOf(e.id));
-    push(new PlayerScreen(this.source, { kind: 'vod', item: this.episodeItem(e), startAt }));
+    // The whole series in order, so the player can autoplay the next episode.
+    const eps = this.seriesInfo ? this.seriesInfo.episodes : [e];
+    const at = eps.indexOf(e);
+    push(new PlayerScreen(this.source, { kind: 'vod', item: this.episodeItem(e), startAt, queue: eps.map((x) => this.episodeItem(x)), queueIndex: Math.max(0, at) }));
   }
 
   onKey(k: Key): boolean {
