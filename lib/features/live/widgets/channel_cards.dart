@@ -27,6 +27,7 @@ class LiveListCard extends StatefulWidget {
     required this.onFocusChange,
     required this.onContextMenu,
     this.logoSize = 84,
+    this.tv = false,
   });
 
   final ChannelView channel;
@@ -38,12 +39,17 @@ class LiveListCard extends StatefulWidget {
   final KContextMenuCallback onContextMenu;
   final double logoSize;
 
+  /// TV: the "more" button shows on the focused card, as the cue that the
+  /// channel menu is there (OK held).
+  final bool tv;
+
   @override
   State<LiveListCard> createState() => _LiveListCardState();
 }
 
 class _LiveListCardState extends State<LiveListCard> {
   bool _hovered = false;
+  bool _focused = false;
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +61,10 @@ class _LiveListCardState extends State<LiveListCard> {
       ringWidth: KFocusRingWidth.tv,
       scale: 1.02,
       onTap: widget.onTap,
-      onFocusChange: widget.onFocusChange,
+      onFocusChange: (focused) {
+        if (widget.tv) setState(() => _focused = focused);
+        widget.onFocusChange(focused);
+      },
       onHoverChange: (h) => setState(() => _hovered = h),
       onContextMenu: widget.onContextMenu,
       semanticLabel: '${channel.displayName}, ${info.title}, ${info.time}',
@@ -111,7 +120,7 @@ class _LiveListCardState extends State<LiveListCard> {
                   top: 6,
                   right: 6,
                   child: LiveMoreButton(
-                    visible: _hovered,
+                    visible: _hovered || _focused,
                     onOpen: widget.onContextMenu,
                   ),
                 ),
@@ -146,6 +155,7 @@ class LiveGridCard extends StatefulWidget {
     required this.onTap,
     required this.onFocusChange,
     required this.onContextMenu,
+    this.tv = false,
   });
 
   final ChannelView channel;
@@ -156,12 +166,16 @@ class LiveGridCard extends StatefulWidget {
   final ValueChanged<bool> onFocusChange;
   final KContextMenuCallback onContextMenu;
 
+  /// See [LiveListCard.tv].
+  final bool tv;
+
   @override
   State<LiveGridCard> createState() => _LiveGridCardState();
 }
 
 class _LiveGridCardState extends State<LiveGridCard> {
   bool _hovered = false;
+  bool _focused = false;
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +186,10 @@ class _LiveGridCardState extends State<LiveGridCard> {
       selected: widget.selected,
       ringWidth: KFocusRingWidth.tv,
       onTap: widget.onTap,
-      onFocusChange: widget.onFocusChange,
+      onFocusChange: (focused) {
+        if (widget.tv) setState(() => _focused = focused);
+        widget.onFocusChange(focused);
+      },
       onHoverChange: (h) => setState(() => _hovered = h),
       onContextMenu: widget.onContextMenu,
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 6),
@@ -209,7 +226,10 @@ class _LiveGridCardState extends State<LiveGridCard> {
                   ],
                 ),
               ),
-              LiveMoreButton(visible: _hovered, onOpen: widget.onContextMenu),
+              LiveMoreButton(
+                visible: _hovered || _focused,
+                onOpen: widget.onContextMenu,
+              ),
             ],
           ),
           const SizedBox(height: 10),
@@ -337,8 +357,9 @@ class LiveStatusIcons extends StatelessWidget {
   }
 }
 
-/// Small round "•••" button shown while the pointer is over a card; opens
-/// the channel menu at the button.
+/// Small round "•••" button shown while the pointer is over a card (on a TV:
+/// while the card is focused, where OK held opens the same menu); opens the
+/// channel menu at the button.
 class LiveMoreButton extends StatelessWidget {
   const LiveMoreButton({
     super.key,

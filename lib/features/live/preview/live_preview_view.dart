@@ -28,6 +28,8 @@ class LivePreviewView extends StatefulWidget {
     this.compact = false,
     this.previewEnabled = true,
     this.borderRadius = KRadii.video,
+    this.focusNode,
+    this.highlighted = false,
   });
 
   final LivePreviewController controller;
@@ -49,6 +51,14 @@ class LivePreviewView extends StatefulWidget {
   /// The live preview setting; when off the poster says so.
   final bool previewEnabled;
   final double borderRadius;
+
+  /// TV: when set the preview takes the remote's focus (OK plays it), shows
+  /// the play glyph and a focus ring.
+  final FocusNode? focusNode;
+
+  /// Draws the play glyph although neither the pointer nor focus is on the
+  /// preview (the grid tile floats over the focused card).
+  final bool highlighted;
 
   @override
   State<LivePreviewView> createState() => _LivePreviewViewState();
@@ -81,43 +91,55 @@ class _LivePreviewViewState extends State<LivePreviewView> {
             ? _videoFor(widget.controller.engine)
             : null;
         return KInteractive(
-          focusable: false,
+          focusable: widget.focusNode != null,
+          focusNode: widget.focusNode,
           onTap: channel == null ? null : widget.onActivate,
           onContextMenu: channel == null ? null : widget.onContextMenu,
           semanticLabel: channel?.displayName,
-          builder: (context, state, _) => ClipRRect(
-            borderRadius: BorderRadius.circular(widget.borderRadius),
-            child: ColoredBox(
-              color: KColors.surface1,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  if (video == null)
-                    _Poster(
-                      channel: channel,
-                      compact: widget.compact,
-                      hint: _posterHint(context, status, showing),
-                      error: showing && status.hasError,
-                    )
-                  else
-                    _blurIfLocked(video),
-                  if (video != null && widget.locked)
-                    _LockedOverlay(compact: widget.compact),
-                  if (showing && status.loading && !widget.locked)
-                    Center(child: KSpinner(size: widget.compact ? 26 : 38)),
-                  if (showing && !status.hasError)
-                    Positioned(
-                      left: widget.compact ? 10 : 16,
-                      top: widget.compact ? 10 : 16,
-                      child: _StatsChips(
-                        status: status,
-                        sizeIndicator: widget.sizeIndicator,
+          builder: (context, state, _) => DecoratedBox(
+            position: DecorationPosition.foreground,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(widget.borderRadius),
+              border: state.focused
+                  ? Border.all(color: KColors.focusRing, width: 3)
+                  : null,
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(widget.borderRadius),
+              child: ColoredBox(
+                color: KColors.surface1,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    if (video == null)
+                      _Poster(
+                        channel: channel,
                         compact: widget.compact,
+                        hint: _posterHint(context, status, showing),
+                        error: showing && status.hasError,
+                      )
+                    else
+                      _blurIfLocked(video),
+                    if (video != null && widget.locked)
+                      _LockedOverlay(compact: widget.compact),
+                    if (showing && status.loading && !widget.locked)
+                      Center(child: KSpinner(size: widget.compact ? 26 : 38)),
+                    if (showing && !status.hasError)
+                      Positioned(
+                        left: widget.compact ? 10 : 16,
+                        top: widget.compact ? 10 : 16,
+                        child: _StatsChips(
+                          status: status,
+                          sizeIndicator: widget.sizeIndicator,
+                          compact: widget.compact,
+                        ),
                       ),
-                    ),
-                  if (state.hovered && video != null && !widget.locked)
-                    _HoverPlay(compact: widget.compact),
-                ],
+                    if ((state.highlighted || widget.highlighted) &&
+                        video != null &&
+                        !widget.locked)
+                      _HoverPlay(compact: widget.compact),
+                  ],
+                ),
               ),
             ),
           ),

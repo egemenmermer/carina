@@ -12,6 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/clock.dart';
+import '../../app/platform/form_factor.dart';
 import '../../app/shell/category_selection.dart';
 import '../../app/shell/shell_state.dart';
 import '../../app/time_format.dart';
@@ -65,6 +66,7 @@ class _LiveScreenState extends ConsumerState<LiveScreen> {
   );
   final FocusNode _pillFocus = FocusNode(debugLabel: 'live-category-pill');
   final FocusNode _upcomingFocus = FocusNode(debugLabel: 'live-upcoming');
+  final FocusNode _previewFocus = FocusNode(debugLabel: 'live-preview');
 
   /// The list on screen and the category key it belongs to.
   List<ChannelView> _channels = const [];
@@ -137,6 +139,7 @@ class _LiveScreenState extends ConsumerState<LiveScreen> {
     _screenFocus.dispose();
     _pillFocus.dispose();
     _upcomingFocus.dispose();
+    _previewFocus.dispose();
     super.dispose();
   }
 
@@ -526,6 +529,8 @@ class _LiveScreenState extends ConsumerState<LiveScreen> {
       _grid.columns *
       math.max(1, (_viewportHeight / _grid.rowExtent).floor() - 1);
 
+  bool get _tv => ref.read(formFactorProvider).isTv;
+
   bool _isDown(KeyEvent event) =>
       event is KeyDownEvent || event is KeyRepeatEvent;
 
@@ -555,7 +560,12 @@ class _LiveScreenState extends ConsumerState<LiveScreen> {
     } else if (key == LogicalKeyboardKey.arrowLeft) {
       _openSidebar();
     } else if (key == LogicalKeyboardKey.arrowRight) {
-      if (_upcomingFocus.context != null) _upcomingFocus.requestFocus();
+      // TV: the big preview is the next stop; Down from it reaches UPCOMING.
+      if (_tv && _previewFocus.context != null) {
+        _previewFocus.requestFocus();
+      } else if (_upcomingFocus.context != null) {
+        _upcomingFocus.requestFocus();
+      }
     } else {
       return KeyEventResult.ignored;
     }
@@ -612,6 +622,16 @@ class _LiveScreenState extends ConsumerState<LiveScreen> {
     }
     if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
       _openSidebar();
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
+  }
+
+  /// Left from the preview returns to the selected card (TV).
+  KeyEventResult _onPreviewKey(FocusNode node, KeyEvent event) {
+    if (!_isDown(event)) return KeyEventResult.ignored;
+    if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+      _focusSelected();
       return KeyEventResult.handled;
     }
     return KeyEventResult.ignored;
@@ -877,6 +897,7 @@ class _LiveScreenState extends ConsumerState<LiveScreen> {
         'size';
     final session = ref.watch(parentalSessionProvider);
     final parental = ref.read(parentalServiceProvider);
+    final tv = ref.watch(formFactorProvider).isTv;
     final selected = _find(_selectedId) ?? _channels.first;
     final selectedLocked = parental.isLocked(selected, session);
 
@@ -897,6 +918,7 @@ class _LiveScreenState extends ConsumerState<LiveScreen> {
           _grid = LiveGridMetrics.of(constraints.maxWidth);
           return _verticalLayout(
             pill: pill,
+            tv: tv,
             cardInfo: cardInfo,
             previewEnabled: previewEnabled,
             sizeIndicator: sizeIndicator,
@@ -934,6 +956,7 @@ class _LiveScreenState extends ConsumerState<LiveScreen> {
                       info: info,
                       logoSize: logoSize,
                       selected: c.providerId == _selectedId,
+                      tv: tv,
                       focusNode: _nodeFor(c.providerId),
                       onTap: () => _onCardActivate(c),
                       onFocusChange: (g) => _onCardFocus(c, g),
@@ -944,14 +967,20 @@ class _LiveScreenState extends ConsumerState<LiveScreen> {
               },
             ),
           ),
-          preview: LivePreviewView(
-            controller: _preview,
-            channel: selected,
-            locked: selectedLocked,
-            previewEnabled: previewEnabled,
-            sizeIndicator: sizeIndicator,
-            onActivate: () => _onCardActivate(selected),
-            onContextMenu: (pos) => _onCardMenu(selected, pos),
+          preview: Focus(
+            onKeyEvent: _onPreviewKey,
+            skipTraversal: true,
+            canRequestFocus: false,
+            child: LivePreviewView(
+              focusNode: tv ? _previewFocus : null,
+              controller: _preview,
+              channel: selected,
+              locked: selectedLocked,
+              previewEnabled: previewEnabled,
+              sizeIndicator: sizeIndicator,
+              onActivate: () => _onCardActivate(selected),
+              onContextMenu: (pos) => _onCardMenu(selected, pos),
+            ),
           ),
           nowOnAir: _NowOnAirHost(playlistId: _pid, channel: selected),
           upcoming: Focus(
@@ -971,6 +1000,7 @@ class _LiveScreenState extends ConsumerState<LiveScreen> {
 
   Widget _verticalLayout({
     required Widget pill,
+    required bool tv,
     required Widget Function(ChannelView, Widget Function(LiveCardInfo))
     cardInfo,
     required bool previewEnabled,
@@ -1010,6 +1040,8 @@ class _LiveScreenState extends ConsumerState<LiveScreen> {
                 channel: previewed,
                 locked: locked,
                 compact: true,
+                // The card under the tile holds the remote's focus.
+                highlighted: tv && _focusedId == previewed.providerId,
                 sizeIndicator: sizeIndicator,
                 borderRadius: KRadii.card,
                 onActivate: () => _onCardActivate(previewed),
@@ -1051,6 +1083,7 @@ class _LiveScreenState extends ConsumerState<LiveScreen> {
                 channel: c,
                 info: info,
                 selected: c.providerId == _selectedId,
+                tv: tv,
                 focusNode: _nodeFor(c.providerId),
                 onTap: () => _onCardActivate(c),
                 onFocusChange: (g) => _onCardFocus(c, g),
