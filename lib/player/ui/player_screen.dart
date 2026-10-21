@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/clock.dart';
+import '../../app/platform/form_factor.dart';
 import '../../app/platform/screen_awake.dart';
 import '../../app/router.dart' show rootNavigatorKey;
 import '../../app/time_format.dart';
@@ -47,6 +48,14 @@ const Duration kNumberZapDelay = Duration(milliseconds: 1500);
 
 enum _Guide { none, mini, full }
 
+/// The remote's D-pad.
+final Set<LogicalKeyboardKey> _arrowKeys = {
+  LogicalKeyboardKey.arrowUp,
+  LogicalKeyboardKey.arrowDown,
+  LogicalKeyboardKey.arrowLeft,
+  LogicalKeyboardKey.arrowRight,
+};
+
 /// Live keys that still work while the error overlay is up.
 final Set<LogicalKeyboardKey> _liveZapKeys = {
   LogicalKeyboardKey.arrowUp,
@@ -78,6 +87,23 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
       m: GlobalKey(debugLabel: 'player ${m.name}'),
   };
   final GlobalKey _errorSwitchKey = GlobalKey(debugLabel: 'error switch');
+
+  /// Android TV / Google TV with a remote (decided once at bootstrap).
+  late final bool _tv;
+
+  /// TV: marks the controls subtree, so "focus is on a control" is
+  /// `_controlsScope.hasFocus`.
+  final FocusNode _controlsScope = FocusNode(
+    debugLabel: 'player controls',
+    canRequestFocus: false,
+    skipTraversal: true,
+  );
+
+  /// TV: focus nodes of the bar controls (null on desktop).
+  PlayerBarFocus? _barFocus;
+
+  /// TV: the control that had focus when an overlay opened.
+  FocusNode? _returnFocus;
 
   bool _controlsVisible = true;
   bool _pinned = false;
@@ -131,6 +157,17 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
   @override
   void initState() {
     super.initState();
+    _tv = ref.read(formFactorProvider).isTv;
+    if (_tv) {
+      _barFocus = PlayerBarFocus(
+        menus: {
+          for (final m in PlayerMenu.values)
+            m: FocusNode(debugLabel: 'player ${m.name} button'),
+        },
+        seek: FocusNode(debugLabel: 'player seek bar'),
+        hint: FocusNode(debugLabel: 'player hint'),
+      );
+    }
     controller = PlayerController(
       request: widget.request,
       deps: PlayerDeps.of(ref),
@@ -159,6 +196,15 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
     _screenAwake.release(this);
     controller.dispose();
     _focus.dispose();
+    _controlsScope.dispose();
+    final bar = _barFocus;
+    if (bar != null) {
+      for (final node in bar.menus.values) {
+        node.dispose();
+      }
+      bar.seek.dispose();
+      bar.hint.dispose();
+    }
     super.dispose();
   }
 
@@ -235,12 +281,63 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
       _scheduleHide();
       return;
     }
+    _releaseControlFocus();
     setState(() => _controlsVisible = false);
   }
 
   void _hideControlsNow() {
+    // Focus first: it may flush a pending seek, which re-arms the timer.
+    _releaseControlFocus();
     _hideTimer?.cancel();
     if (_controlsVisible) setState(() => _controlsVisible = false);
+  }
+
+  /// TV: hidden controls are excluded from focus, so a control that has it
+  /// hands it back to the player first (else the keys stop reaching it).
+  void _releaseControlFocus() {
+    if (_tv && _controlsScope.hasFocus) _focus.requestFocus();
+  }
+
+  /// TV: shows the controls and moves focus into them (the seek bar, on
+  /// live the hint), once they are on screen again.
+  void _focusControls() {
+    final bar = _barFocus;
+    if (bar == null) return;
+    _showControls();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_controlsShown || _controlsScope.hasFocus) return;
+      (_live ? bar.hint : bar.seek).requestFocus();
+    });
+  }
+
+  /// TV: remembers the control that has focus before an overlay covers it.
+  void _rememberFocus() {
+    _returnFocus = _tv && _controlsScope.hasFocus
+        ? FocusManager.instance.primaryFocus
+        : null;
+  }
+
+  /// Gives the keyboard back to the player when an overlay closes. On TV it
+  /// goes to the remembered control (or [fallback]) while the controls are
+  /// on screen, else to the player itself, never to an invisible node.
+  void _restoreFocus({FocusNode? fallback}) {
+    if (!_tv) {
+      _focus.requestFocus();
+      return;
+    }
+    final node = _returnFocus ?? fallback;
+    _returnFocus = null;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (_controlsShown &&
+          node != null &&
+          node.context != null &&
+          node.canRequestFocus) {
+        node.requestFocus();
+      } else {
+        _focus.requestFocus();
+      }
+    });
   }
 
   // ---------------------------------------------------------------------------
@@ -299,6 +396,7 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
 
   Future<void> _showMenu(PlayerMenu menu, BuildContext anchor) async {
     _hideTimer?.cancel();
+    _rememberFocus();
     _menuDepth++;
     setState(() => _activeMenu = menu);
     try {
@@ -318,7 +416,7 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
       if (mounted) {
         setState(() => _activeMenu = null);
         _scheduleHide();
-        _focus.requestFocus();
+        _restoreFocus();
       }
     }
   }
@@ -352,6 +450,9 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
         onNextEpisode: c.nextEpisode == null
             ? null
             : () => unawaited(c.playNextEpisode()),
+        tv: _tv,
+        muted: c.state.muted,
+        onMute: () => unawaited(c.toggleMute()),
       ),
     };
   }
@@ -393,7 +494,7 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
     if (path == null || !mounted) return;
     await controller.addExternalSubtitle(path);
     toasts.show(l10n.playerSubtitleLoaded);
-    _focus.requestFocus();
+    _restoreFocus();
   }
 
   // ---------------------------------------------------------------------------
@@ -402,6 +503,8 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
   void _openInfo() {
     if (!mounted) return;
     _hideTimer?.cancel();
+    _rememberFocus();
+    _releaseControlFocus();
     setState(() {
       _infoOpen = true;
       _guide = _Guide.none;
@@ -411,7 +514,7 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
   void _closeInfo() {
     setState(() => _infoOpen = false);
     _showControls();
-    _focus.requestFocus();
+    _restoreFocus(fallback: _live ? null : _barFocus?.seek);
   }
 
   void _openGuide(_Guide guide) {
@@ -425,12 +528,14 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
 
   void _closeGuide() {
     setState(() => _guide = _Guide.none);
+    _returnFocus = null;
     _focus.requestFocus();
   }
 
   Future<void> _openActionSheet() async {
     final channel = controller.channel;
     if (!_live || channel == null || _menuDepth > 0) return;
+    _rememberFocus();
     _menuDepth++;
     LiveAction? action;
     try {
@@ -450,7 +555,7 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
       case LiveAction.addChannel:
         await _addToMultiview();
       case null:
-        _focus.requestFocus();
+        _restoreFocus();
     }
   }
 
@@ -695,11 +800,81 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
       infoPanelOpen: _infoOpen,
       modifiers: PlayerModifiers.current(),
     );
+    if (_tv && !modal) {
+      final result = _onTvKey(event, shortcut);
+      if (result != null) return result;
+    }
     if (shortcut == null) {
       if (event is KeyDownEvent) _showControls();
       return KeyEventResult.ignored;
     }
     _run(shortcut, repeat: event is KeyRepeatEvent);
+    return KeyEventResult.handled;
+  }
+
+  /// The remote on TV: the D-pad moves focus between the controls while
+  /// they show; with them hidden it seeks / zaps and OK brings them back.
+  /// Returns null to let the keyboard map ([shortcut]) decide.
+  KeyEventResult? _onTvKey(KeyEvent event, PlayerShortcut? shortcut) {
+    final key = event.logicalKey;
+    final repeat = event is KeyRepeatEvent;
+    final arrow = _arrowKeys.contains(key);
+    final ok =
+        key == LogicalKeyboardKey.enter ||
+        key == LogicalKeyboardKey.numpadEnter ||
+        key == LogicalKeyboardKey.select;
+
+    // Back (Esc): the controls go first, then a second press leaves.
+    if (shortcut?.command == PlayerCommand.back) {
+      if (_controlsShown) {
+        if (!repeat) _hideControlsNow();
+        return KeyEventResult.handled;
+      }
+      return null;
+    }
+    if (!arrow && !ok) return null;
+
+    // The guides and the info panel have their own focus (Back closes
+    // them).
+    if (_guide != _Guide.none || _infoOpen) return KeyEventResult.ignored;
+
+    // Something else has focus (a control, the Skip intro pill, the paused
+    // button): arrows travel between the focusable widgets, and OK reaches
+    // the focused one first (only a node without an action, like the seek
+    // bar, lets it through to the keyboard map).
+    final primary = FocusManager.instance.primaryFocus;
+    if (primary != null && primary != _focus) {
+      final sideways =
+          key == LogicalKeyboardKey.arrowLeft ||
+          key == LogicalKeyboardKey.arrowRight;
+      if (_controlsScope.hasFocus) {
+        _scheduleHide();
+        return arrow ? KeyEventResult.ignored : null;
+      }
+      if (!sideways || _controlsShown) {
+        return arrow ? KeyEventResult.ignored : null;
+      }
+      // A lone pill must not trap ←/→: back to the player (seek / zap).
+      _focus.requestFocus();
+    }
+
+    // The player itself has focus.
+    final up = key == LogicalKeyboardKey.arrowUp;
+    final down = key == LogicalKeyboardKey.arrowDown;
+    if (_live) {
+      // ↑/↓ zap and OK opens the actions, as on desktop; ←/→ bring the
+      // controls.
+      if (up || down || ok) return null;
+      _focusControls();
+      return KeyEventResult.handled;
+    }
+    if (up || down) {
+      _focusControls();
+      return KeyEventResult.handled;
+    }
+    // ←/→ seek and OK plays / pauses, with the controls following.
+    if (shortcut != null) _run(shortcut, repeat: repeat);
+    _focusControls();
     return KeyEventResult.handled;
   }
 
@@ -749,6 +924,7 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
         _guide != _Guide.none ||
         failure != null ||
         c.resumeOffer != null;
+    if (_tv) WidgetsBinding.instance.addPostFrameCallback(_ensureFocus);
     final duration = KMotion.of(context, const Duration(milliseconds: 200));
     final sizeIndicator =
         ref.watchSetting(
@@ -770,6 +946,9 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
 
     return Focus(
       focusNode: _focus,
+      // On TV the player takes focus only when asked: directional traversal
+      // must not land on it (its box is the whole screen).
+      skipTraversal: _tv,
       onKeyEvent: _onKey,
       child: Listener(
         onPointerDown: _onPointerDown,
@@ -796,8 +975,9 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
 
                 // Controls.
                 Positioned.fill(
-                  child: IgnorePointer(
+                  child: _ControlsGate(
                     ignoring: !controlsShown,
+                    scope: _tv ? _controlsScope : null,
                     child: AnimatedOpacity(
                       key: const ValueKey('player-controls'),
                       opacity: controlsShown ? 1 : 0,
@@ -857,6 +1037,7 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
                                       onOpenMenu: (m) => unawaited(openMenu(m)),
                                       onOptions: () =>
                                           unawaited(_openActionSheet()),
+                                      tvFocus: _barFocus,
                                     )
                                   : VodBottomBar(
                                       controller: c,
@@ -871,6 +1052,7 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
                                       },
                                       onInteraction: _showControls,
                                       onInfo: _openInfo,
+                                      tvFocus: _barFocus,
                                     ),
                             ),
                           ),
@@ -1037,6 +1219,16 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
     );
   }
 
+  /// TV safety net: when a focused widget went away (a pill that closed,
+  /// the paused button) the keys would stop reaching the player.
+  void _ensureFocus(Duration _) {
+    if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
+    // After the focus requests of this frame have been applied.
+    scheduleMicrotask(() {
+      if (mounted && !_focus.hasFocus) _focus.requestFocus();
+    });
+  }
+
   Widget _buildInfoPanel(L10n l10n, CarinaTimeFormat format, DateTime now) {
     final c = controller;
     if (_live) {
@@ -1115,6 +1307,39 @@ class PlayerScreenState extends ConsumerState<PlayerScreen> {
             },
           ),
       ],
+    );
+  }
+}
+
+/// The controls layer: swallows pointer events while hidden and, on TV
+/// ([scope] set), keeps focus out of the hidden controls. [scope] tells
+/// whether focus is inside them.
+class _ControlsGate extends StatelessWidget {
+  const _ControlsGate({
+    required this.ignoring,
+    required this.scope,
+    required this.child,
+  });
+
+  final bool ignoring;
+  final FocusNode? scope;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final scope = this.scope;
+    if (scope == null) return IgnorePointer(ignoring: ignoring, child: child);
+    return IgnorePointer(
+      ignoring: ignoring,
+      child: ExcludeFocus(
+        excluding: ignoring,
+        child: Focus(
+          focusNode: scope,
+          canRequestFocus: false,
+          skipTraversal: true,
+          child: child,
+        ),
+      ),
     );
   }
 }

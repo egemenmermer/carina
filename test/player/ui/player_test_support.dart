@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:carina/app/clock.dart';
+import 'package:carina/app/platform/form_factor.dart';
 import 'package:carina/data/repositories/vod_repository.dart';
 import 'package:carina/player/engine/fake_engine.dart';
 import 'package:carina/player/engine/playback_engine.dart';
@@ -80,8 +81,10 @@ List<Override> playerOverrides(
   required FakeEngineFactory factory,
   FakePlayerWindow? window,
   SubtitleFilePicker? picker,
+  FormFactor formFactor = FormFactor.desktop,
 }) => [
   ...fx.providerOverrides,
+  if (formFactor.isTv) formFactorProvider.overrideWithValue(formFactor),
   playbackEngineFactoryProvider.overrideWithValue(factory),
   minuteClockProvider.overrideWith((ref) => Stream.value(testNow)),
   clockSourceProvider.overrideWithValue(() => testNow),
@@ -98,6 +101,7 @@ Future<PlayerScreenState> pumpPlayer(
   FakePlayerWindow? window,
   SubtitleFilePicker? picker,
   Locale locale = const Locale('en'),
+  FormFactor formFactor = FormFactor.desktop,
 }) async {
   await pumpScreen(
     tester,
@@ -107,6 +111,7 @@ Future<PlayerScreenState> pumpPlayer(
       factory: factory,
       window: window,
       picker: picker,
+      formFactor: formFactor,
     ),
     locale: locale,
   );
