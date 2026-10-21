@@ -8,7 +8,8 @@ import 'package:carina/l10n/gen/app_localizations.dart';
 /// with the name underneath. Hover and keyboard focus scale the avatar and
 /// draw a white ring; a ••• button appears at its top-right corner. Click /
 /// Enter opens the playlist; right-click, long-press, the Menu key and the
-/// ••• button open the playlist menu.
+/// ••• button open the playlist menu. On a TV there is no pointer for the
+/// button, so it is left out and holding OK opens the menu.
 class PlaylistAvatarTile extends StatefulWidget {
   const PlaylistAvatarTile({
     super.key,
@@ -63,6 +64,7 @@ class _PlaylistAvatarTileState extends State<PlaylistAvatarTile> {
     final row = widget.playlist;
     final size = widget.avatarSize;
     final duration = KMotion.of(context, KDurations.hover);
+    final tv = KTvMode.of(context);
     final showMore = (_hovered || _focused) && !widget.active;
     final progress = widget.updateProgress;
 
@@ -181,31 +183,34 @@ class _PlaylistAvatarTileState extends State<PlaylistAvatarTile> {
           clipBehavior: Clip.none,
           children: [
             Align(alignment: Alignment.topCenter, child: tile),
-            Positioned(
-              top: -2,
-              left: PlaylistAvatarTile.widthFor(size) / 2 + size / 2 - 26,
-              child: IgnorePointer(
-                ignoring: !showMore,
-                child: AnimatedOpacity(
-                  opacity: showMore ? 1 : 0,
-                  duration: duration,
-                  child: Builder(
-                    builder: (buttonContext) => KIconButton(
-                      icon: PhosphorIconsBold.dotsThree,
-                      size: 34,
-                      iconSize: 18,
-                      focusable: false,
-                      background: const Color(0xE61C1C1E),
-                      tooltip: l10n.playlistsMoreActions,
-                      onPressed: () {
-                        final rect = kGlobalRectOf(buttonContext);
-                        widget.onMenu(rect.bottomLeft + const Offset(0, 6));
-                      },
+            // The remote cannot reach the button (held OK opens the menu),
+            // so a cue that cannot be pressed would only mislead.
+            if (!tv)
+              Positioned(
+                top: -2,
+                left: PlaylistAvatarTile.widthFor(size) / 2 + size / 2 - 26,
+                child: IgnorePointer(
+                  ignoring: !showMore,
+                  child: AnimatedOpacity(
+                    opacity: showMore ? 1 : 0,
+                    duration: duration,
+                    child: Builder(
+                      builder: (buttonContext) => KIconButton(
+                        icon: PhosphorIconsBold.dotsThree,
+                        size: 34,
+                        iconSize: 18,
+                        focusable: false,
+                        background: const Color(0xE61C1C1E),
+                        tooltip: l10n.playlistsMoreActions,
+                        onPressed: () {
+                          final rect = kGlobalRectOf(buttonContext);
+                          widget.onMenu(rect.bottomLeft + const Offset(0, 6));
+                        },
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
           ],
         ),
       ),

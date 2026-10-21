@@ -3,6 +3,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:carina/app/platform/form_factor.dart';
+import 'package:carina/core/core.dart';
 import 'package:carina/data/app_paths.dart';
 import 'package:carina/data/db/database.dart';
 import 'package:carina/data/import/import.dart';
@@ -334,6 +336,38 @@ void main() {
     expect(router.state.uri.toString(), '/playlists/${ids['demo']}/avatar');
     await unmountAndFlush(tester);
     await tester.runAsync(fx.dispose);
+  });
+
+  testWidgets('Manager on a TV: no ••• button, holding OK opens the menu', (
+    tester,
+  ) async {
+    final fx = (await tester.runAsync(() => importMockPlaylist()))!;
+    final ids = (await tester.runAsync(() => _seedPlaylists(fx)))!;
+    final router = playlistsTestRouter();
+    await pumpScreen(
+      tester,
+      routerHost(router),
+      overrides: [
+        ...fx.providerOverrides,
+        formFactorProvider.overrideWithValue(FormFactor.tv),
+      ],
+    );
+    await settleDrift(tester);
+    expect(_tile(ids['demo']!), findsOneWidget);
+    // A cue the remote cannot press is left out.
+    expect(find.byTooltip('More actions'), findsNothing);
+
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.select);
+    await tester.pump(
+      KInteractive.tvMenuHold + const Duration(milliseconds: 50),
+    );
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.select);
+    await settle(tester);
+    expect(find.text('Choose Avatar'), findsOneWidget);
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await settle(tester);
+    expect(find.text('Choose Avatar'), findsNothing);
+    await unmountAndFlush(tester);
   });
 
   testWidgets('Manager: empty state', (tester) async {
