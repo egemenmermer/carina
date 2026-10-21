@@ -307,3 +307,17 @@ enum WizardProblem {
   file,
   epgInvalid,
 }
+
+/// The name offered when a playlist arrives without one (Add from phone):
+/// the host of the Xtream server or of the M3U URL, without a leading
+/// `www.`. `IPTV` when no host can be read (the address is invalid anyway).
+String defaultPlaylistName(
+  PlaylistType type, {
+  String server = '',
+  String playlistUrl = '',
+}) {
+  final text = (type == PlaylistType.xtream ? server : playlistUrl).trim();
+  final host = Uri.tryParse(text)?.host ?? '';
+  final name = host.startsWith('www.') ? host.substring(4) : host;
+  return name.isEmpty ? 'IPTV' : name;
+}
