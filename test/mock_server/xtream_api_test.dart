@@ -32,7 +32,7 @@ void main() {
   }
 
   group('authentication', () {
-    test('kanal/test123 is active', () async {
+    test('carina/test123 is active', () async {
       final r = await fetch('$api?$account');
       expect(r.status, 200);
       expect(r.header('content-type'), startsWith('application/json'));
@@ -76,7 +76,7 @@ void main() {
 
     test('anything else is HTTP 401 with auth 0', () async {
       for (final query in [
-        'username=kanal&password=wrong',
+        'username=carina&password=wrong',
         'username=x&password=y',
         '',
       ]) {

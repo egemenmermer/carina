@@ -206,5 +206,5 @@ readStreamFor(
 const account =
     'username=${MockFixtures.username}&password=${MockFixtures.password}';
 
-/// `/live/kanal/test123` style path prefix.
+/// `/live/carina/test123` style path prefix.
 const creds = '${MockFixtures.username}/${MockFixtures.password}';

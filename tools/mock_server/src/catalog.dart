@@ -75,7 +75,7 @@ String _two(int v) => v < 10 ? '0$v' : '$v';
 
 /// Known fixtures with stable ids (docs/ARCHITECTURE.md section 4).
 abstract final class MockFixtures {
-  static const username = 'kanal';
+  static const username = 'carina';
   static const password = 'test123';
   static const expiredUsername = 'expired';
   static const expiredPassword = 'test123';
@@ -166,7 +166,7 @@ abstract final class MockFixtures {
   static const timezone = 'Europe/Istanbul';
   static const utcOffset = Duration(hours: 3);
 
-  /// Account expiry of `kanal` (2027-03-01 00:00 UTC).
+  /// Account expiry of `carina` (2027-03-01 00:00 UTC).
   static final expiresAt = DateTime.utc(2027, 3, 1);
 
   /// Expiry of the `expired` account (in the past).

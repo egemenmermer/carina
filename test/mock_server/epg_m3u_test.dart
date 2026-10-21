@@ -236,7 +236,7 @@ void main() {
       expect(php.status, 200);
       expect(php.text, xml);
       expect(
-        (await fetch('$base/xmltv.php?username=kanal&password=bad')).status,
+        (await fetch('$base/xmltv.php?username=carina&password=bad')).status,
         401,
       );
       expect(
@@ -302,19 +302,19 @@ void main() {
         '#EXTGRP:', '#KODIPROP:inputstream.adaptive.license_key=',
         'catchup="default"', 'catchup="append"', 'catchup="shift"',
         'catchup="flussonic"', 'catchup="xc"', 'catchup-days="3"',
-        'catchup-source="$base/timeshift/kanal/test123/{duration:60}/{Y}-{m}-{d}:{H}-{M}/1001.ts"',
+        'catchup-source="$base/timeshift/carina/test123/{duration:60}/{Y}-{m}-{d}:{H}-{M}/1001.ts"',
         'catchup-source="?utc={utc}&lutc={lutc}"',
         '/fs/ch',
-        '/movie/kanal/test123/3001.mkv',
-        '/series/kanal/test123/', 'Sıcak Kafa S01E02', 'Sıcak Kafa S01 E01',
-        '$base/live/kanal/test123/1001.ts?plain=1',
+        '/movie/carina/test123/3001.mkv',
+        '/series/carina/test123/', 'Sıcak Kafa S01E02', 'Sıcak Kafa S01 E01',
+        '$base/live/carina/test123/1001.ts?plain=1',
         '#EXTINF:5400',
         '$base/vod/ornek-film.mp4',
       ]) {
         expect(text, contains(needle), reason: needle);
       }
       final live = RegExp(
-        r'^http://[^\n]*/live/kanal/test123/\d+\.ts\r?$',
+        r'^http://[^\n]*/live/carina/test123/\d+\.ts\r?$',
         multiLine: true,
       ).allMatches(text).length;
       expect(live, greaterThanOrEqualTo(server.catalog.channels.length - 30));
@@ -331,7 +331,7 @@ void main() {
 
     test('the plain HTTP entries of the playlist play', () async {
       final r = await readStreamFor(
-        '$base/live/kanal/test123/1001.ts?plain=1',
+        '$base/live/carina/test123/1001.ts?plain=1',
         const Duration(milliseconds: 300),
       );
       expect(r.status, 200);
@@ -352,18 +352,18 @@ void main() {
       expect(
         text,
         contains(
-          'tvg-id="trt1.tr" tvg-name="TRT 1 HD" tvg-logo="$base/img/logo_00.png" group-title="TR | Ulusal",TRT 1 HD\n$base/live/kanal/test123/1001.ts\n',
+          'tvg-id="trt1.tr" tvg-name="TRT 1 HD" tvg-logo="$base/img/logo_00.png" group-title="TR | Ulusal",TRT 1 HD\n$base/live/carina/test123/1001.ts\n',
         ),
       );
-      expect(text, contains('$base/movie/kanal/test123/3001.mkv'));
+      expect(text, contains('$base/movie/carina/test123/3001.mkv'));
       expect(text, contains('Sıcak Kafa S01 E02'));
       final hls = await fetch('$base/get.php?$account&type=m3u&output=m3u8');
       expect(
         hls.text,
-        contains('#EXTINF:-1,TRT 1 HD\n$base/live/kanal/test123/1001.m3u8'),
+        contains('#EXTINF:-1,TRT 1 HD\n$base/live/carina/test123/1001.m3u8'),
       );
       expect(
-        (await fetch('$base/get.php?username=kanal&password=x&type=m3u_plus'))
+        (await fetch('$base/get.php?username=carina&password=x&type=m3u_plus'))
             .status,
         401,
       );

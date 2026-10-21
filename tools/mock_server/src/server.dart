@@ -41,7 +41,7 @@ final class MockRequest {
   final DateTime time;
   final String method;
 
-  /// Path and query as requested (`/live/kanal/test123/1001.ts`).
+  /// Path and query as requested (`/live/carina/test123/1001.ts`).
   final String path;
   final String? userAgent;
   final String? referer;
@@ -346,15 +346,15 @@ final class MockServer {
     return textResponse(200, '''
 Carina mock IPTV server (${catalog.scale.name}: ${catalog.channels.length} live, ${catalog.movies.length} movies, ${catalog.series.length} series)
 
-Xtream API    $o/player_api.php?username=kanal&password=test123[&action=...]
-XMLTV         $o/xmltv.php?username=kanal&password=test123  |  $o/epg.xml  |  $o/epg.xml.gz
-M3U           $o/get.php?username=kanal&password=test123&type=m3u_plus&output=ts  |  $o/playlist.m3u
+Xtream API    $o/player_api.php?username=carina&password=test123[&action=...]
+XMLTV         $o/xmltv.php?username=carina&password=test123  |  $o/epg.xml  |  $o/epg.xml.gz
+M3U           $o/get.php?username=carina&password=test123&type=m3u_plus&output=ts  |  $o/playlist.m3u
 Streams       /live/u/p/<id>.ts|.m3u8  /movie/u/p/<id>.<ext>  /series/u/p/<id>.<ext>
 Catch-up      /timeshift/u/p/<minutes>/<YYYY-MM-DD:HH-MM>/<id>.ts  /streaming/timeshift.php?...
 Images        /img/<file>
 Failures      /fail/<kind>/... with kind = ${_failureKinds.join(', ')}
 Diagnostics   /mock/health  /mock/requests (DELETE clears)
-Accounts      kanal/test123 (active), expired/test123 (expired), anything else 401
+Accounts      carina/test123 (active), expired/test123 (expired), anything else 401
 ''');
   }
 
@@ -794,7 +794,7 @@ Accounts      kanal/test123 (active), expired/test123 (expired), anything else 4
     }
     final f = _decode(file);
     if (f == 'mpegts') {
-      return _liveChannel(request, id, 'ts', viaPath: '/live/kanal/test123/');
+      return _liveChannel(request, id, 'ts', viaPath: '/live/carina/test123/');
     }
     if (f == 'index.m3u8' || f == 'video.m3u8' || f == 'mono.m3u8') {
       return media.hlsPlaylist();

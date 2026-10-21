@@ -124,9 +124,9 @@ void main() {
     });
 
     test('credentials are checked on stream URLs', () async {
-      expect((await fetch('$base/movie/kanal/wrong/3001.mkv')).status, 401);
+      expect((await fetch('$base/movie/carina/wrong/3001.mkv')).status, 401);
       expect((await fetch('$base/movie/expired/test123/3001.mkv')).status, 403);
-      expect((await fetch('$base/live/kanal/wrong/1001.ts')).status, 401);
+      expect((await fetch('$base/live/carina/wrong/1001.ts')).status, 401);
     });
   });
 
@@ -343,7 +343,7 @@ void main() {
         400,
       );
       expect(
-        (await fetch('$base/timeshift/kanal/nope/60/$recent/1001.ts')).status,
+        (await fetch('$base/timeshift/carina/nope/60/$recent/1001.ts')).status,
         401,
       );
     });
