@@ -4,10 +4,24 @@
 
 # Carina
 
-**A fast, keyboard-friendly TV player for your own playlists.**
+**A fast TV player for your own playlists.**
 Windows, macOS, Android TV and LG webOS. English and Turkish.
 
+[![Latest release](https://img.shields.io/github/v/release/egemenmermer/carina?include_prereleases&style=flat-square&label=latest&color=E5322D)](https://github.com/egemenmermer/carina/releases)
+[![GPL-3.0 license](https://img.shields.io/badge/license-GPL--3.0-64748B?style=flat-square)](LICENSE)
+
+[![Download for Windows](https://img.shields.io/badge/Windows-download-2563EB?style=for-the-badge)](https://github.com/egemenmermer/carina/releases/download/v1.1.0-beta.1/Carina-Setup-1.1.0-x64.exe)
+[![Download for macOS](https://img.shields.io/badge/macOS-download-18181B?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/egemenmermer/carina/releases/download/v1.1.0-beta.1/Carina-1.1.0-35-macos.zip)
+[![Download for Android TV](https://img.shields.io/badge/Android_TV-download-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/egemenmermer/carina/releases/download/v1.1.0-beta.1/Carina-1.1.0-36-androidtv.apk)
+[![Download for LG webOS](https://img.shields.io/badge/LG_webOS-download-A50034?style=for-the-badge&logo=lg&logoColor=white)](https://github.com/egemenmermer/carina/releases/download/v1.1.0-beta.1/Carina-0.1.0-4-webos.ipk)
+
+[Install](#install) · [Screenshots](#screenshots) · [Features](#features) · [Build from source](#build-from-source)
+
+**Open source · No channels included · Bring your own Xtream Codes or M3U**
+
 </div>
+
+![Carina movies home](docs/images/movies.jpg)
 
 Carina is a player only. It ships with no channels, no content and no
 provider. You add your own Xtream Codes account or M3U playlist (with an
@@ -16,6 +30,42 @@ and shows.
 
 Carina is the sibling of [Vela](https://github.com/egemenmermer/vela): in the
 old Argo Navis constellation Vela is the sails and Carina the hull.
+
+## Screenshots
+
+### TV Live
+
+Channel list with an in-place preview, what is on now and what comes next.
+
+![TV Live](docs/images/live.jpg)
+
+### TV Guide
+
+A full programme grid with catch-up for channels that have an archive.
+
+![TV Guide](docs/images/guide.jpg)
+
+### Player
+
+Full-screen playback with the channel list and mini guide on top.
+
+![Live player with mini guide](docs/images/player.jpg)
+
+### Multi-channel
+
+Up to four live channels at once.
+
+![Multi-channel 2×2](docs/images/multiview.jpg)
+
+### Shows
+
+Seasons, episodes and details for series.
+
+![Series details](docs/images/series.jpg)
+
+These screenshots come from the app's real interface with the built-in demo
+server (`tools/mock_server`): channel names, programmes and posters are made
+up test data.
 
 ## Features
 
