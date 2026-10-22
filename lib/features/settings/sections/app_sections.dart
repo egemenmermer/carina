@@ -498,9 +498,7 @@ class AboutSection extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const SizedBox(height: 18),
-        const Center(
-          child: CarinaMark(size: 76, background: Color(0xFF0B0B0C)),
-        ),
+        const Center(child: CarinaMark(size: 76, tile: true)),
         const SizedBox(height: 16),
         const Text(
           'Carina',

@@ -6,11 +6,13 @@ an open license (fonts, icon glyphs) or drawn by our own code at runtime.
 ## Carina mark (original)
 
 - Code: `lib/core/brand/carina_mark.dart` (`CarinaMark`, `CarinaMarkPainter`).
-- An original mark: a flat-deck hull with a play button cut out of it, under
-  a star (Canopus). Geometry on a 64×64 grid, optional black rounded-square
-  tile (radius 14) for the app icon. Source SVG: `assets/brand/carina_mark.svg`.
-- Brand gradient `#FFB46B → #FF5E57`; `KColors.brand` is the coral end. The
-  UI accent (`KColors.accent`, `#FF2500`) is separate.
+- The project's own mark: a sailing hull with its wake line under a
+  four-point star (Canopus). Master artwork: `tools/icons/source.png`; the
+  vector paths (64×64 grid) are traced from it. The app icon adds a navy
+  rounded-square tile (radius 22.5). Source SVG: `assets/brand/carina_mark.svg`.
+- Mark gradient `#D3E3F9 → #F2F5FB → #86AEEE`, tile gradient
+  `#3A5598 → #0F1F49 → #030820`. The UI colours (`KColors.brand` `#FF5E57`,
+  `KColors.accent` `#FF2500`) are separate from the mark.
 
 ## Inter (font)
 

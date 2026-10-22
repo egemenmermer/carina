@@ -20,7 +20,23 @@ import '../../test/support/screenshot.dart' show loadAppFonts;
 
 /// Every size any platform asks for (Windows .ico, macOS AppIcon set, Android
 /// legacy launcher mdpi..xxxhdpi = 48/72/96/144/192, brand).
-const iconSizes = <int>[16, 20, 24, 32, 40, 48, 64, 72, 96, 128, 144, 192, 256, 512, 1024];
+const iconSizes = <int>[
+  16,
+  20,
+  24,
+  32,
+  40,
+  48,
+  64,
+  72,
+  96,
+  128,
+  144,
+  192,
+  256,
+  512,
+  1024,
+];
 
 /// Adaptive-icon foreground layers: 108 dp at mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi.
 const foregroundSizes = <int>[108, 162, 216, 324, 432];
@@ -29,14 +45,11 @@ const foregroundSizes = <int>[108, 162, 216, 324, 432];
 const bannerWidth = 320;
 const bannerHeight = 180;
 
-/// Tile colour from docs/ARCHITECTURE.md section 5; the mark keeps its
-/// brand gradient.
-const tileBlack = Color(0xFF000000);
-
 Future<List<int>> renderIcon(int size) async {
   final recorder = ui.PictureRecorder();
   final canvas = Canvas(recorder);
-  const CarinaMarkPainter(background: tileBlack).paint(canvas, Size.square(size.toDouble()));
+  const CarinaMarkPainter(tile: true)
+      .paint(canvas, Size.square(size.toDouble()));
   final picture = recorder.endRecording();
   final image = await picture.toImage(size, size);
   final data = await image.toByteData(format: ui.ImageByteFormat.png);
@@ -45,7 +58,11 @@ Future<List<int>> renderIcon(int size) async {
   return data!.buffer.asUint8List();
 }
 
-Future<List<int>> _encode(ui.PictureRecorder recorder, int width, int height) async {
+Future<List<int>> _encode(
+  ui.PictureRecorder recorder,
+  int width,
+  int height,
+) async {
   final picture = recorder.endRecording();
   final image = await picture.toImage(width, height);
   final data = await image.toByteData(format: ui.ImageByteFormat.png);
@@ -54,13 +71,13 @@ Future<List<int>> _encode(ui.PictureRecorder recorder, int width, int height) as
   return data!.buffer.asUint8List();
 }
 
-/// Centre of the mark's bounding box on the 64 grid (x 8..58, y 14.6..50).
-const _markCentre = Offset(33, 32.3);
+/// Centre of the mark's bounding box on the 64 grid.
+final _markCentre = CarinaMarkPainter.markBounds.center;
 
 /// Mark alone on transparent, sized for an adaptive-icon foreground layer.
 /// The layer is 108 dp; the launcher shows at most the central 66 dp circle, so
-/// the 64 grid is shown 96.4 grid units wide: the mark is about 56 dp wide and
-/// its corners stay well inside that circle.
+/// the 64 grid is shown 96.4 grid units wide: the mark is about 57 dp wide and
+/// 46 dp tall, so its tips stay inside that circle.
 Future<List<int>> renderForeground(int size) async {
   const canvasUnits = 96.4;
   final recorder = ui.PictureRecorder();
@@ -73,14 +90,15 @@ Future<List<int>> renderForeground(int size) async {
   return _encode(recorder, size, size);
 }
 
-/// Android TV launcher banner: black, the mark and the Inter wordmark, centred
+/// Android TV launcher banner: the navy tile gradient, the mark and the Inter
+/// wordmark, centred
 /// as one group. Needs the app fonts (see [loadAppFonts]).
 Future<List<int>> renderTvBanner() async {
-  const markScale = 1.44; // mark is 50 grid units wide -> 72 px
-  const gap = 16.0;
-  const markWidth = 50 * markScale;
-  // Optical centre of the mark: weighted towards the hull, not the star.
-  const markCentreY = 37.0;
+  const bounds = CarinaMarkPainter.markBounds;
+  const markScale = 2.0; // mark is ~41 grid units tall -> 82 px
+  const gap = 18.0;
+  final markWidth = bounds.width * markScale;
+  final markCentreY = bounds.center.dy;
 
   final text = TextPainter(
     text: const TextSpan(
@@ -97,7 +115,9 @@ Future<List<int>> renderTvBanner() async {
   )..layout();
   // Inter cap height is 1490/2048 em; centre the capitals on the banner axis.
   final capHeight = 40 * 1490 / 2048;
-  final baseline = text.computeDistanceToActualBaseline(TextBaseline.alphabetic);
+  final baseline = text.computeDistanceToActualBaseline(
+    TextBaseline.alphabetic,
+  );
 
   const centreY = bannerHeight / 2;
   final groupWidth = markWidth + gap + text.width;
@@ -107,11 +127,19 @@ Future<List<int>> renderTvBanner() async {
   final canvas = Canvas(recorder);
   canvas.drawRect(
     const Rect.fromLTWH(0, 0, 320, 180),
-    Paint()..color = const Color(0xFF000000),
+    Paint()
+      ..shader = const LinearGradient(
+        begin: Alignment.topRight,
+        end: Alignment.bottomLeft,
+        colors: CarinaMarkPainter.tileColors,
+      ).createShader(const Rect.fromLTWH(0, 0, 320, 180)),
   );
   canvas
     ..save()
-    ..translate(left - 8 * markScale, centreY - markCentreY * markScale)
+    ..translate(
+      left - bounds.left * markScale,
+      centreY - markCentreY * markScale,
+    )
     ..scale(markScale);
   const CarinaMarkPainter().paint(canvas, const Size.square(64));
   canvas.restore();
