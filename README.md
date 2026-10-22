@@ -39,15 +39,21 @@ old Argo Navis constellation Vela is the sails and Carina the hull.
 - **Parental control:** channel and category locks, hide mode, session unlock.
 - **Reminders:** for upcoming programmes.
 
-## Install (Windows)
+## Install
 
-The Windows workflow builds an installer
-(`Carina-Setup-<version>-x64.exe`, per user, no admin rights) and a portable
-zip on every push; download them from the run's artifacts. The builds are not
-code-signed, so Windows SmartScreen asks once: choose **More info → Run
-anyway**.
+Download the latest build from
+[Releases](https://github.com/egemenmermer/carina/releases):
 
-Carina keeps its data in `%APPDATA%\Carina`.
+- **Windows 10/11:** `Carina-Setup-<version>-x64.exe` (per user, no admin
+  rights) or the portable zip. Until code signing is in place SmartScreen
+  asks once: choose **More info → Run anyway**. Data lives in
+  `%APPDATA%\Carina`.
+- **macOS 12+:** the `macos.zip`.
+- **Android TV / Google TV:** the `androidtv.apk` (sideload with Downloader
+  or `adb install`).
+- **LG webOS 4+:** the `.ipk`, see [webos/README.md](webos/README.md).
+
+Every push also builds these in GitHub Actions (run artifacts).
 
 ## Build from source
 
@@ -86,6 +92,28 @@ FTS5 · dio · package:xml (streaming) · window_manager · Inno Setup.
 Carina does not provide, sell or link to any TV channels or content. Use it
 only with playlists you have the right to watch. When you add a TMDb key,
 Carina uses the TMDB API but is not endorsed or certified by TMDB.
+
+## Code signing policy
+
+Windows releases will be signed with free code signing provided by
+[SignPath.io](https://about.signpath.io/), certificate by
+[SignPath Foundation](https://signpath.org/) (application pending).
+
+- Only builds made by this repository's GitHub Actions workflows from
+  commits on `main` are submitted for signing; nothing built on a personal
+  machine is signed.
+- Committers and reviewers: [Egemen Mermer](https://github.com/egemenmermer).
+- Approvers (each signing request is approved by hand):
+  [Egemen Mermer](https://github.com/egemenmermer).
+
+### Privacy
+
+Carina connects only to the servers you configure (your IPTV provider's
+playlist, stream and guide addresses) and, if you add your own TMDb key, to
+the TMDB API for artwork and details. Channel logos and posters load from
+the addresses in your playlist. It has no analytics, telemetry or
+accounts and sends nothing else anywhere. Playlists, credentials and
+settings stay on your device.
 
 ## License
 
