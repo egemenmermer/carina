@@ -45,8 +45,11 @@ Download the latest build from
 [Releases](https://github.com/egemenmermer/carina/releases):
 
 - **Windows 10/11:** `Carina-Setup-<version>-x64.exe` (per user, no admin
-  rights) or the portable zip. Until code signing is in place SmartScreen
-  asks once: choose **More info → Run anyway**. Data lives in
+  rights) or the portable zip. Windows builds are code-signed through the
+  [SignPath Foundation](https://signpath.org/) (see
+  [Code signing policy](#code-signing-policy); until the first signed
+  release SmartScreen asks once: choose **More info → Run anyway**). Data
+  lives in
   `%APPDATA%\Carina`.
 - **macOS 12+:** the `macos.zip`.
 - **Android TV / Google TV:** the `androidtv.apk` (sideload with Downloader
