@@ -1,0 +1,21 @@
+{
+  "name": "carina-webos",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Carina for webOS: a lightweight IPTV player for LG TVs (webOS 4.x+).",
+  "license": "UNLICENSED",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:dev": "node scripts/build.mjs --dev",
+    "typecheck": "tsc --noEmit -p .",
+    "test": "node scripts/build-tests.mjs && node --test .test-out/*.test.mjs",
+    "serve": "node scripts/serve.mjs",
+    "package": "node scripts/build.mjs && ares-package dist -o out",
+    "check": "npm run typecheck && npm test && npm run build"
+  },
+  "devDependencies": {
+    "@webos-tools/cli": "3.2.6",
+    "esbuild": "0.28.2",
+    "typescript": "5.9.3"
+  }
+}
