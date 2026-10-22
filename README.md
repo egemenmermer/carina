@@ -5,7 +5,7 @@
 # Carina
 
 **A fast, keyboard-friendly TV player for your own playlists.**
-Windows and macOS, one Flutter codebase. English and Turkish.
+Windows, macOS, Android TV and LG webOS. English and Turkish.
 
 </div>
 
@@ -41,22 +41,19 @@ old Argo Navis constellation Vela is the sails and Carina the hull.
 
 ## Install
 
-Download the latest build from
-[Releases](https://github.com/egemenmermer/carina/releases):
+Latest build: **[1.1.0 beta 1](https://github.com/egemenmermer/carina/releases/tag/v1.1.0-beta.1)**
+(all builds: [Releases](https://github.com/egemenmermer/carina/releases)).
 
-- **Windows 10/11:** `Carina-Setup-<version>-x64.exe` (per user, no admin
-  rights) or the portable zip. Windows builds are code-signed through the
-  [SignPath Foundation](https://signpath.org/) (see
-  [Code signing policy](#code-signing-policy); until the first signed
-  release SmartScreen asks once: choose **More info → Run anyway**). Data
-  lives in
-  `%APPDATA%\Carina`.
-- **macOS 12+:** the `macos.zip`.
-- **Android TV / Google TV:** the `androidtv.apk` (sideload with Downloader
-  or `adb install`).
-- **LG webOS 4+:** the `.ipk`, see [webos/README.md](webos/README.md).
+| Platform | Download | How to install |
+|---|---|---|
+| Windows 10/11 (x64) | [Installer (.exe)](https://github.com/egemenmermer/carina/releases/download/v1.1.0-beta.1/Carina-Setup-1.1.0-x64.exe) · [Portable (.zip)](https://github.com/egemenmermer/carina/releases/download/v1.1.0-beta.1/Carina-1.1.0-win-x64-portable.zip) | Run the installer (per user, no admin rights). Until the first SignPath-signed release SmartScreen asks once: **More info → Run anyway**. |
+| macOS 12+ (Apple Silicon and Intel) | [Carina for Mac (.zip)](https://github.com/egemenmermer/carina/releases/download/v1.1.0-beta.1/Carina-1.1.0-35-macos.zip) | Unzip and move **Carina** to Applications. Signed with a Developer ID and notarized by Apple, so it opens without a warning. |
+| Android TV / Google TV | [Carina for Android TV (.apk)](https://github.com/egemenmermer/carina/releases/download/v1.1.0-beta.1/Carina-1.1.0-36-androidtv.apk) | Sideload with the **Downloader** app or `adb install`. Allow installs from unknown sources when the TV asks. |
+| LG webOS 4+ | [Carina for webOS (.ipk)](https://github.com/egemenmermer/carina/releases/download/v1.1.0-beta.1/Carina-0.1.0-4-webos.ipk) | Needs webOS Developer Mode, see [webos/README.md](webos/README.md). |
 
-Every push also builds these in GitHub Actions (run artifacts).
+Checksums: [SHA256SUMS.txt](https://github.com/egemenmermer/carina/releases/download/v1.1.0-beta.1/SHA256SUMS.txt). Windows keeps its data in
+`%APPDATA%\Carina`. Every push also builds all platforms in GitHub Actions
+(run artifacts).
 
 ## Build from source
 
