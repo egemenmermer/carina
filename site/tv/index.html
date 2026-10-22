@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carina: Android TV</title>
+<style>
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #071026; color: #f2f5fb;
+         font: 24px/1.5 -apple-system, "Segoe UI", Roboto, sans-serif; text-align: center; }
+  main { max-width: 760px; padding: 32px 16px; }
+  img { width: 120px; height: 120px; }
+  a { color: #f2f5fb; background: #0f1f49; display: inline-block; padding: 16px 32px; border-radius: 999px;
+      font-weight: 700; text-decoration: none; margin-top: 16px; }
+  a:focus { outline: 4px solid #86aeee; outline-offset: 4px; }
+  p { color: #a9b8d8; }
+</style>
+</head>
+<body>
+<main>
+  <img src="../icon.png" alt="Carina">
+  <h1>Carina indiriliyor…</h1>
+  <p id="status">İndirme kendiliğinden başlamazsa aşağıdaki butona bas. Bitince <b>Yükle</b>’ye bas.</p>
+  <a id="apk" href="https://github.com/egemenmermer/carina/releases" autofocus>Android TV için indir</a>
+</main>
+<script>
+// Finds the newest release's APK and starts the download (the Downloader
+// app installs it when the download finishes).
+fetch('https://api.github.com/repos/egemenmermer/carina/releases?per_page=10')
+  .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+  .then((releases) => {
+    const release = releases.find((r) => !r.draft);
+    const apk = release && release.assets.find((a) => /\.apk$/i.test(a.name));
+    if (!apk) return;
+    document.getElementById('apk').href = apk.browser_download_url;
+    location.href = apk.browser_download_url;
+  })
+  .catch(() => {
+    document.getElementById('status').textContent = 'Son sürüm bulunamadı. Butona basıp sürümler sayfasından APK dosyasını seç.';
+  });
+</script>
+</body>
+</html>

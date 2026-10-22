@@ -15,6 +15,8 @@ Windows, macOS, Android TV and LG webOS. English and Turkish.
 [![Download for Android TV](https://img.shields.io/badge/Android_TV-download-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/egemenmermer/carina/releases/download/v1.1.0-beta.1/Carina-1.1.0-36-androidtv.apk)
 [![Download for LG webOS](https://img.shields.io/badge/LG_webOS-download-A50034?style=for-the-badge&logo=lg&logoColor=white)](https://github.com/egemenmermer/carina/releases/download/v1.1.0-beta.1/Carina-0.1.0-4-webos.ipk)
 
+**Kolay kurulum (Türkçe): [egemenmermer.github.io/carina](https://egemenmermer.github.io/carina/)**
+
 [Install](#install) · [Screenshots](#screenshots) · [Features](#features) · [Build from source](#build-from-source)
 
 **Open source · No channels included · Bring your own Xtream Codes or M3U**
@@ -93,6 +95,9 @@ up test data.
 
 Latest build: **[1.1.0 beta 1](https://github.com/egemenmermer/carina/releases/tag/v1.1.0-beta.1)**
 (all builds: [Releases](https://github.com/egemenmermer/carina/releases)).
+
+Step-by-step install guide in Turkish, with the right download for your
+device: **[egemenmermer.github.io/carina](https://egemenmermer.github.io/carina/)**.
 
 | Platform | Download | How to install |
 |---|---|---|

@@ -3,7 +3,7 @@
 # timestamp) and, when an App Store Connect API key is given, notarizes it
 # and staples the ticket.
 #
-# Usage: tools/macos/sign_and_notarize.sh <path/to/carina.app> <identity>
+# Usage: tools/macos/sign_and_notarize.sh <path/to/Carina.app> <identity>
 #   <identity> is a codesigning identity name or SHA-1 hash.
 # Optional notarization env: ASC_KEY_PATH (.p8), ASC_KEY_ID, ASC_ISSUER_ID.
 set -euo pipefail
@@ -32,18 +32,7 @@ fi
 
 work=$(mktemp -d)
 ditto -c -k --sequesterRsrc --keepParent "$app" "$work/notarize.zip"
-xcrun notarytool submit "$work/notarize.zip" \
-  --key "$ASC_KEY_PATH" --key-id "$ASC_KEY_ID" --issuer "$ASC_ISSUER_ID" \
-  --wait --timeout 30m --output-format json | tee "$work/result.json"
-
-status=$(plutil -extract status raw "$work/result.json")
-if [ "$status" != "Accepted" ]; then
-  id=$(plutil -extract id raw "$work/result.json")
-  xcrun notarytool log "$id" \
-    --key "$ASC_KEY_PATH" --key-id "$ASC_KEY_ID" --issuer "$ASC_ISSUER_ID"
-  echo "Notarization finished with status: $status" >&2
-  exit 1
-fi
+"$(dirname "$0")/notarize.sh" "$work/notarize.zip"
 
 xcrun stapler staple "$app"
 spctl --assess --type execute --verbose=4 "$app"

@@ -85,24 +85,44 @@ jobs:
           fi
           app=$(find build/macos/Build/Products/Release -maxdepth 1 -name '*.app' | head -1)
           tools/macos/sign_and_notarize.sh "$app" "$identity"
+          echo "CARINA_SIGN_IDENTITY=$identity" >> "$GITHUB_ENV"
+          if [ -n "${ASC_KEY_PATH:-}" ]; then
+            echo "ASC_KEY_PATH=$ASC_KEY_PATH" >> "$GITHUB_ENV"
+          fi
+
+      # Drag-to-Applications disk image (layout: tools/macos/dmg/settings.py).
+      # Signed and notarized like the app when the secrets are set.
+      - name: Package DMG
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          app=$(find build/macos/Build/Products/Release -maxdepth 1 -name '*.app' | head -1)
+          test -n "$app" || { echo "No .app in build/macos/Build/Products/Release"; exit 1; }
+          codesign --verify --deep --verbose=1 "$app" || true
+          codesign -dv --verbose=2 "$app" 2>&1 | grep -E "^Authority=|^TeamIdentifier=" || true
+          python3 -m venv "$RUNNER_TEMP/dmgbuild"
+          "$RUNNER_TEMP/dmgbuild/bin/pip" install --quiet dmgbuild==1.6.7
+          mkdir -p dist
+          dmg="dist/Carina-$CARINA_VERSION-${{ github.run_number }}-macos.dmg"
+          "$RUNNER_TEMP/dmgbuild/bin/dmgbuild" -s tools/macos/dmg/settings.py \
+            -D app="$app" "Carina" "$dmg"
+          if [ -n "${CARINA_SIGN_IDENTITY:-}" ]; then
+            codesign --force --timestamp --sign "$CARINA_SIGN_IDENTITY" "$dmg"
+            if [ -n "${ASC_KEY_PATH:-}" ]; then
+              tools/macos/notarize.sh "$dmg"
+              xcrun stapler staple "$dmg"
+              spctl --assess --type open --context context:primary-signature --verbose=4 "$dmg"
+            fi
+          fi
+          (cd dist && shasum -a 256 *.dmg > SHA256SUMS.txt && cat SHA256SUMS.txt)
+          ls -l dist
 
       - name: Remove signing keychain
         if: always()
         run: |
           security delete-keychain "$RUNNER_TEMP/carina-signing.keychain-db" 2>/dev/null || true
           rm -f "$RUNNER_TEMP/asc_key.p8"
-
-      - name: Package zip
-        run: |
-          app=$(find build/macos/Build/Products/Release -maxdepth 1 -name '*.app' | head -1)
-          test -n "$app" || { echo "No .app in build/macos/Build/Products/Release"; exit 1; }
-          codesign --verify --deep --verbose=1 "$app" || true
-          codesign -dv --verbose=2 "$app" 2>&1 | grep -E "^Authority=|^TeamIdentifier=" || true
-          mkdir -p dist
-          zip="dist/Carina-$CARINA_VERSION-${{ github.run_number }}-macos.zip"
-          ditto -c -k --sequesterRsrc --keepParent "$app" "$zip"
-          (cd dist && shasum -a 256 *.zip > SHA256SUMS.txt && cat SHA256SUMS.txt)
-          ls -l dist
 
       - name: Upload carina-macos
         uses: actions/upload-artifact@v6

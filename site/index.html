@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carina: İndir ve kur</title>
+<meta name="description" content="Carina, kendi IPTV aboneliğin için ücretsiz ve açık kaynak bir oynatıcı. Windows, Mac, Android TV ve LG webOS için indir.">
+<link rel="icon" href="icon.png">
+<style>
+  :root {
+    --bg: #071026;
+    --panel: #0f1f49;
+    --panel-2: #142a5e;
+    --text: #f2f5fb;
+    --muted: #a9b8d8;
+    --accent: #86aeee;
+    --button: #f2f5fb;
+    --button-text: #0f1f49;
+    --radius: 18px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: radial-gradient(1200px 600px at 80% -10%, #22397a 0%, transparent 60%), var(--bg);
+    color: var(--text);
+    font: 17px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+  }
+  a { color: var(--accent); }
+  main { max-width: 980px; margin: 0 auto; padding: 48px 16px 64px; }
+  header { text-align: center; }
+  header img { width: 104px; height: 104px; }
+  h1 { font-size: 44px; margin: 12px 0 4px; letter-spacing: -0.02em; }
+  .tagline { color: var(--muted); font-size: 19px; margin: 0 auto; max-width: 560px; }
+  .primary { margin: 32px 0 8px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--button); color: var(--button-text);
+    font-weight: 700; font-size: 20px; text-decoration: none;
+    padding: 16px 32px; border-radius: 999px;
+  }
+  .btn:focus-visible, .chip:focus-visible, .tab:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+  .btn.secondary { background: transparent; color: var(--text); border: 2px solid var(--panel-2); font-size: 17px; padding: 10px 22px; }
+  .hint { color: var(--muted); font-size: 15px; }
+  .tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 40px 0 16px; }
+  .tab {
+    background: var(--panel); color: var(--text); border: 2px solid transparent;
+    border-radius: 999px; padding: 10px 18px; font: inherit; cursor: pointer;
+  }
+  .tab[aria-selected="true"] { border-color: var(--accent); background: var(--panel-2); }
+  .card { background: var(--panel); border-radius: var(--radius); padding: 24px 28px; }
+  .card h2 { margin: 0 0 4px; font-size: 24px; }
+  .card .note { color: var(--muted); margin: 0 0 16px; }
+  ol { padding-left: 22px; margin: 0 0 16px; }
+  li { margin: 8px 0; }
+  .code {
+    display: inline-block; font: 700 28px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: 0.08em; background: var(--bg); padding: 10px 16px; border-radius: 10px;
+  }
+  kbd {
+    font: 600 15px/1 inherit; background: var(--panel-2); border-radius: 6px; padding: 3px 7px;
+  }
+  .after { margin-top: 24px; }
+  .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 40px; }
+  .shots img { width: 100%; border-radius: 12px; display: block; }
+  footer { margin-top: 48px; color: var(--muted); font-size: 14px; text-align: center; }
+  [hidden] { display: none !important; }
+  @media (max-width: 520px) {
+    h1 { font-size: 36px; }
+    .btn { font-size: 18px; padding: 14px 24px; }
+    .card { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="icon.png" alt="Carina logosu" width="104" height="104">
+    <h1>Carina</h1>
+    <p class="tagline">Kendi IPTV aboneliğin için hızlı, sade ve ücretsiz bir oynatıcı. Canlı TV, yayın akışı, filmler ve diziler tek yerde.</p>
+  </header>
+
+  <section class="primary" aria-live="polite">
+    <a id="main-button" class="btn" href="https://github.com/egemenmermer/carina/releases">İndir</a>
+    <span id="main-hint" class="hint">Cihazını aşağıdan seç, adımları izle.</span>
+  </section>
+
+  <nav class="tabs" role="tablist" aria-label="Cihaz">
+    <button class="tab" role="tab" data-p="windows">Windows</button>
+    <button class="tab" role="tab" data-p="mac">Mac</button>
+    <button class="tab" role="tab" data-p="androidtv">Android TV / Google TV</button>
+    <button class="tab" role="tab" data-p="webos">LG Smart TV</button>
+  </nav>
+
+  <section class="card" data-panel="windows" hidden>
+    <h2>Windows 10 ve 11</h2>
+    <p class="note">Kurulum bir dakika sürer, yönetici şifresi istemez.</p>
+    <ol>
+      <li><a data-asset="windows" href="https://github.com/egemenmermer/carina/releases">Windows için indir</a>.</li>
+      <li>İnen <b>Carina-Setup</b> dosyasına çift tıkla.</li>
+      <li>Mavi bir “Windows bilgisayarınızı korudu” penceresi çıkarsa <b>Ek bilgi</b>’ye, sonra <b>Yine de çalıştır</b>’a tıkla. Uygulama henüz imzalanmadığı için bu uyarı bir kez çıkıyor.</li>
+      <li><b>İleri</b> ve <b>Kur</b> butonlarına bas. Carina masaüstünde ve Başlat menüsünde olacak.</li>
+    </ol>
+  </section>
+
+  <section class="card" data-panel="mac" hidden>
+    <h2>Mac</h2>
+    <p class="note">macOS 12 ve sonrası, Apple Silicon ve Intel. Apple tarafından onaylı, uyarı vermez.</p>
+    <ol>
+      <li><a data-asset="mac" href="https://github.com/egemenmermer/carina/releases">Mac için indir</a>.</li>
+      <li>İnen dosyayı aç.</li>
+      <li>Açılan pencerede <b>Carina</b> simgesini yanındaki <b>Uygulamalar</b> klasörüne sürükle.</li>
+      <li>Carina’yı Launchpad’den ya da Uygulamalar klasöründen aç.</li>
+    </ol>
+  </section>
+
+  <section class="card" data-panel="androidtv" hidden>
+    <h2>Android TV ve Google TV</h2>
+    <p class="note">Sony, Philips, TCL, Xiaomi TV’ler, Mi Box, Chromecast with Google TV ve benzerleri. Kumandayla 5 dakika.</p>
+    <ol>
+      <li>TV’de <b>Google Play Store</b>’u aç, <b>Downloader</b> uygulamasını ara ve kur (turuncu simgeli, AFTVnews).</li>
+      <li>TV’nin <b>Ayarlar</b>’ını aç: <b>Uygulamalar → Güvenlik ve kısıtlamalar → Bilinmeyen kaynaklar</b> bölümünde <b>Downloader</b>’ı aç. Menü adları TV markasına göre biraz değişebilir.</li>
+      <li>Downloader’ı aç, adres kutusuna şunu yaz ve <b>Go</b>’ya bas:
+        <div style="margin-top:8px"><span id="tv-code" class="code">egemenmermer.github.io/carina/tv</span></div>
+      </li>
+      <li>İndirme kendiliğinden başlar. Bitince <b>Yükle</b>’ye, sonra <b>Aç</b>’a bas.</li>
+      <li>Carina, TV’nin uygulamalar listesinde görünür. İstersen Downloader’dan indirilen dosyayı silebilirsin.</li>
+    </ol>
+    <p class="hint">Doğrudan dosya: <a data-asset="androidtv" href="https://github.com/egemenmermer/carina/releases">Android TV APK</a></p>
+  </section>
+
+  <section class="card" data-panel="webos" hidden>
+    <h2>LG Smart TV (webOS)</h2>
+    <p class="note">LG sürümü henüz LG’nin uygulama mağazasında değil.</p>
+    <p>Şimdilik yalnızca LG’nin geliştirici moduyla, bir bilgisayar yardımıyla kurulabiliyor ve bu mod belirli aralıklarla yenilenmek zorunda. Teknik bilgisi olan biri için adımlar <a href="https://github.com/egemenmermer/carina/blob/main/webos/README.md">burada</a>.</p>
+    <p>Daha kolay yol: TV’ne bir <b>Google TV / Android TV</b> kutusu (ör. Chromecast with Google TV) takıp Android TV adımlarını izlemek.</p>
+    <p class="hint">Dosya: <a data-asset="webos" href="https://github.com/egemenmermer/carina/releases">LG webOS (.ipk)</a></p>
+  </section>
+
+  <section class="card after">
+    <h2>Kurduktan sonra</h2>
+    <ol>
+      <li>Carina’yı aç ve <b>Playlist ekle</b>’yi seç.</li>
+      <li>IPTV sağlayıcının sana verdiği bilgileri gir: <b>sunucu adresi, kullanıcı adı ve şifre</b> (Xtream Codes) ya da bir <b>M3U linki</b>.</li>
+      <li>Android TV’de uzun şifreyi kumandayla yazmak zorunda değilsin: <b>Telefonunu kullan</b>’ı seç, ekrandaki QR kodu telefonla okut ve bilgileri telefondan gönder.</li>
+    </ol>
+    <p class="hint">Carina kanal ya da içerik satmaz, vermez. Sadece senin aboneliğini oynatır.</p>
+  </section>
+
+  <section class="shots" aria-label="Ekran görüntüleri">
+    <img src="images/movies.jpg" alt="Filmler ana sayfası" loading="lazy">
+    <img src="images/live.jpg" alt="Canlı TV" loading="lazy">
+    <img src="images/guide.jpg" alt="Yayın akışı" loading="lazy">
+    <img src="images/multiview.jpg" alt="Aynı anda dört kanal" loading="lazy">
+  </section>
+
+  <footer>
+    <p>Carina ücretsiz ve açık kaynaktır (GPL-3.0). <a href="https://github.com/egemenmermer/carina">GitHub’da kaynak kod</a> · <a href="https://github.com/egemenmermer/carina/releases">Tüm sürümler</a></p>
+    <p id="version"></p>
+  </footer>
+</main>
+<script>
+(() => {
+  const REPO = 'egemenmermer/carina';
+  const LABELS = {
+    windows: 'Windows için indir',
+    mac: 'Mac için indir',
+    androidtv: 'Android TV için indir',
+    webos: 'LG TV için kurulum',
+  };
+  // Which release asset belongs to which platform.
+  const MATCH = {
+    windows: (n) => /setup.*\.exe$/i.test(n),
+    mac: (n) => /\.dmg$/i.test(n) || /macos\.zip$/i.test(n),
+    androidtv: (n) => /\.apk$/i.test(n),
+    webos: (n) => /\.ipk$/i.test(n),
+  };
+  const urls = {};
+
+  function detect() {
+    const ua = navigator.userAgent;
+    if (/Web0S|webOS|NetCast/i.test(ua)) return 'webos';
+    if (/Android/i.test(ua)) return 'androidtv';
+    if (/Macintosh|Mac OS X/i.test(ua) && !/iPhone|iPad/i.test(ua)) return 'mac';
+    if (/Windows/i.test(ua)) return 'windows';
+    return null;
+  }
+
+  function show(p) {
+    document.querySelectorAll('.tab').forEach((t) =>
+      t.setAttribute('aria-selected', String(t.dataset.p === p)));
+    document.querySelectorAll('[data-panel]').forEach((el) => { el.hidden = el.dataset.panel !== p; });
+    const main = document.getElementById('main-button');
+    const hint = document.getElementById('main-hint');
+    if (p === 'webos') {
+      main.textContent = LABELS.webos;
+      main.href = '#';
+      main.onclick = (e) => { e.preventDefault(); document.querySelector('[data-panel="webos"]').scrollIntoView({ behavior: 'smooth' }); };
+    } else {
+      main.onclick = null;
+      main.textContent = LABELS[p];
+      main.href = urls[p] || 'https://github.com/egemenmermer/carina/releases';
+    }
+    hint.textContent = 'Başka bir cihaz için aşağıdan seç.';
+  }
+
+  document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => show(t.dataset.p)));
+
+  const initial = new URLSearchParams(location.search).get('p') || detect() || 'windows';
+  show(initial);
+
+  fetch(`https://api.github.com/repos/${REPO}/releases?per_page=10`)
+    .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+    .then((releases) => {
+      const release = releases.find((r) => !r.draft);
+      if (!release) return;
+      for (const p of Object.keys(MATCH)) {
+        // Prefer a DMG over the zip when both exist.
+        const assets = release.assets.filter((a) => MATCH[p](a.name));
+        assets.sort((a, b) => Number(/\.dmg$/i.test(b.name)) - Number(/\.dmg$/i.test(a.name)));
+        if (assets[0]) urls[p] = assets[0].browser_download_url;
+      }
+      document.querySelectorAll('[data-asset]').forEach((a) => {
+        if (urls[a.dataset.asset]) a.href = urls[a.dataset.asset];
+      });
+      document.getElementById('version').textContent = `Son sürüm: ${release.name || release.tag_name}`;
+      show(document.querySelector('.tab[aria-selected="true"]').dataset.p);
+    })
+    .catch(() => { /* Buttons keep pointing at the releases page. */ });
+})();
+</script>
+</body>
+</html>
